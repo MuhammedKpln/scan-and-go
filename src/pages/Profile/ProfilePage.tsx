@@ -118,7 +118,7 @@ export default function ProfilePage() {
             </IonButton>
             <IonButton color="secondary">Redigera</IonButton>
           </div>
-          <IonButton expand="full"> Visa QR-Koden </IonButton>
+          <IonButton> Visa QR-Koden </IonButton>
         </div>
       </IonContent>
     </IonPage>

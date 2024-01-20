@@ -22,9 +22,9 @@ import AuthRoutes from "./routes/auth.route";
 import TabRoutes from "./routes/tab.route";
 import { auth } from "./services/firebase.service";
 import "./theme/variables.css";
-
-setupIonicReact();
-
+setupIonicReact({
+  mode: "ios",
+});
 function App() {
   const user = useAuthUser(["user"], auth);
 
