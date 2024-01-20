@@ -17,7 +17,7 @@ import "@ionic/react/css/text-alignment.css";
 import "@ionic/react/css/text-transformation.css";
 
 /* Theme variables */
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useAuthUser } from "@react-query-firebase/auth";
 import AuthRoutes from "./routes/auth.route";
 import TabRoutes from "./routes/tab.route";
 import { auth } from "./services/firebase.service";
@@ -26,11 +26,9 @@ import "./theme/variables.css";
 setupIonicReact();
 
 function App() {
-  const [user, loading, error] = useAuthState(auth, {
-    onUserChanged: undefined,
-  });
+  const user = useAuthUser(["user"], auth);
 
-  if (loading) {
+  if (user.isLoading) {
     return (
       <IonApp>
         <IonLoading message="Starting App..." />
@@ -38,7 +36,7 @@ function App() {
     );
   }
 
-  return <IonApp>{user ? <TabRoutes /> : <AuthRoutes />}</IonApp>;
+  return <IonApp>{user.data ? <TabRoutes /> : <AuthRoutes />}</IonApp>;
 }
 
 export default App;

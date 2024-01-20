@@ -1,6 +1,6 @@
 import { auth } from "@/services/firebase.service";
 import { useIonAlert } from "@ionic/react";
-import { useSignOut } from "react-firebase-hooks/auth";
+import { useAuthSignOut } from "@react-query-firebase/auth";
 import { useHistory } from "react-router";
 import "./ExploreContainer.css";
 
@@ -9,8 +9,8 @@ interface ContainerProps {
 }
 
 const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
-  const [showAlert, hideAlert] = useIonAlert();
-  const [signOut, loading, error] = useSignOut(auth);
+  const [showAlert, _] = useIonAlert();
+  const signout = useAuthSignOut(auth);
   const history = useHistory();
 
   return (
@@ -19,7 +19,7 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
       <button onClick={() => showAlert("selam")}>click me</button>
       <button
         onClick={async () => {
-          await signOut();
+          await signout.mutateAsync();
           history.push("/");
         }}
       >

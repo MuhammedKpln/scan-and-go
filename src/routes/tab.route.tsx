@@ -1,31 +1,44 @@
+import ProfilePage from "@/pages/Profile/ProfilePage";
+import ScanPage from "@/pages/Scan";
 import Tab1 from "@/pages/Tab1";
-import Tab2 from "@/pages/Tab2";
 import Tab3 from "@/pages/Tab3";
 import {
+  IonFabButton,
   IonIcon,
-  IonLabel,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
   IonTabs,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import { ellipse, square, triangle } from "ionicons/icons";
+import {
+  albumsOutline,
+  chatbubbleEllipsesOutline,
+  homeOutline,
+  personCircleOutline,
+  qrCodeOutline,
+} from "ionicons/icons";
 import { Redirect, Route } from "react-router";
 
 export default function TabRoutes() {
   return (
-    <IonReactRouter>
+    <IonReactRouter basename="/app">
       <IonTabs>
         <IonRouterOutlet>
-          <Route exact path="/tab1">
+          <Route path="/home" exact>
             <Tab1 />
           </Route>
-          <Route exact path="/tab2">
-            <Tab2 />
-          </Route>
-          <Route path="/tab3">
+          <Route path="/notes" exact>
             <Tab3 />
+          </Route>
+          <Route path="/scan" exact>
+            <ScanPage />
+          </Route>
+          <Route path="/messages" exact>
+            <Tab3 />
+          </Route>
+          <Route path="/profile" exact>
+            <ProfilePage />
           </Route>
           <Route path="/" exact>
             <Redirect to="/tab1" />
@@ -33,17 +46,22 @@ export default function TabRoutes() {
         </IonRouterOutlet>
 
         <IonTabBar slot="bottom">
-          <IonTabButton tab="tab1" href="/tab1">
-            <IonIcon aria-hidden="true" icon={triangle} />
-            <IonLabel>Tab 1</IonLabel>
+          <IonTabButton tab="home" href="/home">
+            <IonIcon aria-hidden="true" icon={homeOutline} />
           </IonTabButton>
-          <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon aria-hidden="true" icon={ellipse} />
-            <IonLabel>Tab 2</IonLabel>
+          <IonTabButton tab="notes" href="/tab2">
+            <IonIcon aria-hidden="true" icon={albumsOutline} />
           </IonTabButton>
-          <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon aria-hidden="true" icon={square} />
-            <IonLabel>Tab 3</IonLabel>
+          <IonTabButton tab="scan" href="/scan">
+            <IonFabButton>
+              <IonIcon aria-hidden="true" icon={qrCodeOutline} />
+            </IonFabButton>
+          </IonTabButton>
+          <IonTabButton tab="messages" href="/tab3">
+            <IonIcon aria-hidden="true" icon={chatbubbleEllipsesOutline} />
+          </IonTabButton>
+          <IonTabButton tab="profile" href="/profile">
+            <IonIcon aria-hidden="true" icon={personCircleOutline} />
           </IonTabButton>
         </IonTabBar>
       </IonTabs>

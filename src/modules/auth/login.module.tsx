@@ -7,8 +7,8 @@ import {
   useIonRouter,
   useIonToast,
 } from "@ionic/react";
+import { useAuthSignInWithEmailAndPassword } from "@react-query-firebase/auth";
 import { useCallback } from "react";
-import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import styles from "./login.module.scss";
@@ -24,8 +24,7 @@ const loginFormSchema = z.object({
 });
 
 export default function LoginModule() {
-  const [signInWithEmailAndPassword, user, loading, error] =
-    useSignInWithEmailAndPassword(auth);
+  const signInMutation = useAuthSignInWithEmailAndPassword(auth);
   const router = useIonRouter();
   const [present] = useIonToast();
   const {
@@ -38,9 +37,9 @@ export default function LoginModule() {
   });
 
   const onSubmit = useCallback(async (data: Inputs) => {
-    const user = await signInWithEmailAndPassword(data.email, data.password);
+    const user = await signInMutation.mutateAsync(data);
 
-    if (user) {
+    if (user.user) {
       await present("Logged in successfully.", 3000);
       router.push("/");
     }
@@ -90,7 +89,7 @@ export default function LoginModule() {
               label="Lösenord"
               fill="solid"
               type="password"
-              labelPlacement="stacked"
+              labelPlacement="floating"
               errorText={errors.password?.message ?? undefined}
               onIonBlur={onBlur}
               onIonChange={onChange}
