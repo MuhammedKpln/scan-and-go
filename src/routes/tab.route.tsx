@@ -1,3 +1,5 @@
+import ChatPage from "@/pages/Chats/Chat";
+import ChatsPage from "@/pages/Chats/Chats";
 import HomePage from "@/pages/Home/Home";
 import NoteDetails from "@/pages/NoteDetails/NoteDetails";
 import ProfilePage from "@/pages/Profile/ProfilePage";
@@ -35,14 +37,17 @@ export default function TabRoutes() {
           <Route path="/scan" exact>
             <ScanPage />
           </Route>
-          <Route path="/messages" exact>
-            <Tab3 />
+          <Route path="/chats" exact>
+            <ChatsPage />
           </Route>
           <Route path="/profile" exact>
             <ProfilePage />
           </Route>
           <Route path="/note" exact>
             <NoteDetails />
+          </Route>
+          <Route path="/chat" exact>
+            <ChatPage />
           </Route>
           <Route path="/" exact>
             <Redirect to="/home" />
@@ -61,7 +66,7 @@ export default function TabRoutes() {
               <IonIcon aria-hidden="true" icon={qrCodeOutline} />
             </IonFabButton>
           </IonTabButton>
-          <IonTabButton tab="messages" href="/tab3">
+          <IonTabButton tab="messages" href="/chats">
             <IonIcon aria-hidden="true" icon={chatbubbleEllipsesOutline} />
           </IonTabButton>
           <IonTabButton tab="profile" href="/profile">

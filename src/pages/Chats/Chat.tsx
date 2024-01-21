@@ -8,7 +8,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 
-export default function NoteDetails() {
+export default function ChatPage() {
   return (
     <IonPage>
       <IonHeader>
@@ -19,7 +19,7 @@ export default function NoteDetails() {
           <IonTitle>Title</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent>selam</IonContent>
+      <IonContent>slam</IonContent>
     </IonPage>
   );
 }

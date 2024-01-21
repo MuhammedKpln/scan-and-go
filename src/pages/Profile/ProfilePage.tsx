@@ -31,21 +31,7 @@ export default function ProfilePage() {
   const ref = doc(firestore, "profiles", user.data!.uid).withConverter<IUser>(
     converter()
   );
-  const profile = useFirestoreDocument<IUser>(
-    ["profiles", user.data?.uid],
-    ref
-  );
-
-  //   useEffect(() => {
-  //     async function fetchData() {
-  //       const docRef = doc(firestore, "profiles", user!.uid);
-  //       const data = await getDoc(docRef);
-
-  //       console.log(data.data());
-  //     }
-
-  //     fetchData();
-  //   }, []);
+  const profile = useFirestoreDocument<IUser>(["profile", user.data?.uid], ref);
 
   if (user.isError || profile.isError) {
     return (
@@ -69,8 +55,9 @@ export default function ProfilePage() {
         <IonToolbar>
           <IonButtons slot="start">
             <IonTitle>
-              {profile?.data?.data()?.firstName}{" "}
-              {profile?.data?.data()?.lastName}
+              {`${profile?.data?.data()?.firstName} ${
+                profile?.data?.data()?.lastName
+              }` ?? "No name"}
             </IonTitle>
           </IonButtons>
           <IonButtons slot="end">
@@ -91,8 +78,9 @@ export default function ProfilePage() {
             </IonAvatar>
             <IonText>
               <h3>
-                {profile?.data?.data()?.firstName}{" "}
-                {profile?.data?.data()?.lastName}
+                {`${profile?.data?.data()?.firstName} ${
+                  profile?.data?.data()?.lastName
+                }` ?? "No name"}
               </h3>
             </IonText>
             <IonText>{profile?.data?.data()?.bio}</IonText>
