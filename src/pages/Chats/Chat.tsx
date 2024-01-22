@@ -1,24 +1,12 @@
-import {
-  IonBackButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-} from "@ionic/react";
+import AppHeader from "@/components/App/AppHeader";
+import { IonContent, IonPage, IonTitle } from "@ionic/react";
 
 export default function ChatPage() {
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonButtons slot="start">
-            <IonBackButton></IonBackButton>
-          </IonButtons>
-          <IonTitle>Title</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+      <AppHeader withBackButton>
+        <IonTitle>Title</IonTitle>
+      </AppHeader>
       <IonContent>slam</IonContent>
     </IonPage>
   );

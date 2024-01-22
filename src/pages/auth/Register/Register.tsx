@@ -1,6 +1,6 @@
 import AppHeader from "@/components/App/AppHeader";
 import DividerWithText from "@/components/DividerWithText/DividerWithText";
-import LoginModule from "@/modules/auth/login.module";
+import RegisterModule from "@/modules/auth/register.module";
 import {
   IonButton,
   IonContent,
@@ -11,21 +11,21 @@ import {
 } from "@ionic/react";
 import { logoApple, logoGoogle } from "ionicons/icons";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   return (
     <IonPage>
       <AppHeader withBackButton>
-        <IonTitle>Login</IonTitle>
+        <IonTitle>Registrera dig</IonTitle>
       </AppHeader>
       <IonContent className="ion-padding">
         <div className="flex flex-col justify-evenly gap-3">
           <div>
             <IonText>
-              <h1>Login</h1>
+              <h1>Registrera dig</h1>
             </IonText>
-            <IonText color="medium">Welcome back to the app</IonText>
+            <IonText color="medium">Welcome to the family!</IonText>
           </div>
-          <LoginModule />
+          <RegisterModule />
 
           <DividerWithText text="eller forsätt med" />
 
@@ -37,9 +37,6 @@ export default function LoginPage() {
             <IonIcon slot="start" icon={logoApple} />
             Fortsätt med Apple
           </IonButton>
-
-          <DividerWithText text="eller" />
-          <IonButton fill="clear">Skapa ett konto</IonButton>
         </div>
       </IonContent>
     </IonPage>

@@ -24,7 +24,7 @@ export default function LoginModule() {
   const {
     handleSubmit,
     control,
-    formState: { errors, touchedFields },
+    formState: { errors },
   } = useForm<Inputs>({
     resolver: zodResolver(loginFormSchema),
     reValidateMode: "onChange",
@@ -86,7 +86,7 @@ export default function LoginModule() {
           name="password"
         />
 
-        <IonButton type="submit" expand="full">
+        <IonButton type="submit" expand="full" shape="round">
           Logga in
         </IonButton>
       </form>

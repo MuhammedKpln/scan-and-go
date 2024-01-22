@@ -1,7 +1,12 @@
 export type IUser = {
-  userId: string;
   firstName: string;
   lastName: string;
-  profileImageRef: string;
+  profileImageRef?: string;
   bio?: string;
 };
+
+export interface IRegisterUserForm
+  extends Omit<IUser, "profileImageRef" | "bio"> {
+  email: string;
+  password: string;
+}

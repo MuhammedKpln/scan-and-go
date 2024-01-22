@@ -22,7 +22,9 @@ export default function OnboardPage() {
             Logga in
           </IonButton>
 
-          <IonButton fill="clear">Create an account</IonButton>
+          <IonButton fill="clear" routerLink="/register">
+            Create an account
+          </IonButton>
         </div>
       </IonContent>
     </IonPage>
