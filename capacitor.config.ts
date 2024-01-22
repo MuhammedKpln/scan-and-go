@@ -1,12 +1,13 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'scan and go',
-  webDir: 'dist',
+  appId: "com.muhammedkpln.scanandgo",
+  appName: "Scan & Go",
+  webDir: "dist",
+  bundledWebRuntime: true,
   server: {
-    androidScheme: 'https'
-  }
+    androidScheme: "https",
+  },
 };
 
 export default config;

@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.muhammedkpln.scanandgo;
 
 import com.getcapacitor.BridgeActivity;
 

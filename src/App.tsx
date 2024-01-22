@@ -36,6 +36,12 @@ export default function App() {
   }
 
   return (
-    <IonApp>{signInData.signedIn ? <TabRoutes /> : <AuthRoutes />}</IonApp>
+    <IonApp>
+      {signInData.signedIn && signInData.user.emailVerified ? (
+        <TabRoutes />
+      ) : (
+        <AuthRoutes />
+      )}
+    </IonApp>
   );
 }

@@ -1,6 +1,11 @@
 import { FirebaseCollections } from "@/models/firebase_collections.model";
 import { IRegisterUserForm, IUser } from "@/models/user.model";
-import { Auth, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  Auth,
+  User,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
 import { Firestore, doc, setDoc } from "firebase/firestore";
 import { converter } from "./firebase.service";
 
@@ -22,13 +27,17 @@ export class FirebaseAuthService {
       );
 
       if (user) {
-        const createProfile = await this.createProfile(user.user.uid, data);
+        await this.createProfile(user.user.uid, data);
 
-        return true;
+        await this.sendVerificationEmail(user.user);
       }
     } catch (error) {
       throw error;
     }
+  }
+
+  private async sendVerificationEmail(user: User) {
+    await sendEmailVerification(user);
   }
 
   private async createProfile(uid: string, data: IUser) {

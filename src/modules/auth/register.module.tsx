@@ -1,10 +1,16 @@
 import { IRegisterUserForm } from "@/models/user.model";
 import { FirebaseAuthService } from "@/services/firebase-auth.service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IonButton, IonInput, useIonRouter, useIonToast } from "@ionic/react";
-import { useCallback } from "react";
+import {
+  IonButton,
+  IonInput,
+  useIonLoading,
+  useIonRouter,
+  useIonToast,
+} from "@ionic/react";
+import { useCallback, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useAuth, useFirestore } from "reactfire";
+import { useAuth, useFirestore, useSigninCheck } from "reactfire";
 import { z } from "zod";
 import styles from "./register.module.scss";
 
@@ -20,6 +26,8 @@ export default function RegisterModule() {
   const [showToast, dismissToast] = useIonToast();
   const router = useIonRouter();
   const firestore = useFirestore();
+  const [showLoading, dismissLoading] = useIonLoading();
+  const signInCheck = useSigninCheck();
   const {
     handleSubmit,
     control,
@@ -29,19 +37,35 @@ export default function RegisterModule() {
     reValidateMode: "onChange",
   });
 
+  useEffect(() => {
+    if (signInCheck.data.signedIn) {
+      const interval = setInterval(() => {
+        auth?.currentUser?.reload();
+      }, 5_000);
+
+      return () => {
+        dismissLoading();
+
+        clearInterval(interval);
+        showToast({
+          color: "success",
+          message: "Reg success",
+          duration: 2000,
+        });
+        router.push("/app", "forward", "replace");
+      };
+    }
+  }, [signInCheck]);
+
   const onSubmit = useCallback(async (data: IRegisterUserForm) => {
     const fbAuth = new FirebaseAuthService(auth, firestore);
 
     try {
       await fbAuth.createUser(data);
 
-      showToast({
-        color: "success",
-        message: "Reg success",
-        duration: 2000,
-      });
-
-      router.push("/app", "forward", "replace");
+      showLoading(
+        "Vi har skickat ett verifiering mejl, var snäll verifiera dig innan vi fortsätter."
+      );
     } catch (error) {
       showToast({
         color: "danger",

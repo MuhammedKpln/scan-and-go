@@ -1,10 +1,14 @@
 import {
   browserLocalPersistence,
   browserSessionPersistence,
+  connectAuthEmulator,
   indexedDBLocalPersistence,
   initializeAuth,
 } from "firebase/auth";
-import { initializeFirestore } from "firebase/firestore";
+import {
+  connectFirestoreEmulator,
+  initializeFirestore,
+} from "firebase/firestore";
 import { PropsWithChildren } from "react";
 import {
   AuthProvider,
@@ -22,6 +26,10 @@ export default function Providers(props: PropsWithChildren) {
         browserSessionPersistence,
       ],
     });
+
+    if (process.env.NODE_ENV !== "PRODUCTION") {
+      connectAuthEmulator(auth, "http://localhost:9099");
+    }
     return auth;
   });
 
@@ -32,6 +40,11 @@ export default function Providers(props: PropsWithChildren) {
           kind: "persistent",
         },
       });
+
+      if (process.env.NODE_ENV !== "PRODUCTION") {
+        connectFirestoreEmulator(db, "localhost", 8080);
+      }
+
       return db;
     });
 
