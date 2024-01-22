@@ -1,9 +1,17 @@
+import { FirebaseAuthService } from "@/services/firebase-auth.service";
 import { signInWithEmailAndPassword } from "@firebase/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IonButton, IonInput, useIonRouter, useIonToast } from "@ionic/react";
+import {
+  IonButton,
+  IonInput,
+  useIonAlert,
+  useIonRouter,
+  useIonToast,
+} from "@ionic/react";
+import { User } from "firebase/auth";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useAuth } from "reactfire";
+import { useAuth, useFirestore } from "reactfire";
 import { z } from "zod";
 import styles from "./login.module.scss";
 
@@ -19,8 +27,10 @@ const loginFormSchema = z.object({
 
 export default function LoginModule() {
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useIonRouter();
   const [present] = useIonToast();
+  const [presentAlert] = useIonAlert();
   const {
     handleSubmit,
     control,
@@ -30,6 +40,17 @@ export default function LoginModule() {
     reValidateMode: "onChange",
   });
 
+  const sendVerificationMail = useCallback(async (user: User) => {
+    const authService = new FirebaseAuthService(auth, firestore);
+    await authService.sendVerificationEmail(user);
+
+    present({
+      message: "Email verification succesfully send!",
+      color: "success",
+      duration: 3000,
+    });
+  }, []);
+
   const onSubmit = useCallback(async (data: Inputs) => {
     const user = await signInWithEmailAndPassword(
       auth,
@@ -38,8 +59,25 @@ export default function LoginModule() {
     );
 
     if (user.user) {
-      await present("Logged in successfully.", 3000);
-      router.push("/");
+      if (user.user.emailVerified) {
+        await present("Logged in successfully.", 3000);
+        router.push("/");
+      } else {
+        await presentAlert({
+          message: "You need to activate you're account before proceeding.",
+          subHeader: "Account verification",
+          buttons: [
+            {
+              text: "Send verification mail",
+              handler: () => sendVerificationMail(user.user),
+            },
+            {
+              text: "Cancel",
+              role: "cancel",
+            },
+          ],
+        });
+      }
     }
   }, []);
 

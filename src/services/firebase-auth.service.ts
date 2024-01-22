@@ -36,7 +36,7 @@ export class FirebaseAuthService {
     }
   }
 
-  private async sendVerificationEmail(user: User) {
+  async sendVerificationEmail(user: User) {
     await sendEmailVerification(user);
   }
 

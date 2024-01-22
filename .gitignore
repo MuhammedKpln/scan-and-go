@@ -27,3 +27,9 @@ yarn-error.log*
 
 # Optional eslint cache
 .eslintcache
+
+
+# Firebase
+
+firebase-debug.log
+firestore-debug.log

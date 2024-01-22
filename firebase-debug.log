@@ -323,3 +323,22 @@ INFO: Detected non-HTTP/2 connection.
 [debug] [2024-01-22T14:47:41.966Z] Jan 22, 2024 3:47:41 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreListenHandler onClose
 INFO: channel closed
  {"metadata":{"emulator":{"name":"firestore"},"message":"Jan 22, 2024 3:47:41 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreListenHandler onClose\nINFO: channel closed\n"}}
+[warn] ⚠  Received a signed JWT. Auth Emulator does not validate JWTs and IS NOT SECURE {"metadata":{"emulator":{"name":"auth"},"message":"Received a signed JWT. Auth Emulator does not validate JWTs and IS NOT SECURE"}}
+[debug] [2024-01-22T15:09:32.966Z] Jan 22, 2024 4:09:32 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jan 22, 2024 4:09:32 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-01-22T15:09:33.013Z] Jan 22, 2024 4:09:33 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jan 22, 2024 4:09:33 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-01-22T15:09:33.024Z] Jan 22, 2024 4:09:33 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jan 22, 2024 4:09:33 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-01-22T15:10:33.031Z] Jan 22, 2024 4:10:33 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jan 22, 2024 4:10:33 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-01-22T15:10:33.037Z] Jan 22, 2024 4:10:33 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreListenHandler onClose
+INFO: channel closed
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jan 22, 2024 4:10:33 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreListenHandler onClose\nINFO: channel closed\n"}}
+[info] i  To verify the email address admin@admin.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=7x3TSTFGUE9YpXdjOTZcvqq_57TWU_h9PbwUtgqGcGkOHHOaRO8UBt&apiKey=fake-api-key {"metadata":{"emulator":{"name":"auth"},"message":"To verify the email address admin@admin.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=7x3TSTFGUE9YpXdjOTZcvqq_57TWU_h9PbwUtgqGcGkOHHOaRO8UBt&apiKey=fake-api-key"}}
+[info] i  To verify the email address admin@admin.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=n_AVt2qvjLs74W_XbKTMWD7bS2rNgJWhsryM0tweBsxrB7jvc5B2Ze&apiKey=fake-api-key {"metadata":{"emulator":{"name":"auth"},"message":"To verify the email address admin@admin.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=n_AVt2qvjLs74W_XbKTMWD7bS2rNgJWhsryM0tweBsxrB7jvc5B2Ze&apiKey=fake-api-key"}}
+[info] i  To verify the email address admin@admin.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=K8_RMnydkJori_4-xZeSoxf9NsDoYMayytKnk5Nm3cPoAX4TQ-CYhD&apiKey=fake-api-key {"metadata":{"emulator":{"name":"auth"},"message":"To verify the email address admin@admin.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=K8_RMnydkJori_4-xZeSoxf9NsDoYMayytKnk5Nm3cPoAX4TQ-CYhD&apiKey=fake-api-key"}}
