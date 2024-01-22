@@ -342,3 +342,12 @@ INFO: channel closed
 [info] i  To verify the email address admin@admin.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=7x3TSTFGUE9YpXdjOTZcvqq_57TWU_h9PbwUtgqGcGkOHHOaRO8UBt&apiKey=fake-api-key {"metadata":{"emulator":{"name":"auth"},"message":"To verify the email address admin@admin.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=7x3TSTFGUE9YpXdjOTZcvqq_57TWU_h9PbwUtgqGcGkOHHOaRO8UBt&apiKey=fake-api-key"}}
 [info] i  To verify the email address admin@admin.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=n_AVt2qvjLs74W_XbKTMWD7bS2rNgJWhsryM0tweBsxrB7jvc5B2Ze&apiKey=fake-api-key {"metadata":{"emulator":{"name":"auth"},"message":"To verify the email address admin@admin.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=n_AVt2qvjLs74W_XbKTMWD7bS2rNgJWhsryM0tweBsxrB7jvc5B2Ze&apiKey=fake-api-key"}}
 [info] i  To verify the email address admin@admin.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=K8_RMnydkJori_4-xZeSoxf9NsDoYMayytKnk5Nm3cPoAX4TQ-CYhD&apiKey=fake-api-key {"metadata":{"emulator":{"name":"auth"},"message":"To verify the email address admin@admin.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=K8_RMnydkJori_4-xZeSoxf9NsDoYMayytKnk5Nm3cPoAX4TQ-CYhD&apiKey=fake-api-key"}}
+[debug] [2024-01-22T15:17:51.568Z] Jan 22, 2024 4:17:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jan 22, 2024 4:17:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-01-22T15:17:51.596Z] Jan 22, 2024 4:17:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jan 22, 2024 4:17:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-01-22T15:17:51.607Z] Jan 22, 2024 4:17:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jan 22, 2024 4:17:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
