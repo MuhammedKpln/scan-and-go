@@ -27,7 +27,6 @@ export default function ChatsPage() {
             firstName: "Muhammed",
             lastName: "Kaplan",
             profileImageRef: "null",
-            userId: "",
           }}
           onClickDelete={() => null}
         />
