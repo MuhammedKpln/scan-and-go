@@ -1,5 +1,5 @@
 import { IUser } from "@/models/user.model";
-import { auth, converter, firestore } from "@/services/firebase.service";
+import { converter } from "@/services/firebase.service";
 import {
   IonAlert,
   IonAvatar,
@@ -14,8 +14,6 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { useAuthUser } from "@react-query-firebase/auth";
-import { useFirestoreDocument } from "@react-query-firebase/firestore";
 import { doc } from "firebase/firestore";
 import {
   arrowRedoOutline,
@@ -24,16 +22,20 @@ import {
   logoLinkedin,
   logoWhatsapp,
 } from "ionicons/icons";
+import { useAuth, useFirestore, useFirestoreDocDataOnce } from "reactfire";
 import styles from "./Profile.module.scss";
 
 export default function ProfilePage() {
-  const user = useAuthUser(["user"], auth);
-  const ref = doc(firestore, "profiles", user.data!.uid).withConverter<IUser>(
-    converter()
-  );
-  const profile = useFirestoreDocument<IUser>(["profile", user.data?.uid], ref);
+  const user = useAuth();
+  const firestore = useFirestore();
+  const ref = doc(
+    firestore,
+    "profiles",
+    user.currentUser!.uid
+  ).withConverter<IUser>(converter());
+  const profile = useFirestoreDocDataOnce<IUser>(ref);
 
-  if (user.isError || profile.isError) {
+  if (profile.status === "error") {
     return (
       <IonPage>
         <IonAlert>seklam</IonAlert>
@@ -41,7 +43,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (user.isLoading || profile.isLoading) {
+  if (profile.status === "loading") {
     return (
       <IonPage>
         <IonLoading>Loading..</IonLoading>
@@ -55,9 +57,8 @@ export default function ProfilePage() {
         <IonToolbar>
           <IonButtons slot="start">
             <IonTitle>
-              {`${profile?.data?.data()?.firstName} ${
-                profile?.data?.data()?.lastName
-              }` ?? "No name"}
+              {`${profile.data.firstName} ${profile.data.lastName}` ??
+                "No name"}
             </IonTitle>
           </IonButtons>
           <IonButtons slot="end">
@@ -78,12 +79,11 @@ export default function ProfilePage() {
             </IonAvatar>
             <IonText>
               <h3>
-                {`${profile?.data?.data()?.firstName} ${
-                  profile?.data?.data()?.lastName
-                }` ?? "No name"}
+                {`${profile.data.firstName} ${profile.data.lastName}` ??
+                  "No name"}
               </h3>
             </IonText>
-            <IonText>{profile?.data?.data()?.bio}</IonText>
+            <IonText>{profile.data.bio}</IonText>
 
             <IonButtons className="mt-5">
               <IonButton fill="clear">
@@ -106,7 +106,7 @@ export default function ProfilePage() {
             </IonButton>
             <IonButton color="secondary">Redigera</IonButton>
           </div>
-          <IonButton> Visa QR-Koden </IonButton>
+          <IonButton onClick={() => user.signOut()}>Visa QR-Koden</IonButton>
         </div>
       </IonContent>
     </IonPage>

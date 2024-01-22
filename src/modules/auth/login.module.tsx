@@ -1,15 +1,9 @@
-import { auth } from "@/services/firebase.service";
+import { signInWithEmailAndPassword } from "@firebase/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  IonButton,
-  IonInput,
-  IonText,
-  useIonRouter,
-  useIonToast,
-} from "@ionic/react";
-import { useAuthSignInWithEmailAndPassword } from "@react-query-firebase/auth";
+import { IonButton, IonInput, useIonRouter, useIonToast } from "@ionic/react";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useAuth } from "reactfire";
 import { z } from "zod";
 import styles from "./login.module.scss";
 
@@ -24,7 +18,7 @@ const loginFormSchema = z.object({
 });
 
 export default function LoginModule() {
-  const signInMutation = useAuthSignInWithEmailAndPassword(auth);
+  const auth = useAuth();
   const router = useIonRouter();
   const [present] = useIonToast();
   const {
@@ -37,7 +31,11 @@ export default function LoginModule() {
   });
 
   const onSubmit = useCallback(async (data: Inputs) => {
-    const user = await signInMutation.mutateAsync(data);
+    const user = await signInWithEmailAndPassword(
+      auth,
+      data.email,
+      data.password
+    );
 
     if (user.user) {
       await present("Logged in successfully.", 3000);
@@ -47,17 +45,6 @@ export default function LoginModule() {
 
   return (
     <>
-      <div className={styles.logoBg}>G</div>
-      <IonText>
-        <h1>Scan & Go</h1>
-      </IonText>
-      <IonText color="medium">
-        <h6>
-          Belajar gratis di Namanyajugabelajar.io, dan memulai karir yang kamu
-          cita-citata sejak dalam embrio!
-        </h6>
-      </IonText>
-
       <form className={styles.loginForm} onSubmit={handleSubmit(onSubmit)}>
         <Controller
           control={control}
@@ -67,7 +54,7 @@ export default function LoginModule() {
                 fieldState.isTouched ? "ion-touched" : null
               }`}
               label="Email"
-              fill="solid"
+              fill="outline"
               labelPlacement="floating"
               type="email"
               errorText={errors.email?.message ?? undefined}
@@ -87,7 +74,7 @@ export default function LoginModule() {
                 fieldState.isTouched ? "ion-touched" : null
               }`}
               label="Lösenord"
-              fill="solid"
+              fill="outline"
               type="password"
               labelPlacement="floating"
               errorText={errors.password?.message ?? undefined}

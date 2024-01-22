@@ -17,16 +17,17 @@ import "@ionic/react/css/text-alignment.css";
 import "@ionic/react/css/text-transformation.css";
 
 /* Theme variables */
-import { useAuthUser } from "@react-query-firebase/auth";
+import { useSigninCheck } from "reactfire";
 import AuthRoutes from "./routes/auth.route";
 import TabRoutes from "./routes/tab.route";
-import { auth } from "./services/firebase.service";
 import "./theme/variables.css";
-setupIonicReact();
-function App() {
-  const user = useAuthUser(["user"], auth);
 
-  if (user.isLoading) {
+setupIonicReact();
+
+export default function App() {
+  const { data: signInData, status: signInStatus } = useSigninCheck();
+
+  if (signInStatus === "loading") {
     return (
       <IonApp>
         <IonLoading message="Starting App..." />
@@ -34,7 +35,7 @@ function App() {
     );
   }
 
-  return <IonApp>{user.data ? <TabRoutes /> : <AuthRoutes />}</IonApp>;
+  return (
+    <IonApp>{signInData.signedIn ? <TabRoutes /> : <AuthRoutes />}</IonApp>
+  );
 }
-
-export default App;

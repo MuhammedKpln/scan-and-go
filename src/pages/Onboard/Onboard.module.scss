@@ -1,0 +1,7 @@
+.welcomeImage {
+    @apply w-6/12;
+}
+
+.container {
+    @apply flex justify-evenly items-center content-center gap-5 flex-col text-center h-full w-full;
+}

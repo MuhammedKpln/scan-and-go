@@ -4,7 +4,6 @@ import HomePage from "@/pages/Home/Home";
 import NoteDetails from "@/pages/NoteDetails/NoteDetails";
 import ProfilePage from "@/pages/Profile/ProfilePage";
 import ScanPage from "@/pages/Scan";
-import Tab3 from "@/pages/Tab3";
 import {
   IonFabButton,
   IonIcon,
@@ -32,7 +31,7 @@ export default function TabRoutes() {
             <HomePage />
           </Route>
           <Route path="/notes" exact>
-            <Tab3 />
+            <HomePage />
           </Route>
           <Route path="/scan" exact>
             <ScanPage />
@@ -49,7 +48,7 @@ export default function TabRoutes() {
           <Route path="/chat" exact>
             <ChatPage />
           </Route>
-          <Route path="/" exact>
+          <Route path="/app" exact>
             <Redirect to="/home" />
           </Route>
         </IonRouterOutlet>

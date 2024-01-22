@@ -1,9 +1,7 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
 import {
   PartialWithFieldValue,
   QueryDocumentSnapshot,
-  getFirestore,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -16,12 +14,10 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
-const auth = getAuth(firebaseApp);
-const firestore = getFirestore(firebaseApp);
 
 const converter = <T>() => ({
   toFirestore: (data: PartialWithFieldValue<T>) => data,
   fromFirestore: (snap: QueryDocumentSnapshot) => snap.data() as T,
 });
 
-export { auth, converter, firebaseApp, firestore };
+export { converter, firebaseApp, firebaseConfig };
