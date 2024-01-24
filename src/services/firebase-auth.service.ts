@@ -48,7 +48,7 @@ export class FirebaseAuthService {
         uid
       ).withConverter<IUser>(converter<IUser>());
 
-      await setDoc<IUser>(docRef, {
+      await setDoc(docRef, {
         firstName: data.firstName,
         lastName: data.lastName,
         bio: "",
