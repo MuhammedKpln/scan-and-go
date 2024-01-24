@@ -27,7 +27,7 @@ export default function Providers(props: PropsWithChildren) {
       ],
     });
 
-    if (process.env.NODE_ENV !== "PRODUCTION") {
+    if (!import.meta.env.PROD) {
       connectAuthEmulator(auth, "http://localhost:9099");
     }
     return auth;
@@ -41,7 +41,7 @@ export default function Providers(props: PropsWithChildren) {
         },
       });
 
-      if (process.env.NODE_ENV !== "PRODUCTION") {
+      if (!import.meta.env.PROD) {
         connectFirestoreEmulator(db, "localhost", 8080);
       }
 
