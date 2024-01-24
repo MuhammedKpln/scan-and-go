@@ -22,7 +22,9 @@ import AuthRoutes from "./routes/auth.route";
 import TabRoutes from "./routes/tab.route";
 import "./theme/variables.css";
 
-setupIonicReact();
+setupIonicReact({
+  mode: "ios",
+});
 
 export default function App() {
   const { data: signInData, status: signInStatus } = useSigninCheck();

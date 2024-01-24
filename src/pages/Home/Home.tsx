@@ -1,3 +1,4 @@
+import NewNoteModule from "@/modules/note/new_note.module";
 import {
   IonButton,
   IonCard,
@@ -14,13 +15,22 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
+  useIonModal,
   useIonRouter,
 } from "@ionic/react";
 import { addOutline } from "ionicons/icons";
+import { useCallback } from "react";
 import styles from "./Home.module.scss";
 
 export default function HomePage() {
   const router = useIonRouter();
+  const [showModal, hideModal] = useIonModal(NewNoteModule, {
+    onDismiss: (data: string, role: string) => hideModal(data, role),
+  });
+
+  const onClickAddNote = useCallback(() => {
+    showModal();
+  }, []);
 
   return (
     <IonPage className="ion-padding">
@@ -53,7 +63,7 @@ export default function HomePage() {
             </IonCardContent>
           </IonCard>
 
-          <IonButton>
+          <IonButton onClick={onClickAddNote}>
             <IonIcon icon={addOutline} />
             Lägg till nytt anteckning
           </IonButton>
