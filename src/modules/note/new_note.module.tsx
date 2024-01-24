@@ -1,5 +1,9 @@
+import { useAuthContext } from "@/context/AuthContext";
+import { QueryStatus } from "@/hooks/base";
+import { useCollection } from "@/hooks/useCollection";
+import { useSetDoc } from "@/hooks/useSetDoc";
 import { INote } from "@/models/note.model";
-import { converter } from "@/services/firebase.service";
+import { converter, db } from "@/services/firebase.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IonButton,
@@ -15,25 +19,15 @@ import {
   IonPage,
   IonPopover,
   IonSelect,
+  IonSelectOption,
   IonTextarea,
   IonTitle,
   IonToolbar,
+  useIonToast,
 } from "@ionic/react";
-import {
-  Timestamp,
-  collection,
-  doc,
-  query,
-  setDoc,
-  where,
-} from "firebase/firestore";
-import { useCallback } from "react";
+import { Timestamp, collection, query, where } from "firebase/firestore";
+import { useCallback, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
-import {
-  useFirestore,
-  useFirestoreCollection,
-  useSigninCheck,
-} from "reactfire";
 import { z } from "zod";
 
 interface IProps {
@@ -47,37 +41,60 @@ const newNoteFormSchema = z.object({
 });
 
 export default function NewNoteModule(props: IProps) {
-  const firestore = useFirestore();
-  const user = useSigninCheck();
-  const tagsCollection = collection(firestore, "tags");
-  const tagsQuery = query(
-    tagsCollection,
-    where("userUid", "==", user.data.user?.uid)
-  ).withConverter(converter<ITag>());
-
-  const ss = useFirestoreCollection(tagsQuery);
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm<typeof newNoteFormSchema._type>({
     resolver: zodResolver(newNoteFormSchema),
-    reValidateMode: "onChange",
+    reValidateMode: "onSubmit",
   });
+  const authContext = useAuthContext();
+  const [showToast] = useIonToast();
+  const tagsCollection = useMemo(() => collection(db, "tags"), []);
+  const notesRef = useMemo(
+    () => collection(db, "notes").withConverter<INote>(converter()),
+    []
+  );
+  const tagsQuery = query(
+    tagsCollection,
+    where("userUid", "==", authContext.user?.uid)
+  ).withConverter(converter<ITag>());
+  const addNewDoc = useSetDoc(notesRef);
 
-  const onSubmitForm = useCallback(async () => {
-    const docRef = doc(firestore, "notes").withConverter<INote>(converter());
+  const tags = useCollection<ITag>(tagsQuery);
 
-    setDoc(docRef, {
-      content: "",
-      expire_at: Timestamp.fromDate(new Date()),
-      title: "",
-    });
-  }, []);
+  const onSubmitForm = useCallback(
+    async (data: typeof newNoteFormSchema._type) => {
+      console.log("ae");
+      await addNewDoc.mutate({
+        content: data.content.toString(),
+        expire_at: Timestamp.fromDate(data.expireAt),
+        title: "we",
+        userUid: authContext.user!.uid,
+      });
 
-  console.log(ss);
+      props.onDismiss(undefined, "confirm");
+      showToast({
+        message: "Temporary note created sucesfully.",
+        color: "success",
+        duration: 3000,
+      });
+    },
+    []
+  );
 
-  if (ss.status === "loading") {
+  console.log(errors);
+
+  if (tags.status === QueryStatus.Error) {
+    return (
+      <IonPage>
+        <IonLoading />
+      </IonPage>
+    );
+  }
+
+  if (tags.status === QueryStatus.Loading) {
     return (
       <IonPage>
         <IonLoading />
@@ -98,14 +115,6 @@ export default function NewNoteModule(props: IProps) {
             </IonButton>
           </IonButtons>
           <IonTitle>Temporary note</IonTitle>
-          <IonButtons slot="end">
-            <IonButton
-              onClick={() => props.onDismiss(undefined, "confirm")}
-              strong={true}
-            >
-              Publish
-            </IonButton>
-          </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
@@ -121,27 +130,70 @@ export default function NewNoteModule(props: IProps) {
                     value={value}
                     onIonChange={onChange}
                     onIonBlur={onBlur}
-                  ></IonSelect>
+                  >
+                    {tags.data?.docs.map((e) => {
+                      const s = e.data();
+
+                      return (
+                        <IonSelectOption value={e.id} key={e.id}>
+                          {s.tagName}
+                        </IonSelectOption>
+                      );
+                    })}
+                  </IonSelect>
                 )}
               />
             </IonItem>
             <IonItem>
-              <IonTextarea
-                placeholder="Not detaylari"
-                labelPlacement="floating"
-                label="Not detaylari"
-              ></IonTextarea>
+              <Controller
+                control={control}
+                name="content"
+                render={({ field: { onBlur, onChange, value } }) => (
+                  <IonTextarea
+                    placeholder="Not detaylari"
+                    labelPlacement="floating"
+                    label="Not detaylari"
+                    onIonChange={onChange}
+                    onIonBlur={onBlur}
+                    value={value}
+                  ></IonTextarea>
+                )}
+              />
             </IonItem>
             <IonItem>
               <IonLabel>Choose a expire time</IonLabel>
               <IonDatetimeButton datetime="datetime">se</IonDatetimeButton>
             </IonItem>
           </IonList>
+
           <IonPopover keepContentsMounted={true}>
             <IonContent>
-              <IonDatetime id="datetime" presentation="time" locale="sv-SE" />
+              <Controller
+                control={control}
+                name="expireAt"
+                render={({ field: { onBlur, onChange, value } }) => (
+                  <IonDatetime
+                    id="datetime"
+                    presentation="time"
+                    onIonBlur={onBlur}
+                    onIonChange={(e) =>
+                      onChange(new Date(e.target.value as string))
+                    }
+                    locale="sv-SE"
+                  />
+                )}
+              />
             </IonContent>
           </IonPopover>
+
+          <IonButton
+            type="submit"
+            expand="full"
+            shape="round"
+            className="ion-padding"
+          >
+            Publish temporary note
+          </IonButton>
         </form>
       </IonContent>
     </IonPage>

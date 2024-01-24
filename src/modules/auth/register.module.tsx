@@ -1,5 +1,7 @@
+import { AuthContext } from "@/context/AuthContext";
 import { IRegisterUserForm } from "@/models/user.model";
 import { FirebaseAuthService } from "@/services/firebase-auth.service";
+import { auth, db } from "@/services/firebase.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IonButton,
@@ -8,9 +10,8 @@ import {
   useIonRouter,
   useIonToast,
 } from "@ionic/react";
-import { useCallback, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useAuth, useFirestore, useSigninCheck } from "reactfire";
 import { z } from "zod";
 import styles from "./register.module.scss";
 
@@ -22,12 +23,11 @@ const registerFormSchema = z.object({
 });
 
 export default function RegisterModule() {
-  const auth = useAuth();
   const [showToast, dismissToast] = useIonToast();
   const router = useIonRouter();
-  const firestore = useFirestore();
   const [showLoading, dismissLoading] = useIonLoading();
-  const signInCheck = useSigninCheck();
+  const authContext = useContext(AuthContext);
+
   const {
     handleSubmit,
     control,
@@ -38,9 +38,9 @@ export default function RegisterModule() {
   });
 
   useEffect(() => {
-    if (signInCheck.data.signedIn) {
-      const interval = setInterval(() => {
-        auth?.currentUser?.reload();
+    if (authContext?.isSignedIn) {
+      const interval = setInterval(async () => {
+        await authContext.user?.reload();
       }, 5_000);
 
       return () => {
@@ -55,10 +55,10 @@ export default function RegisterModule() {
         router.push("/app", "forward", "replace");
       };
     }
-  }, [signInCheck]);
+  }, []);
 
   const onSubmit = useCallback(async (data: IRegisterUserForm) => {
-    const fbAuth = new FirebaseAuthService(auth, firestore);
+    const fbAuth = new FirebaseAuthService(auth, db);
 
     try {
       await fbAuth.createUser(data);

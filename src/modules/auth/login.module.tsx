@@ -1,4 +1,5 @@
 import { FirebaseAuthService } from "@/services/firebase-auth.service";
+import { auth, db } from "@/services/firebase.service";
 import { signInWithEmailAndPassword } from "@firebase/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -11,7 +12,6 @@ import {
 import { User } from "firebase/auth";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useAuth, useFirestore } from "reactfire";
 import { z } from "zod";
 import styles from "./login.module.scss";
 
@@ -26,8 +26,6 @@ const loginFormSchema = z.object({
 });
 
 export default function LoginModule() {
-  const auth = useAuth();
-  const firestore = useFirestore();
   const router = useIonRouter();
   const [present] = useIonToast();
   const [presentAlert] = useIonAlert();
@@ -41,7 +39,7 @@ export default function LoginModule() {
   });
 
   const sendVerificationMail = useCallback(async (user: User) => {
-    const authService = new FirebaseAuthService(auth, firestore);
+    const authService = new FirebaseAuthService(auth, db);
     await authService.sendVerificationEmail(user);
 
     present({

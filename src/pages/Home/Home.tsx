@@ -1,17 +1,10 @@
+import HomeNotesCard from "@/modules/note/home_notes_cad.module";
 import NewNoteModule from "@/modules/note/new_note.module";
 import {
   IonButton,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
   IonContent,
   IonHeader,
   IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
   IonPage,
   IonTitle,
   IonToolbar,
@@ -41,27 +34,7 @@ export default function HomePage() {
       </IonHeader>
       <IonContent>
         <div className={styles.ionPage}>
-          <IonCard>
-            <IonCardHeader>
-              <IonCardTitle>Anteckningar</IonCardTitle>
-              <IonCardSubtitle>Sparade anteckningar</IonCardSubtitle>
-            </IonCardHeader>
-
-            <IonCardContent>
-              <IonList>
-                <IonItem
-                  onClick={() => router.push("/note")}
-                  lines="none"
-                  button
-                >
-                  <IonLabel>
-                    <h3>Pokémon Yellow</h3>
-                    <p>2023-02-21</p>
-                  </IonLabel>
-                </IonItem>
-              </IonList>
-            </IonCardContent>
-          </IonCard>
+          <HomeNotesCard />
 
           <IonButton onClick={onClickAddNote}>
             <IonIcon icon={addOutline} />

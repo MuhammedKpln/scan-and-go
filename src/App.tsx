@@ -17,7 +17,8 @@ import "@ionic/react/css/text-alignment.css";
 import "@ionic/react/css/text-transformation.css";
 
 /* Theme variables */
-import { useSigninCheck } from "reactfire";
+import { useContext } from "react";
+import { AuthContext } from "./context/AuthContext";
 import AuthRoutes from "./routes/auth.route";
 import TabRoutes from "./routes/tab.route";
 import "./theme/variables.css";
@@ -25,9 +26,9 @@ import "./theme/variables.css";
 setupIonicReact();
 
 export default function App() {
-  const { data: signInData, status: signInStatus } = useSigninCheck();
+  const s = useContext(AuthContext);
 
-  if (signInStatus === "loading") {
+  if (s?.isLoadingUser) {
     return (
       <IonApp>
         <IonLoading message="Starting App..." />
@@ -37,11 +38,7 @@ export default function App() {
 
   return (
     <IonApp>
-      {signInData.signedIn && signInData.user.emailVerified ? (
-        <TabRoutes />
-      ) : (
-        <AuthRoutes />
-      )}
+      {s?.isSignedIn && s.user?.emailVerified ? <TabRoutes /> : <AuthRoutes />}
     </IonApp>
   );
 }

@@ -1,45 +1,50 @@
 import { initializeApp } from "firebase/app";
 import {
+  browserLocalPersistence,
+  connectAuthEmulator,
+  indexedDBLocalPersistence,
+  initializeAuth,
+} from "firebase/auth";
+import {
   PartialWithFieldValue,
   QueryDocumentSnapshot,
-  QuerySnapshot
+  connectFirestoreEmulator,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
 } from "firebase/firestore";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCmH5y9SuxaRCt9H4uIcQy3MdbbepSyv5Q",
-  authDomain: "scango-7ccc8.firebaseapp.com",
-  projectId: "scango-7ccc8",
-  storageBucket: "scango-7ccc8.appspot.com",
-  messagingSenderId: "494333650521",
-  appId: "1:494333650521:web:e055a1d1046ffdee17b348",
+const config = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
+// Initialize Firebase
+const app = initializeApp(config);
 
-const converter = <T>() => ({
-  toFirestore: (data: PartialWithFieldValue<T>) => data,
-  fromFirestore: (snap: QueryDocumentSnapshot): T => {
-    console.log(snap)
-
-    return snap.data() as T
-  },
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager(),
+  }),
+});
+export const auth = initializeAuth(app, {
+  persistence: [browserLocalPersistence, indexedDBLocalPersistence],
 });
 
-const listConverter = <T>() => ({
+if (!import.meta.env.PROD) {
+  connectAuthEmulator(auth, "http://localhost:9099");
+  connectFirestoreEmulator(db, "localhost", 8080);
+}
+
+export const converter = <T>() => ({
   toFirestore: (data: PartialWithFieldValue<T>) => data,
-  fromFirestore: (snap: QuerySnapshot) => {
-    console.log(snap)
-    const s = snap.docs.map((e) => e.data() as T )
+  fromFirestore: (snap: QueryDocumentSnapshot): T => {
+    console.log(snap);
 
-    return {
-      ...snap,
-      docs: s
-    }
+    return snap.data() as T;
   },
-
-})
-
-
-
-export { converter, firebaseApp, firebaseConfig, listConverter };
-
+});
