@@ -1,4 +1,5 @@
 import { AuthContext } from "@/context/AuthContext";
+import { QueryStatus } from "@/hooks/base";
 import { useColletionDataOnce } from "@/hooks/useCollectionDataOnce";
 import { IUser } from "@/models/user.model";
 import { converter, db } from "@/services/firebase.service";
@@ -36,9 +37,9 @@ export default function ProfilePage() {
       ),
     []
   );
-  const [loading, data, error] = useColletionDataOnce<IUser>(docRef);
+  const profile = useColletionDataOnce<IUser>(docRef);
 
-  if (error) {
+  if (profile.status === QueryStatus.Error) {
     return (
       <IonPage>
         <IonAlert>seklam</IonAlert>
@@ -46,7 +47,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (loading) {
+  if (profile.status === QueryStatus.Loading) {
     return (
       <IonPage>
         <IonLoading>Loading..</IonLoading>
@@ -60,7 +61,8 @@ export default function ProfilePage() {
         <IonToolbar>
           <IonButtons slot="start">
             <IonTitle>
-              {`${data?.firstName} ${data?.lastName}` ?? "No name"}
+              {`${profile.data?.firstName} ${profile.data?.lastName}` ??
+                "No name"}
             </IonTitle>
           </IonButtons>
           <IonButtons slot="end">
@@ -80,9 +82,12 @@ export default function ProfilePage() {
               />
             </IonAvatar>
             <IonText>
-              <h3>{`${data?.firstName} ${data?.lastName}` ?? "No name"}</h3>
+              <h3>
+                {`${profile.data?.firstName} ${profile.data?.lastName}` ??
+                  "No name"}
+              </h3>
             </IonText>
-            <IonText>{data?.bio}</IonText>
+            <IonText>{profile.data?.bio}</IonText>
 
             <IonButtons className="mt-5">
               <IonButton fill="clear">
