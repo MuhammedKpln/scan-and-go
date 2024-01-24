@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import {
   PartialWithFieldValue,
   QueryDocumentSnapshot,
+  QuerySnapshot
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -17,7 +18,28 @@ const firebaseApp = initializeApp(firebaseConfig);
 
 const converter = <T>() => ({
   toFirestore: (data: PartialWithFieldValue<T>) => data,
-  fromFirestore: (snap: QueryDocumentSnapshot) => snap.data() as T,
+  fromFirestore: (snap: QueryDocumentSnapshot): T => {
+    console.log(snap)
+
+    return snap.data() as T
+  },
 });
 
-export { converter, firebaseApp, firebaseConfig };
+const listConverter = <T>() => ({
+  toFirestore: (data: PartialWithFieldValue<T>) => data,
+  fromFirestore: (snap: QuerySnapshot) => {
+    console.log(snap)
+    const s = snap.docs.map((e) => e.data() as T )
+
+    return {
+      ...snap,
+      docs: s
+    }
+  },
+
+})
+
+
+
+export { converter, firebaseApp, firebaseConfig, listConverter };
+

@@ -28,7 +28,7 @@ export default function Providers(props: PropsWithChildren) {
     });
 
     if (!import.meta.env.PROD) {
-      connectAuthEmulator(auth, "http://localhost:9099");
+      connectAuthEmulator(auth, "http://127.0.0.1:9099");
     }
     return auth;
   });
@@ -42,7 +42,7 @@ export default function Providers(props: PropsWithChildren) {
       });
 
       if (!import.meta.env.PROD) {
-        connectFirestoreEmulator(db, "localhost", 8080);
+        connectFirestoreEmulator(db, "127.0.0.1", 8080);
       }
 
       return db;
