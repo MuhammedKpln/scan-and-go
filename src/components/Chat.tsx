@@ -33,7 +33,7 @@ export default function Chat({
           </IonAvatar>
 
           <div>
-            <IonText color="dark">
+            <IonText>
               <div className="text-md mb-2">
                 {user.firstName} {user.lastName}
               </div>

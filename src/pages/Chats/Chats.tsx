@@ -1,4 +1,5 @@
 import Chat from "@/components/Chat";
+import { Routes } from "@/routes/routes";
 import {
   IonContent,
   IonHeader,
@@ -21,7 +22,7 @@ export default function ChatsPage() {
 
       <IonContent>
         <Chat
-          onClick={() => router.push("/chat")}
+          onClick={() => router.push(`${Routes.Chats}/23`)}
           subtitle="Burasi chattir sana buradan yaziyotum götun asla kalkmasin"
           user={{
             firstName: "Muhammed",
