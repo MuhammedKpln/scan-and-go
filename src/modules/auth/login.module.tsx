@@ -1,14 +1,10 @@
+import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
+import { Routes } from "@/routes/routes";
 import { FirebaseAuthService } from "@/services/firebase-auth.service";
 import { auth, db } from "@/services/firebase.service";
 import { signInWithEmailAndPassword } from "@firebase/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  IonButton,
-  IonInput,
-  useIonAlert,
-  useIonRouter,
-  useIonToast,
-} from "@ionic/react";
+import { IonButton, IonInput, useIonAlert, useIonRouter } from "@ionic/react";
 import { User } from "firebase/auth";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -27,7 +23,7 @@ const loginFormSchema = z.object({
 
 export default function LoginModule() {
   const router = useIonRouter();
-  const [present] = useIonToast();
+  const { showToast } = useAppToast();
   const [presentAlert] = useIonAlert();
   const {
     handleSubmit,
@@ -42,23 +38,25 @@ export default function LoginModule() {
     const authService = new FirebaseAuthService(auth, db);
     await authService.sendVerificationEmail(user);
 
-    present({
+    showToast({
       message: "Email verification succesfully send!",
-      color: "success",
-      duration: 3000,
+      status: ToastStatus.Success,
     });
   }, []);
 
   const onSubmit = useCallback(async (data: Inputs) => {
-    const user = await signInWithEmailAndPassword(
-      auth,
-      data.email,
-      data.password
-    );
+    try {
+      const user = await signInWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
 
-    if (user.user) {
       if (user.user.emailVerified) {
-        await present("Logged in successfully.", 3000);
+        showToast({
+          message: "Logged in successfully.",
+          status: ToastStatus.Success,
+        });
         router.push("/");
       } else {
         await presentAlert({
@@ -76,6 +74,17 @@ export default function LoginModule() {
           ],
         });
       }
+    } catch (error) {
+      showToast({
+        message: "Kunde inte logga in, är du registrerad hos oss?",
+        status: ToastStatus.Error,
+        buttons: [
+          {
+            text: "Skapa ett konto",
+            handler: () => router.push(Routes.Register),
+          },
+        ],
+      });
     }
   }, []);
 
