@@ -1,4 +1,9 @@
-import { IonApp, IonLoading, setupIonicReact } from "@ionic/react";
+import {
+  IonApp,
+  IonLoading,
+  IonRouterOutlet,
+  setupIonicReact,
+} from "@ionic/react";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -17,9 +22,13 @@ import "@ionic/react/css/text-alignment.css";
 import "@ionic/react/css/text-transformation.css";
 
 /* Theme variables */
+import { IonReactRouter } from "@ionic/react-router";
 import { useContext } from "react";
+import { Route } from "react-router";
+import AppOrLogin from "./components/AppOrLogin";
 import { AuthContext } from "./context/AuthContext";
-import AuthRoutes from "./routes/auth.route";
+import RegisterPage from "./pages/auth/Register/Register";
+import LoginPage from "./pages/auth/login";
 import TabRoutes from "./routes/tab.route";
 import "./theme/variables.css";
 
@@ -38,7 +47,20 @@ export default function App() {
 
   return (
     <IonApp>
-      {s?.isSignedIn && s.user?.emailVerified ? <TabRoutes /> : <AuthRoutes />}
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <Route path="/app" render={() => <TabRoutes />} />
+          <Route path="/login" exact>
+            <LoginPage />
+          </Route>
+
+          <Route path="/register" exact>
+            <RegisterPage />
+          </Route>
+
+          <Route path="/" exact component={AppOrLogin} />
+        </IonRouterOutlet>
+      </IonReactRouter>
     </IonApp>
   );
 }

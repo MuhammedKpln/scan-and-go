@@ -3,6 +3,7 @@ import { QueryStatus } from "@/hooks/base";
 import { useCollection } from "@/hooks/useCollection";
 import { FirebaseCollections } from "@/models/firebase_collections.model";
 import { INote } from "@/models/note.model";
+import { Routes } from "@/routes/routes";
 import { db } from "@/services/firebase.service";
 import {
   IonCard,
@@ -49,7 +50,7 @@ export default function HomeNotesCard() {
               const note = e.data();
               return (
                 <IonItem
-                  onClick={() => router.push("/note")}
+                  routerLink={`${Routes.Notes}/${e.id}`}
                   lines="none"
                   button
                   key={e.id}
