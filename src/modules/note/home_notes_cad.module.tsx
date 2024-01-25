@@ -1,3 +1,4 @@
+import AppInfoCard from "@/components/App/AppInfoCard";
 import { useAuthContext } from "@/context/AuthContext";
 import { QueryStatus } from "@/hooks/base";
 import { useCollection } from "@/hooks/useCollection";
@@ -46,22 +47,26 @@ export default function HomeNotesCard() {
           <IonSpinner />
         ) : (
           <IonList>
-            {notes.data?.docs.map((e) => {
-              const note = e.data();
-              return (
-                <IonItem
-                  routerLink={`${Routes.Notes}/${e.id}`}
-                  lines="none"
-                  button
-                  key={e.id}
-                >
-                  <IonLabel>
-                    <h3>{note.content}</h3>
-                    <p>{note.expire_at.toDate().toString()}</p>
-                  </IonLabel>
-                </IonItem>
-              );
-            })}
+            {notes.data?.empty ? (
+              <AppInfoCard message="Inga temporär anteckningar" />
+            ) : (
+              notes.data?.docs.map((e) => {
+                const note = e.data();
+                return (
+                  <IonItem
+                    routerLink={`${Routes.Notes}/${e.id}`}
+                    lines="none"
+                    button
+                    key={e.id}
+                  >
+                    <IonLabel>
+                      <h3>{note.content}</h3>
+                      <p>{note.expire_at.toDate().toString()}</p>
+                    </IonLabel>
+                  </IonItem>
+                );
+              })
+            )}
           </IonList>
         )}
       </IonCardContent>

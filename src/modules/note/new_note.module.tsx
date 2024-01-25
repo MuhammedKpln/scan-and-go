@@ -1,3 +1,4 @@
+import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
 import { QueryStatus } from "@/hooks/base";
@@ -126,7 +127,10 @@ export default function NewNoteModule(props: IProps) {
       </IonHeader>
       <IonContent className="ion-padding">
         {tags.status === QueryStatus.Error && (
-          <div className="p-5 rounded-sm bg-red-500"> Error! </div>
+          <AppInfoCard
+            message="Ett fel har uppstot! var snäll prova igen senare"
+            status={InfoCardStatus.Error}
+          />
         )}
         <form onSubmit={handleSubmit(onSubmitForm)}>
           <IonList inset>
