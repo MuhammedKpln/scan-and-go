@@ -1,3 +1,4 @@
+import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
 import { QueryStatus } from "@/hooks/base";
 import { useCollection } from "@/hooks/useCollection";
@@ -15,7 +16,6 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonLoading,
   IonPage,
   IonPopover,
   IonSelect,
@@ -103,20 +103,10 @@ export default function NewNoteModule(props: IProps) {
     }
   }, [tags]);
 
-  if (tags.status === QueryStatus.Error) {
-    return (
-      <IonPage>
-        <IonLoading />
-      </IonPage>
-    );
-  }
+  console.log(tags);
 
   if (tags.status === QueryStatus.Loading) {
-    return (
-      <IonPage>
-        <IonLoading />
-      </IonPage>
-    );
+    return <AppLoading />;
   }
 
   return (
@@ -135,6 +125,9 @@ export default function NewNoteModule(props: IProps) {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
+        {tags.status === QueryStatus.Error && (
+          <div className="p-5 rounded-sm bg-red-500"> Error! </div>
+        )}
         <form onSubmit={handleSubmit(onSubmitForm)}>
           <IonList inset>
             <IonItem>

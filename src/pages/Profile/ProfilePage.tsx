@@ -1,3 +1,4 @@
+import AppLoading from "@/components/App/AppLoading";
 import { AuthContext } from "@/context/AuthContext";
 import { QueryStatus } from "@/hooks/base";
 import { useColletionDataOnce } from "@/hooks/useCollectionDataOnce";
@@ -11,7 +12,6 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  IonLoading,
   IonPage,
   IonText,
   IonTitle,
@@ -48,11 +48,7 @@ export default function ProfilePage() {
   }
 
   if (profile.status === QueryStatus.Loading) {
-    return (
-      <IonPage>
-        <IonLoading>Loading..</IonLoading>
-      </IonPage>
-    );
+    return <AppLoading />;
   }
 
   return (

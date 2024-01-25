@@ -1,9 +1,4 @@
-import {
-  IonApp,
-  IonLoading,
-  IonRouterOutlet,
-  setupIonicReact,
-} from "@ionic/react";
+import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -25,6 +20,7 @@ import "@ionic/react/css/text-transformation.css";
 import { IonReactRouter } from "@ionic/react-router";
 import { useContext } from "react";
 import { Route } from "react-router";
+import AppLoading from "./components/App/AppLoading";
 import AppOrLogin from "./components/AppOrLogin";
 import { AuthContext } from "./context/AuthContext";
 import RegisterPage from "./pages/auth/Register/Register";
@@ -38,11 +34,7 @@ export default function App() {
   const s = useContext(AuthContext);
 
   if (s?.isLoadingUser) {
-    return (
-      <IonApp>
-        <IonLoading message="Starting App..." />
-      </IonApp>
-    );
+    return <AppLoading message="Starting App..." />;
   }
 
   return (

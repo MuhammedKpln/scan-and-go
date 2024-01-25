@@ -18,9 +18,16 @@ export function useCollection<T = DocumentData>(
   }, []);
 
   const _getDocs = useCallback(async (docRef: Query) => {
-    const query = await getDocs(docRef);
-    setData(query as QuerySnapshot<T>);
-    setStatus(QueryStatus.Success);
+    try {
+      const query = await getDocs(docRef);
+      console.log(query);
+      setData(query as QuerySnapshot<T>);
+      setStatus(QueryStatus.Success);
+    } catch (error) {
+      console.log(error);
+      setError(error as Error);
+      setStatus(QueryStatus.Error);
+    }
   }, []);
 
   return {
