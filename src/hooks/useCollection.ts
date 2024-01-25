@@ -19,14 +19,8 @@ export function useCollection<T = DocumentData>(
 
   const _getDocs = useCallback(async (docRef: Query) => {
     const query = await getDocs(docRef);
-    if (!query.empty) {
-      // const docs = query.docs.map((e) => e.data());
-      setData(query as QuerySnapshot<T>);
-      setStatus(QueryStatus.Success);
-    } else {
-      setError(new Error(`Collection data does not exist.`));
-      setStatus(QueryStatus.Error);
-    }
+    setData(query as QuerySnapshot<T>);
+    setStatus(QueryStatus.Success);
   }, []);
 
   return {

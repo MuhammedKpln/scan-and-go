@@ -23,10 +23,11 @@ import {
   IonTextarea,
   IonTitle,
   IonToolbar,
+  useIonAlert,
   useIonToast,
 } from "@ionic/react";
 import { Timestamp, collection, query, where } from "firebase/firestore";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -49,6 +50,8 @@ export default function NewNoteModule(props: IProps) {
     resolver: zodResolver(newNoteFormSchema),
     reValidateMode: "onSubmit",
   });
+  const [showAlert, dismissAlert] = useIonAlert();
+
   const authContext = useAuthContext();
   const [showToast] = useIonToast();
   const tagsCollection = useMemo(() => collection(db, "tags"), []);
@@ -84,7 +87,21 @@ export default function NewNoteModule(props: IProps) {
     []
   );
 
-  console.log(errors);
+  useEffect(() => {
+    if (tags.status === QueryStatus.Success && tags.data?.empty) {
+      showAlert({
+        message: "You don't have any registered tags, please register one.",
+        onWillDismiss: () => props.onDismiss(undefined, "cancel"),
+        buttons: [
+          {
+            text: "Ok",
+            role: "confirm",
+            handler: () => dismissAlert(),
+          },
+        ],
+      });
+    }
+  }, [tags]);
 
   if (tags.status === QueryStatus.Error) {
     return (
