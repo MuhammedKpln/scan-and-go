@@ -45,7 +45,7 @@ export const converter = <T>() => ({
 
 const notesSeeder = () => {
   const notesCollection = collection(db, "notes");
-  Array(10)
+  Array(5)
     .fill("")
     .forEach(async () => {
       await addDoc(notesCollection, {
@@ -64,7 +64,7 @@ const tagsSeeder = () => {
     converter<ITag>()
   );
 
-  Array(10)
+  Array(5)
     .fill("")
     .forEach(async () => {
       await addDoc(tagsCollection, {
@@ -82,7 +82,7 @@ const profilesSeeder = () => {
     converter<IUser>()
   );
 
-  Array(10)
+  Array(5)
     .fill("")
     .forEach(async () => {
       await addDoc(profilesCollection, {
