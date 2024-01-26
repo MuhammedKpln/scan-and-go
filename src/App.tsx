@@ -23,8 +23,10 @@ import { Route } from "react-router";
 import AppLoading from "./components/App/AppLoading";
 import AppOrLogin from "./components/AppOrLogin";
 import { AuthContext } from "./context/AuthContext";
+import SettingsPage from "./pages/Settings/Settings";
 import RegisterPage from "./pages/auth/Register/Register";
 import LoginPage from "./pages/auth/login";
+import { Routes } from "./routes/routes";
 import TabRoutes from "./routes/tab.route";
 import "./theme/variables.css";
 
@@ -41,13 +43,17 @@ export default function App() {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route path="/app" render={() => <TabRoutes />} />
-          <Route path="/login" exact>
+          <Route path={Routes.AppRoot} render={() => <TabRoutes />} />
+          <Route path={Routes.Login} exact>
             <LoginPage />
           </Route>
 
-          <Route path="/register" exact>
+          <Route path={Routes.Register} exact>
             <RegisterPage />
+          </Route>
+
+          <Route path={Routes.Settings} exact>
+            <SettingsPage />
           </Route>
 
           <Route path="/" exact component={AppOrLogin} />

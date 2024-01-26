@@ -8,4 +8,5 @@ export enum Routes {
   Profile = "/app/profile",
   Login = "/login",
   Register = "/register",
+  Settings = "/settings",
 }

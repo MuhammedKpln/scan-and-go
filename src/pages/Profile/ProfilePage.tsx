@@ -4,6 +4,7 @@ import { AuthContext } from "@/context/AuthContext";
 import { QueryStatus } from "@/hooks/base";
 import { useColletionDataOnce } from "@/hooks/useCollectionDataOnce";
 import { IUser } from "@/models/user.model";
+import { Routes } from "@/routes/routes";
 import { converter, db } from "@/services/firebase.service";
 import {
   IonAvatar,
@@ -19,11 +20,11 @@ import {
 } from "@ionic/react";
 import { doc } from "firebase/firestore";
 import {
-  arrowRedoOutline,
   logoFacebook,
   logoInstagram,
   logoLinkedin,
   logoWhatsapp,
+  settingsOutline,
 } from "ionicons/icons";
 import { useContext, useMemo } from "react";
 import styles from "./Profile.module.scss";
@@ -64,8 +65,8 @@ export default function ProfilePage() {
             </IonTitle>
           </IonButtons>
           <IonButtons slot="end">
-            <IonButton>
-              <IonIcon icon={arrowRedoOutline} />
+            <IonButton routerLink={Routes.Settings}>
+              <IonIcon icon={settingsOutline} />
             </IonButton>
           </IonButtons>
         </IonToolbar>
