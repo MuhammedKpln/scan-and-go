@@ -3,6 +3,7 @@ export type IUser = {
   lastName: string;
   profileImageRef?: string;
   bio?: string;
+  socialMediaAccounts?: object;
 };
 
 export interface IRegisterUserForm
