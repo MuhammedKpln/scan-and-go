@@ -1,3 +1,4 @@
+import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import { AuthContext } from "@/context/AuthContext";
 import { QueryStatus } from "@/hooks/base";
@@ -5,7 +6,6 @@ import { useColletionDataOnce } from "@/hooks/useCollectionDataOnce";
 import { IUser } from "@/models/user.model";
 import { converter, db } from "@/services/firebase.service";
 import {
-  IonAlert,
   IonAvatar,
   IonButton,
   IonButtons,
@@ -42,7 +42,9 @@ export default function ProfilePage() {
   if (profile.status === QueryStatus.Error) {
     return (
       <IonPage>
-        <IonAlert>seklam</IonAlert>
+        <IonContent>
+          <AppInfoCard message="Error!" status={InfoCardStatus.Error} />
+        </IonContent>
       </IonPage>
     );
   }
