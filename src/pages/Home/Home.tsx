@@ -1,4 +1,4 @@
-import HomeNotesCard from "@/modules/note/home_notes_cad.module";
+import HomeNotesCard from "@/modules/note/home_notes_card.module";
 import NewNoteModule from "@/modules/note/new_note.module";
 import {
   IonButton,

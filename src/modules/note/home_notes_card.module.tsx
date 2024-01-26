@@ -18,7 +18,9 @@ import {
   IonSpinner,
   useIonRouter,
 } from "@ionic/react";
-import { collection, query, where } from "firebase/firestore";
+import { formatDistanceToNow } from "date-fns";
+import { sv } from "date-fns/locale/sv";
+import { collection, limit, query, where } from "firebase/firestore";
 import { useMemo } from "react";
 
 export default function HomeNotesCard() {
@@ -28,8 +30,16 @@ export default function HomeNotesCard() {
     () => collection(db, FirebaseCollections.Notes),
     []
   );
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
   const notesQuery = useMemo(
-    () => query(notesCollection, where("userUid", "==", authContext.user?.uid)),
+    () =>
+      query(
+        notesCollection,
+        where("userUid", "==", authContext.user?.uid),
+        where("expire_at", ">", new Date(Date.now() + 10000)),
+        limit(4)
+      ),
     []
   );
 
@@ -52,6 +62,10 @@ export default function HomeNotesCard() {
             ) : (
               notes.data?.docs.map((e) => {
                 const note = e.data();
+                const date = formatDistanceToNow(note.expire_at.toDate(), {
+                  addSuffix: true,
+                  locale: sv,
+                });
                 return (
                   <IonItem
                     routerLink={`${Routes.Notes}/${e.id}`}
@@ -61,7 +75,7 @@ export default function HomeNotesCard() {
                   >
                     <IonLabel>
                       <h3>{note.content}</h3>
-                      <p>{note.expire_at.toDate().toString()}</p>
+                      <p>{date}</p>
                     </IonLabel>
                   </IonItem>
                 );
