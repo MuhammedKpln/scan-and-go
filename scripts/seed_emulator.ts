@@ -1,3 +1,4 @@
+import { INote } from "@/models/note.model";
 import { IUser } from "@/models/user.model";
 import { faker } from "@faker-js/faker";
 import "dotenv/config";
@@ -14,7 +15,9 @@ import {
   addDoc,
   collection,
   connectFirestoreEmulator,
+  doc,
   getFirestore,
+  setDoc,
 } from "firebase/firestore";
 
 const app = initializeApp({
@@ -44,13 +47,15 @@ export const converter = <T>() => ({
 });
 
 const notesSeeder = () => {
-  const notesCollection = collection(db, "notes");
+  const notesCollection = collection(db, "notes").withConverter(
+    converter<INote>()
+  );
   Array(5)
     .fill("")
     .forEach(async () => {
       await addDoc(notesCollection, {
         title: faker.lorem.words(5),
-        content: faker.lorem.words(10),
+        content: faker.lorem.words(5),
         expire_at: faker.date.soon(),
         userUid: user.user.uid,
       });
@@ -77,23 +82,19 @@ const tagsSeeder = () => {
   console.log("Tags seeded");
 };
 
-const profilesSeeder = () => {
-  const profilesCollection = collection(db, "profiles").withConverter(
+const profilesSeeder = async () => {
+  const profilesCollection = doc(db, "profiles", user.user.uid).withConverter(
     converter<IUser>()
   );
 
-  Array(5)
-    .fill("")
-    .forEach(async () => {
-      await addDoc(profilesCollection, {
-        bio: faker.person.bio(),
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        profileImageRef: faker.image.avatar(),
-      });
-    });
+  await setDoc(profilesCollection, {
+    bio: faker.person.bio(),
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    profileImageRef: faker.image.avatar(),
+  });
 
-  console.log("Profiles seeded");
+  console.log("Profile seeded");
 };
 
 // Function to seed Firestore
