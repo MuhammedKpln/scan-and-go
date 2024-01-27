@@ -50,6 +50,8 @@ export default function TwitterSetting() {
         message: "Updated succesfully!",
         status: ToastStatus.Success,
       });
+
+      modalRef.current?.dismiss(undefined, "confirm");
     } catch (error) {
       showToast({
         message: "Error!",
