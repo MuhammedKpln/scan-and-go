@@ -17,12 +17,14 @@ import "@ionic/react/css/text-alignment.css";
 import "@ionic/react/css/text-transformation.css";
 
 /* Theme variables */
+import { SplashScreen } from "@capacitor/splash-screen";
 import { IonReactRouter } from "@ionic/react-router";
-import { useContext } from "react";
 import { Route } from "react-router";
 import AppLoading from "./components/App/AppLoading";
 import AppOrLogin from "./components/AppOrLogin";
-import { AuthContext } from "./context/AuthContext";
+import { useAuthContext } from "./context/AuthContext";
+import { useAppTheme } from "./hooks/app/useAppTheme";
+import { useSplashScreen } from "./hooks/app/useSplashScreen";
 import SettingsPage from "./pages/Settings/Settings";
 import RegisterPage from "./pages/auth/Register/Register";
 import LoginPage from "./pages/auth/login";
@@ -31,11 +33,14 @@ import TabRoutes from "./routes/tab.route";
 import "./theme/variables.css";
 
 setupIonicReact();
+SplashScreen.show();
 
 export default function App() {
-  const s = useContext(AuthContext);
+  const authContext = useAuthContext();
+  useAppTheme();
+  useSplashScreen();
 
-  if (s?.isLoadingUser) {
+  if (!authContext?.isInitialized) {
     return <AppLoading message="Starting App..." />;
   }
 

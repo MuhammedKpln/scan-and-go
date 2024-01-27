@@ -8,9 +8,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useHistory } from "react-router";
 
 export interface AuthContextProps {
+  isInitialized: boolean;
   user: User | null;
   isSignedIn: boolean;
   isLoadingUser: boolean;
@@ -29,7 +29,7 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
-  const router = useHistory();
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -40,9 +40,9 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
         setIsSignedIn(true);
       } else {
         setIsSignedIn(false);
-
-        router?.replace("/");
       }
+
+      setIsInitialized(true);
     });
     return () => unsubscribe();
   }, []);
@@ -55,8 +55,9 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
       isLoadingUser,
       isSignedIn,
       logout,
+      isInitialized,
     };
-  }, [user, isLoadingUser, isSignedIn, logout]);
+  }, [user, isLoadingUser, isSignedIn, logout, isInitialized]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

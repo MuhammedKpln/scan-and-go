@@ -1,5 +1,6 @@
 import HomeNotesCard from "@/modules/note/home_notes_card.module";
 import NewNoteModule from "@/modules/note/new_note.module";
+import { IAppReducerType, useAppStore } from "@/stores/app.store";
 import {
   IonButton,
   IonContent,
@@ -17,6 +18,7 @@ import styles from "./Home.module.scss";
 
 export default function HomePage() {
   const router = useIonRouter();
+  const s = useAppStore((state) => state.dispatch);
   const [showModal, hideModal] = useIonModal(NewNoteModule, {
     onDismiss: (data: string, role: string) => hideModal(data, role),
   });
@@ -35,6 +37,17 @@ export default function HomePage() {
       <IonContent>
         <div className={styles.ionPage}>
           <HomeNotesCard />
+
+          <IonButton
+            onClick={() => {
+              s({
+                type: IAppReducerType.ToggleDarkMode,
+                args: {},
+              });
+            }}
+          >
+            open action sheete
+          </IonButton>
 
           <IonButton onClick={onClickAddNote}>
             <IonIcon icon={addOutline} />
