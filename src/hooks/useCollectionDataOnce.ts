@@ -1,15 +1,27 @@
 import { DocumentReference, getDoc } from "firebase/firestore";
 import { useCallback, useEffect } from "react";
-import { QueryStatus, UseBaseHookReturnValue, useBaseHook } from "./base";
+import {
+  QueryStatus,
+  UseBaseHookArgs,
+  UseBaseHookReturnValueWithMutate,
+  useBaseHook,
+} from "./base";
 
 export function useColletionDataOnce<T>(
-  docRef: DocumentReference
-): UseBaseHookReturnValue<T> {
+  docRef: DocumentReference,
+  args?: UseBaseHookArgs
+): UseBaseHookReturnValueWithMutate<T> {
   const { data, error, setData, setError, setStatus, status } =
     useBaseHook<T>();
 
   useEffect(() => {
-    _getByDoc(docRef);
+    if (!args?.isAsync) {
+      _getByDoc(docRef);
+    }
+  }, []);
+
+  const mutate = useCallback(async () => {
+    await _getByDoc(docRef);
   }, []);
 
   const _getByDoc = useCallback(async (docRef: DocumentReference) => {
@@ -27,5 +39,6 @@ export function useColletionDataOnce<T>(
     status,
     data,
     error,
+    mutate,
   };
 }

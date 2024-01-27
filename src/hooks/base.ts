@@ -26,3 +26,13 @@ export interface UseBaseHookReturnValue<T> {
   data?: T;
   error?: Error | string;
 }
+export interface UseBaseHookReturnValueWithMutate<T> {
+  status: QueryStatus;
+  data?: T;
+  error?: Error | string;
+  mutate?: () => Promise<void>;
+}
+
+export interface UseBaseHookArgs {
+  isAsync?: boolean;
+}
