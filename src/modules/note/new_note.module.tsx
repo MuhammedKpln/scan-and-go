@@ -2,8 +2,8 @@ import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
 import { QueryStatus } from "@/hooks/base";
+import { useAddDoc } from "@/hooks/useAddDoc";
 import { useCollection } from "@/hooks/useCollection";
-import { useSetDoc } from "@/hooks/useSetDoc";
 import { INote } from "@/models/note.model";
 import { converter, db } from "@/services/firebase.service";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -64,7 +64,7 @@ export default function NewNoteModule(props: IProps) {
     tagsCollection,
     where("userUid", "==", authContext.user?.uid)
   ).withConverter(converter<ITag>());
-  const addNewDoc = useSetDoc(notesRef);
+  const addNewDoc = useAddDoc(notesRef);
 
   const tags = useCollection<ITag>(tagsQuery);
 

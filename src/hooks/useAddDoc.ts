@@ -7,7 +7,7 @@ import {
 import { useCallback } from "react";
 import { QueryStatus, useBaseHook } from "./base";
 
-export function useSetDoc<T = DocumentData>(docRef: CollectionReference<T>) {
+export function useAddDoc<T = DocumentData>(docRef: CollectionReference<T>) {
   const { setError, setStatus, status, error } = useBaseHook<T>();
 
   const mutate = useCallback(async (data: WithFieldValue<T>) => {
