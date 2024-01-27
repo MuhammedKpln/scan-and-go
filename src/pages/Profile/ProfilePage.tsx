@@ -19,13 +19,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { doc } from "firebase/firestore";
-import {
-  logoFacebook,
-  logoInstagram,
-  logoLinkedin,
-  logoWhatsapp,
-  settingsOutline,
-} from "ionicons/icons";
+import { logoTwitter, settingsOutline } from "ionicons/icons";
 import { useContext, useMemo } from "react";
 import styles from "./Profile.module.scss";
 
@@ -89,18 +83,15 @@ export default function ProfilePage() {
             <IonText>{profile.data?.bio}</IonText>
 
             <IonButtons className="mt-5">
-              <IonButton fill="clear">
-                <IonIcon icon={logoLinkedin} />
-              </IonButton>
-              <IonButton fill="clear">
-                <IonIcon icon={logoInstagram} />
-              </IonButton>
-              <IonButton fill="clear">
-                <IonIcon icon={logoFacebook} />
-              </IonButton>
-              <IonButton fill="clear">
-                <IonIcon icon={logoWhatsapp} />
-              </IonButton>
+              {profile.data?.socialMediaAccounts?.twitter && (
+                <IonButton
+                  fill="clear"
+                  href={`https://twitter.com/${profile.data.socialMediaAccounts.twitter}`}
+                  target="_blank"
+                >
+                  <IonIcon icon={logoTwitter} />
+                </IonButton>
+              )}
             </IonButtons>
           </div>
           <div className="flex flex-col w-full">
