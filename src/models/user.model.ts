@@ -1,9 +1,13 @@
+interface ISocialMediaAccounts {
+  twitter?: string;
+}
+
 export type IUser = {
   firstName: string;
   lastName: string;
   profileImageRef?: string;
   bio?: string;
-  socialMediaAccounts?: object;
+  socialMediaAccounts?: ISocialMediaAccounts;
 };
 
 export interface IRegisterUserForm

@@ -33,7 +33,7 @@ export function useAppToast() {
       message: props.message,
       color,
       buttons: props.buttons,
-      duration: props.buttons && 3000,
+      duration: !props.buttons ? 3000 : undefined,
     });
   }, []);
 
