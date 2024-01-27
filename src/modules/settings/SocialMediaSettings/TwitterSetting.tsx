@@ -4,6 +4,7 @@ import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { useUpdateDoc } from "@/hooks/useUpdateDoc";
 import { FirebaseCollections } from "@/models/firebase_collections.model";
 import { db } from "@/services/firebase.service";
+import { IUserReducerType, useUserStore } from "@/stores/user.store";
 import { doc } from "@firebase/firestore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -29,6 +30,7 @@ const formValidator = z.object({
 export default function TwitterSetting() {
   const modalRef = useRef<HTMLIonModalElement>(null);
   const { user } = useAuthContext();
+  const userStoreDispatch = useUserStore((state) => state.dispatch);
   const { showToast } = useAppToast();
   const { control, handleSubmit } = useForm<typeof formValidator._type>({
     resolver: zodResolver(formValidator),
@@ -51,6 +53,14 @@ export default function TwitterSetting() {
         status: ToastStatus.Success,
       });
 
+      userStoreDispatch({
+        type: IUserReducerType.UpdateSocialMediaAccounts,
+        args: {
+          socialMediaAccounts: {
+            twitter: inputs.twitterUsername,
+          },
+        },
+      });
       modalRef.current?.dismiss(undefined, "confirm");
     } catch (error) {
       showToast({

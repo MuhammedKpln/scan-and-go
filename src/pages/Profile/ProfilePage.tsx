@@ -6,6 +6,7 @@ import { useColletionDataOnce } from "@/hooks/useCollectionDataOnce";
 import { IUser } from "@/models/user.model";
 import { Routes } from "@/routes/routes";
 import { converter, db } from "@/services/firebase.service";
+import { IUserReducerType, useUserStore } from "@/stores/user.store";
 import {
   IonAvatar,
   IonButton,
@@ -20,11 +21,12 @@ import {
 } from "@ionic/react";
 import { doc } from "firebase/firestore";
 import { logoTwitter, settingsOutline } from "ionicons/icons";
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import styles from "./Profile.module.scss";
 
 export default function ProfilePage() {
   const authContext = useContext(AuthContext);
+  const updateUserDispatch = useUserStore((state) => state.dispatch);
   const docRef = useMemo(
     () =>
       doc(db, "profiles", authContext!.user!.uid).withConverter<IUser>(
@@ -32,7 +34,17 @@ export default function ProfilePage() {
       ),
     []
   );
+
   const profile = useColletionDataOnce<IUser>(docRef);
+
+  useEffect(() => {
+    if (profile.status === QueryStatus.Success) {
+      updateUserDispatch({
+        type: IUserReducerType.UpdateUser,
+        args: profile.data!,
+      });
+    }
+  }, [profile.status]);
 
   if (profile.status === QueryStatus.Error) {
     return (
