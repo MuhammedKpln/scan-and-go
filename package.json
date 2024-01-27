@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "ionic build --prod",
     "preview": "vite preview",
     "seed-emulator": "tsx ./scripts/seed_emulator.ts",
     "test.e2e": "cypress run",

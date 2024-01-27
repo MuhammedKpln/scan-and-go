@@ -33,8 +33,10 @@ yarn-error.log*
 
 firebase-debug.log
 firestore-debug.log
-
+.firebase
 
 # Local
 
 .env
+
+
