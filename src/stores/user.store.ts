@@ -4,6 +4,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 interface IUserStore extends IUser {
   dispatch: (state: IReducerPayload) => void;
+  hasBeenFetched: boolean;
 }
 
 interface IReducerPayload {
@@ -22,7 +23,7 @@ const reducer = (
 ): Partial<IUserStore> => {
   switch (type) {
     case IUserReducerType.UpdateUser:
-      return args;
+      return { ...state, ...args };
 
     case IUserReducerType.UpdateSocialMediaAccounts:
       return {
@@ -41,8 +42,9 @@ export const useUserStore = create<IUserStore>()(
       lastName: "",
       bio: undefined,
       profileImageRef: undefined,
-      socialMediaAccounts: { twitter: "se" },
-      dispatch: (args) => set((state) => reducer(state, args), true),
+      socialMediaAccounts: {},
+      hasBeenFetched: false,
+      dispatch: (args) => set((state) => reducer(state, args)),
     }),
     {
       name: "user",

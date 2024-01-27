@@ -18,15 +18,19 @@ import {
   IonText,
   IonTitle,
   IonToolbar,
+  useIonViewDidEnter,
 } from "@ionic/react";
 import { doc } from "firebase/firestore";
 import { logoTwitter, settingsOutline } from "ionicons/icons";
-import { useContext, useEffect, useMemo } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import styles from "./Profile.module.scss";
 
 export default function ProfilePage() {
+  const [profile, setProfile] = useState<IUser | undefined>();
   const authContext = useContext(AuthContext);
   const updateUserDispatch = useUserStore((state) => state.dispatch);
+  const storeHasFetched = useUserStore((state) => state.hasBeenFetched);
+  const userFromStore = useUserStore();
   const docRef = useMemo(
     () =>
       doc(db, "profiles", authContext!.user!.uid).withConverter<IUser>(
@@ -35,18 +39,31 @@ export default function ProfilePage() {
     []
   );
 
-  const profile = useColletionDataOnce<IUser>(docRef);
+  const _profile = useColletionDataOnce<IUser>(docRef, { isAsync: true });
+
+  useIonViewDidEnter(() => {
+    if (storeHasFetched) {
+      setProfile(userFromStore);
+    } else {
+      _profile.mutate?.call(undefined);
+    }
+  }, [userFromStore, storeHasFetched]);
 
   useEffect(() => {
-    if (profile.status === QueryStatus.Success) {
+    if (_profile.status === QueryStatus.Success) {
+      setProfile(_profile.data);
+
       updateUserDispatch({
         type: IUserReducerType.UpdateUser,
-        args: profile.data!,
+        args: {
+          hasBeenFetched: true,
+          ..._profile.data!,
+        },
       });
     }
-  }, [profile.status]);
+  }, [_profile.status]);
 
-  if (profile.status === QueryStatus.Error) {
+  if (!storeHasFetched && _profile.status === QueryStatus.Error) {
     return (
       <IonPage>
         <IonContent>
@@ -56,7 +73,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (profile.status === QueryStatus.Loading) {
+  if (!storeHasFetched && _profile.status === QueryStatus.Loading) {
     return <AppLoading />;
   }
 
@@ -66,8 +83,7 @@ export default function ProfilePage() {
         <IonToolbar>
           <IonButtons slot="start">
             <IonTitle>
-              {`${profile.data?.firstName} ${profile.data?.lastName}` ??
-                "No name"}
+              {`${profile?.firstName} ${profile?.lastName}` ?? "No name"}
             </IonTitle>
           </IonButtons>
           <IonButtons slot="end">
@@ -88,17 +104,16 @@ export default function ProfilePage() {
             </IonAvatar>
             <IonText>
               <h3>
-                {`${profile.data?.firstName} ${profile.data?.lastName}` ??
-                  "No name"}
+                {`${profile?.firstName} ${profile?.lastName}` ?? "No name"}
               </h3>
             </IonText>
-            <IonText>{profile.data?.bio}</IonText>
+            <IonText>{profile?.bio}</IonText>
 
             <IonButtons className="mt-5">
-              {profile.data?.socialMediaAccounts?.twitter && (
+              {profile?.socialMediaAccounts?.twitter && (
                 <IonButton
                   fill="clear"
-                  href={`https://twitter.com/${profile.data.socialMediaAccounts.twitter}`}
+                  href={`https://twitter.com/${profile?.socialMediaAccounts.twitter}`}
                   target="_blank"
                 >
                   <IonIcon icon={logoTwitter} />
