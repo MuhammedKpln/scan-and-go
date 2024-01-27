@@ -991,6 +991,11 @@
     "@babel/helper-validator-identifier" "^7.22.20"
     to-fast-properties "^2.0.0"
 
+"@capacitor/action-sheet@^5.0.6":
+  version "5.0.6"
+  resolved "https://registry.yarnpkg.com/@capacitor/action-sheet/-/action-sheet-5.0.6.tgz#aef6423f6130ebab50d4bf39bf5758f92cbde5b9"
+  integrity sha512-WeiHz5KYfqypphd4JwD8DSxhi9QIk9Wh4XZFMlBivZm6tXhlJLjAo0kHzZGNX3J7H+rpn0n0aFVcZylnP34erQ==
+
 "@capacitor/android@^5.6.0":
   version "5.6.0"
   resolved "https://registry.yarnpkg.com/@capacitor/android/-/android-5.6.0.tgz#62a5e4697466beed4265da6f3939b42e8f00e642"
@@ -1040,6 +1045,11 @@
   version "5.0.7"
   resolved "https://registry.yarnpkg.com/@capacitor/keyboard/-/keyboard-5.0.7.tgz#a9c02d768658da945b058c132cbe10599cb99d2a"
   integrity sha512-+6lW8z2nXTM2NOG7D7pOasCfIGicz26+EeDRXIj5AtJibbjwtE1Q5GIY+qGHgzpmwOF0qmcrGJBz4zagDwUapg==
+
+"@capacitor/splash-screen@^5.0.6":
+  version "5.0.6"
+  resolved "https://registry.yarnpkg.com/@capacitor/splash-screen/-/splash-screen-5.0.6.tgz#d29320de49cc68add59e17fecb64aa2f1a08447f"
+  integrity sha512-9B8wSm89D+LlshFw8B+mjPU8pJNf1WOx2mkMjMvcH0/EqxNaE+ZaO8lPCX+9WvWSEZs3O3l11qiSnOFHeK0t9A==
 
 "@capacitor/status-bar@5.0.6":
   version "5.0.6"
@@ -1787,6 +1797,11 @@
     "@stencil/core" "^4.10.0"
     ionicons "^7.2.2"
     tslib "^2.1.0"
+
+"@ionic/pwa-elements@^3.2.2":
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/@ionic/pwa-elements/-/pwa-elements-3.2.2.tgz#a757b22d7054e718b20e722f1a936f7deff09a01"
+  integrity sha512-gCQsHdvkaWa83T3ToKsr6FOtzSmLIYFWy+zZisXVDqU3ry4Hv581dFSxDUgokgoWSxIERe/nvYnhoN8zIIEKQQ==
 
 "@ionic/react-router@^7.0.0":
   version "7.6.5"
