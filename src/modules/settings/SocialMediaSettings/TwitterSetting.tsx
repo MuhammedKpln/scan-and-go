@@ -31,10 +31,16 @@ export default function TwitterSetting() {
   const modalRef = useRef<HTMLIonModalElement>(null);
   const { user } = useAuthContext();
   const userStoreDispatch = useUserStore((state) => state.dispatch);
+  const userTwitter = useUserStore(
+    (state) => state.socialMediaAccounts?.twitter
+  );
   const { showToast } = useAppToast();
   const { control, handleSubmit } = useForm<typeof formValidator._type>({
     resolver: zodResolver(formValidator),
     reValidateMode: "onSubmit",
+    defaultValues: {
+      twitterUsername: userTwitter,
+    },
   });
   const docRef = useMemo(
     () => doc(db, FirebaseCollections.Profiles, user!.uid),
