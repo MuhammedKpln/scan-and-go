@@ -30,7 +30,7 @@ import RegisterPage from "./pages/auth/Register/Register";
 import LoginPage from "./pages/auth/login";
 import { Routes } from "./routes/routes";
 import TabRoutes from "./routes/tab.route";
-import "./theme/variables.css";
+import "./theme/variables.scss";
 
 setupIonicReact();
 SplashScreen.show();

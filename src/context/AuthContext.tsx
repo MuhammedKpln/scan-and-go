@@ -33,15 +33,14 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setIsLoadingUser(false);
-
       if (user) {
         setIsSignedIn(true);
+        setUser(user);
       } else {
         setIsSignedIn(false);
       }
 
+      setIsLoadingUser(false);
       setIsInitialized(true);
     });
     return () => unsubscribe();
