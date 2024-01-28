@@ -9,7 +9,7 @@ import {
   IonText,
 } from "@ionic/react";
 
-import styles from "./Chat/Chat.module.scss";
+import styles from "./Chat.module.scss";
 
 interface IProps {
   onClick: () => void;
