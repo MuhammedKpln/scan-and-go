@@ -6,7 +6,7 @@ import {
 } from "@capacitor-mlkit/barcode-scanning";
 import { Capacitor } from "@capacitor/core";
 import { useIonAlert } from "@ionic/react";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 
 interface IProps {
   onBarcodeScanned: (e: BarcodeScannedEvent) => void;
@@ -15,6 +15,7 @@ interface IProps {
 
 export function useBarcodeScanner(props: IProps) {
   const [showAlert] = useIonAlert();
+  const googleModulesInstalled = useRef<boolean>(false);
 
   const initialize = useCallback(async () => {
     const supported = await isSupported();
@@ -38,6 +39,10 @@ export function useBarcodeScanner(props: IProps) {
   }, []);
 
   const startScan = useCallback(async () => {
+    if (!googleModulesInstalled.current) {
+      console.error("Google modules is not installed.");
+    }
+
     document.querySelector("body")?.classList.add("barcode-scanner-active");
 
     await BarcodeScanner.startScan({
@@ -75,6 +80,7 @@ export function useBarcodeScanner(props: IProps) {
             break;
           case GoogleBarcodeScannerModuleInstallState.COMPLETED:
             showAlert("Completed Downloading");
+            googleModulesInstalled.current = true;
             break;
           case GoogleBarcodeScannerModuleInstallState.INSTALLING:
             showAlert("Installing");

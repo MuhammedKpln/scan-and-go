@@ -1,8 +1,7 @@
+import { useIsNative } from "@/hooks/app/useIsNative";
 import ScanModule from "@/modules/scan/Scan.module";
-import { Capacitor } from "@capacitor/core";
 import {
   IonPage,
-  useIonAlert,
   useIonModal,
   useIonRouter,
   useIonViewDidEnter,
@@ -12,8 +11,7 @@ import { useCallback } from "react";
 
 export default function ScanPage() {
   const router = useIonRouter();
-  const [alert] = useIonAlert();
-  const isNative = Capacitor.isNativePlatform();
+  const { isNative } = useIsNative();
   const [showModal, hideModal] = useIonModal(ScanModule, {
     onCancel: () => hideModal(undefined, "cancel"),
   });
@@ -31,25 +29,7 @@ export default function ScanPage() {
   });
 
   useIonViewDidEnter(() => {
-    if (!isNative) {
-      alert({
-        header: "Ladda ner vår app!",
-        message: "Du behöver ladda ner vår app för scanna qr koden.",
-        buttons: [
-          {
-            text: "Gå tillbaka",
-            role: "cancel",
-            handler: () => router.goBack(),
-          },
-          {
-            text: "Ladda ner appen",
-            role: "confirm",
-            id: "ion-primary",
-            handler: () => router.goBack(),
-          },
-        ],
-      });
-    } else {
+    if (isNative.current) {
       showModal({
         onWillDismiss: onExit,
       });

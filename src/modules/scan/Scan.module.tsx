@@ -43,22 +43,15 @@ export default function ScanModule(props: IProps) {
     });
 
     return () => {
-      // Make all elements in the WebView visible again
-      document
-        .querySelector("body")
-        ?.classList.remove("barcode-scanner-active");
-
+      stopScan();
       // Remove all listeners
       BarcodeScanner.removeAllListeners();
-
-      // Stop the barcode scanner
-      BarcodeScanner.stopScan();
     };
   }, []);
 
   return (
     <IonPage>
-      <IonContent className="h-full barcode-scanner-modal">
+      <IonContent className="h-full barcode-scanner-modal overflow-hidden">
         <IonButtons style={{ paddingTop: "var(--ion-safe-area-top)" }}>
           <IonButton fill="clear" slot="start" onClick={stopScanAndNavigate}>
             Cancel
