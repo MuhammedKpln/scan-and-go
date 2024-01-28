@@ -6,6 +6,7 @@ export function useSplashScreen() {
   const authContext = useAuthContext();
 
   useEffect(() => {
+    console.log(authContext.isInitialized);
     if (authContext.isInitialized) {
       SplashScreen.hide();
     }

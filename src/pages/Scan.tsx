@@ -1,15 +1,34 @@
+import ScanModule from "@/modules/scan/Scan.module";
 import { Capacitor } from "@capacitor/core";
 import {
   IonPage,
   useIonAlert,
+  useIonModal,
   useIonRouter,
   useIonViewDidEnter,
+  useIonViewWillLeave,
 } from "@ionic/react";
+import { useCallback } from "react";
 
 export default function ScanPage() {
   const router = useIonRouter();
-  const [alert, dissmis] = useIonAlert();
+  const [alert] = useIonAlert();
   const isNative = Capacitor.isNativePlatform();
+  const [showModal, hideModal] = useIonModal(ScanModule, {
+    onCancel: () => hideModal(undefined, "cancel"),
+  });
+
+  const onExit = useCallback(() => {
+    if (router.canGoBack()) {
+      router.goBack();
+    } else {
+      router.push("/app");
+    }
+  }, []);
+
+  useIonViewWillLeave(() => {
+    hideModal(undefined, "cancel");
+  });
 
   useIonViewDidEnter(() => {
     if (!isNative) {
@@ -29,6 +48,10 @@ export default function ScanPage() {
             handler: () => router.goBack(),
           },
         ],
+      });
+    } else {
+      showModal({
+        onWillDismiss: onExit,
       });
     }
   });

@@ -17,7 +17,6 @@ import "@ionic/react/css/text-alignment.css";
 import "@ionic/react/css/text-transformation.css";
 
 /* Theme variables */
-import { SplashScreen } from "@capacitor/splash-screen";
 import { IonReactRouter } from "@ionic/react-router";
 import { Route } from "react-router";
 import AppLoading from "./components/App/AppLoading";
@@ -33,7 +32,6 @@ import TabRoutes from "./routes/tab.route";
 import "./theme/variables.scss";
 
 setupIonicReact();
-SplashScreen.show();
 
 export default function App() {
   const authContext = useAuthContext();
