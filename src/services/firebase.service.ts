@@ -36,10 +36,10 @@ export const auth = initializeAuth(app, {
 });
 
 if (!import.meta.env.PROD) {
-  connectAuthEmulator(auth, "http://192.168.1.166:9099", {
+  connectAuthEmulator(auth, "http://192.168.1.227:9099", {
     disableWarnings: true,
   });
-  connectFirestoreEmulator(db, "192.168.1.166", 8080);
+  connectFirestoreEmulator(db, "192.168.1.227", 8080);
 }
 
 export const converter = <T>() => ({
