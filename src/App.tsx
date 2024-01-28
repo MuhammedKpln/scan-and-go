@@ -18,6 +18,7 @@ import "@ionic/react/css/text-transformation.css";
 
 /* Theme variables */
 import { IonReactRouter } from "@ionic/react-router";
+import { Suspense, lazy } from "react";
 import { Route } from "react-router";
 import AppLoading from "./components/App/AppLoading";
 import AppOrLogin from "./components/AppOrLogin";
@@ -30,6 +31,8 @@ import LoginPage from "./pages/auth/login";
 import { Routes } from "./routes/routes";
 import TabRoutes from "./routes/tab.route";
 import "./theme/variables.scss";
+
+const TagPage = lazy(() => import("@/pages/Tag/Tag"));
 
 setupIonicReact();
 
@@ -44,24 +47,24 @@ export default function App() {
 
   return (
     <IonApp>
-      <IonReactRouter>
-        <IonRouterOutlet>
-          <Route path={Routes.AppRoot} render={() => <TabRoutes />} />
-          <Route path={Routes.Login} exact>
-            <LoginPage />
-          </Route>
-
-          <Route path={Routes.Register} exact>
-            <RegisterPage />
-          </Route>
-
-          <Route path={Routes.Settings} exact>
-            <SettingsPage />
-          </Route>
-
-          <Route path="/" exact component={AppOrLogin} />
-        </IonRouterOutlet>
-      </IonReactRouter>
+      <Suspense fallback={<AppLoading />}>
+        <IonReactRouter>
+          <IonRouterOutlet>
+            <Route path={Routes.AppRoot} render={() => <TabRoutes />} />
+            <Route path={Routes.Login} exact>
+              <LoginPage />
+            </Route>
+            <Route path={Routes.Register} exact>
+              <RegisterPage />
+            </Route>
+            <Route path={Routes.Settings} exact>
+              <SettingsPage />
+            </Route>
+            <Route path={Routes.Tag} component={TagPage} exact />
+            <Route path="/" exact component={AppOrLogin} />
+          </IonRouterOutlet>
+        </IonReactRouter>
+      </Suspense>
     </IonApp>
   );
 }

@@ -9,4 +9,5 @@ export enum Routes {
   Login = "/login",
   Register = "/register",
   Settings = "/settings",
+  Tag = "/tag/:tagUid",
 }
