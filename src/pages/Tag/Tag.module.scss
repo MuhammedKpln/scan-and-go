@@ -5,3 +5,17 @@
     @apply p-3 rounded-lg;
 
 }
+
+
+.noteContainer {
+
+    background-color: var(--ion-color-light);
+
+    @apply p-3 rounded-lg
+
+}
+
+
+.container {
+    @apply flex flex-col justify-between items-center text-center w-full gap-5;
+}

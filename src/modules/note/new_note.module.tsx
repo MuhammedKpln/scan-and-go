@@ -76,6 +76,7 @@ export default function NewNoteModule(props: IProps) {
         expire_at: Timestamp.fromDate(data.expireAt),
         title: "we",
         userUid: authContext.user!.uid,
+        created_at: Timestamp.fromDate(new Date()),
       });
 
       props.onDismiss(undefined, "confirm");

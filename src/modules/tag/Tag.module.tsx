@@ -1,10 +1,13 @@
 import AppLoading from "@/components/App/AppLoading";
 import { TagDetailPageProps } from "@/pages/Tag/Tag";
 import styles from "@/pages/Tag/Tag.module.scss";
+import { noteService } from "@/services/note.service";
 import { profileService } from "@/services/profile.service";
 import { tagService } from "@/services/tag.service";
-import { IonItem, IonLabel, IonList, IonText } from "@ionic/react";
+import { IonItem, IonLabel, IonList, IonSpinner, IonText } from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { Redirect } from "react-router";
 
 export default function TagModule(props: TagDetailPageProps) {
   const tagQuery = useQuery({
@@ -15,21 +18,46 @@ export default function TagModule(props: TagDetailPageProps) {
   });
 
   const profileQuery = useQuery({
-    enabled: !!tagQuery.data?.data()?.userUid,
-    queryKey: ["profile", tagQuery.data?.data()?.userUid],
+    enabled: !!tagQuery.data?.data()?.userUid && tagQuery.data.exists(),
+    queryKey: ["notes", tagQuery.data?.data()?.userUid],
     queryFn: () => {
       return profileService.fetchProfile(tagQuery.data!.data()!.userUid);
     },
   });
 
+  const notesQuery = useQuery({
+    enabled: !!tagQuery.data?.data()?.userUid && tagQuery.data.exists(),
+    queryKey: ["profile", tagQuery.data?.data()?.userUid],
+    queryFn: () => {
+      return noteService.fetchLatestNotes(tagQuery.data!.data()!.userUid);
+    },
+  });
+  const userLatestNote = useMemo(() => {
+    console.log(notesQuery);
+
+    if (notesQuery.isLoading) {
+      return;
+    }
+
+    if (!notesQuery.data?.empty) {
+      return notesQuery?.data?.docs[0].data().content;
+    }
+
+    return tagQuery.data?.data()?.tagNote;
+  }, [notesQuery]);
+
+  const profileData = profileQuery.data?.data();
+
   if (tagQuery.isLoading || profileQuery.isLoading) {
     return <AppLoading message="Loading tag..." />;
   }
 
-  const profileData = profileQuery.data?.data();
+  if (!tagQuery.data?.exists()) {
+    return <Redirect to="/" />;
+  }
 
   return (
-    <div className="flex flex-col justify-around items-center text-center h-full w-full">
+    <div className={styles.container}>
       <div id="userDetails" className="">
         <img
           src={profileData?.profileImageRef?.toString()}
@@ -37,10 +65,14 @@ export default function TagModule(props: TagDetailPageProps) {
         />
 
         <h1>
-          {profileData?.firstName?.toString()}
+          {profileData?.firstName?.toString()}{" "}
           {profileData?.lastName?.toString()}
         </h1>
         <IonText color="medium">{profileData?.bio?.toString()}</IonText>
+      </div>
+
+      <div className={styles.noteContainer}>
+        {notesQuery.isLoading ? <IonSpinner /> : <>{userLatestNote}</>}
       </div>
 
       <div id="userQr" className={styles.qrCodeContainer}>

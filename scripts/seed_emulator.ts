@@ -54,9 +54,9 @@ const notesSeeder = () => {
     .fill("")
     .forEach(async () => {
       await addDoc(notesCollection, {
-        title: faker.lorem.words(5),
         content: faker.lorem.words(5),
         expire_at: faker.date.soon(),
+        created_at: new Date(),
         userUid: user.user.uid,
       });
     });
