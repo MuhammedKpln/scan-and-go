@@ -1,13 +1,6 @@
 import { FirebaseCollections } from "@/models/firebase_collections.model";
 import { INote } from "@/models/note.model";
-import {
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  startAt,
-  where,
-} from "firebase/firestore";
+import { getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import { BaseService } from "./base.service";
 
 class NoteService extends BaseService {
@@ -20,7 +13,7 @@ class NoteService extends BaseService {
       this.collectionRef,
       orderBy("created_at", "desc"),
       where("userUid", "==", userUid),
-      startAt("expire_at", new Date()),
+      where("expire_at", "==", new Date()),
       limit(1)
     ).withConverter(this.converter<INote>());
 

@@ -92,6 +92,9 @@ const profilesSeeder = async () => {
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     profileImageRef: faker.image.avatar(),
+    socialMediaAccounts: {
+      twitter: faker.internet.userName(),
+    },
   });
 
   console.log("Profile seeded");

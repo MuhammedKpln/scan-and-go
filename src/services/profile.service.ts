@@ -1,6 +1,6 @@
 import { FirebaseCollections } from "@/models/firebase_collections.model";
 import { IUser } from "@/models/user.model";
-import { doc, getDoc } from "firebase/firestore";
+import { DocumentSnapshot, doc, getDoc } from "firebase/firestore";
 import { BaseService } from "./base.service";
 
 class ProfileService extends BaseService {
@@ -8,9 +8,9 @@ class ProfileService extends BaseService {
     super(FirebaseCollections.Profiles);
   }
 
-  fetchProfile(userUid: string) {
-    const docRef = doc(this.collectionRef, userUid).withConverter(
-      this.converter<IUser>()
+  fetchProfile(userUid: string): Promise<DocumentSnapshot<IUser>> {
+    const docRef = doc(this.collectionRef, userUid).withConverter<IUser>(
+      this.converter()
     );
 
     try {

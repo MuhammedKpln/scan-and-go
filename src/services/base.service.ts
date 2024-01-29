@@ -1,7 +1,6 @@
 import { FirebaseCollections } from "@/models/firebase_collections.model";
 import {
   CollectionReference,
-  DocumentData,
   Firestore,
   PartialWithFieldValue,
   QueryDocumentSnapshot,
@@ -18,7 +17,7 @@ export class BaseService {
     this.collectionRef = collection(this.db, collectionReference);
   }
 
-  protected converter<T = DocumentData>() {
+  protected converter<T>() {
     return {
       toFirestore: (data: PartialWithFieldValue<T>) => data,
       fromFirestore: (snap: QueryDocumentSnapshot): T => snap.data() as T,

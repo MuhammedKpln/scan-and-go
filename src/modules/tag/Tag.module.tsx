@@ -4,8 +4,20 @@ import styles from "@/pages/Tag/Tag.module.scss";
 import { noteService } from "@/services/note.service";
 import { profileService } from "@/services/profile.service";
 import { tagService } from "@/services/tag.service";
-import { IonItem, IonLabel, IonList, IonSpinner, IonText } from "@ionic/react";
+import {
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonSpinner,
+  IonText,
+} from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
+import {
+  logoTwitter,
+  mailOpenOutline,
+  phonePortraitOutline,
+} from "ionicons/icons";
 import { useMemo } from "react";
 import { Redirect } from "react-router";
 
@@ -84,6 +96,7 @@ export default function TagModule(props: TagDetailPageProps) {
 
       <IonList inset className="w-full">
         <IonItem>
+          <IonIcon icon={phonePortraitOutline} slot="start" />
           <IonLabel>
             <p>Phone</p>
             <h6>
@@ -92,6 +105,8 @@ export default function TagModule(props: TagDetailPageProps) {
           </IonLabel>
         </IonItem>
         <IonItem>
+          <IonIcon icon={mailOpenOutline} slot="start" />
+
           <IonLabel>
             <p>Email</p>
             <h6>
@@ -99,20 +114,24 @@ export default function TagModule(props: TagDetailPageProps) {
             </h6>
           </IonLabel>
         </IonItem>
-        <IonItem>
-          <IonLabel>
-            <p>Website</p>
-            <h6>
-              <a
-                href="http://www.yoursite.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                www.yoursite.com
-              </a>
-            </h6>
-          </IonLabel>
-        </IonItem>
+
+        {profileData?.socialMediaAccounts?.twitter && (
+          <IonItem>
+            <IonIcon icon={logoTwitter} slot="start" />
+            <IonLabel>
+              <p>Twitter</p>
+              <h6>
+                <a
+                  href={`https://twitter.com/${profileData.socialMediaAccounts.twitter}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {profileData.socialMediaAccounts.twitter}
+                </a>
+              </h6>
+            </IonLabel>
+          </IonItem>
+        )}
       </IonList>
     </div>
   );
