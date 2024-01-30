@@ -74,7 +74,6 @@ export default function NewNoteModule(props: IProps) {
       await addNewDoc.mutate({
         content: data.content.toString(),
         expire_at: Timestamp.fromDate(data.expireAt),
-        title: "we",
         userUid: authContext.user!.uid,
         created_at: Timestamp.fromDate(new Date()),
       });
@@ -123,7 +122,7 @@ export default function NewNoteModule(props: IProps) {
               Cancel
             </IonButton>
           </IonButtons>
-          <IonTitle>Temporary note</IonTitle>
+          <IonTitle>Skapa ett temporär anteckning</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
