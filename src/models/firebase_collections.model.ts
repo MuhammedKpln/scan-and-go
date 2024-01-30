@@ -3,3 +3,12 @@ export enum FirebaseCollections {
   Notes = "notes",
   Tags = "tags",
 }
+
+export enum FirebaseSubCollections {
+  PrivateSubToProfile = "private",
+}
+
+export enum FirebaseSubCollectionDocs {
+  PhoneToProfilePrivateSub = "phone",
+  SocialMediaToProfilePrivateSub = "socialMediaAccounts",
+}

@@ -5,9 +5,19 @@ interface ISocialMediaAccounts {
 export type IUser = {
   firstName: string;
   lastName: string;
+  showPhoneNumber: boolean;
   profileImageRef?: string;
   bio?: string;
-  socialMediaAccounts?: ISocialMediaAccounts;
+};
+
+export type IUserPrivatePhone = {
+  phone: {
+    value: string;
+  };
+};
+
+export type IUserPrivateSocialMediaAccounts = {
+  twitter?: string;
 };
 
 export interface IRegisterUserForm

@@ -25,14 +25,16 @@ import AppOrLogin from "./components/AppOrLogin";
 import { useAuthContext } from "./context/AuthContext";
 import { useAppTheme } from "./hooks/app/useAppTheme";
 import { useSplashScreen } from "./hooks/app/useSplashScreen";
-import SettingsPage from "./pages/Settings/Settings";
-import RegisterPage from "./pages/auth/Register/Register";
-import LoginPage from "./pages/auth/login";
 import { Routes } from "./routes/routes";
 import TabRoutes from "./routes/tab.route";
 import "./theme/variables.scss";
 
 const TagPage = lazy(() => import("@/pages/Tag/Tag"));
+const SettingsPage = lazy(() => import("@/pages/Settings/Settings"));
+const LoginPage = lazy(() => import("@/pages/auth/login"));
+const RegisterPage = lazy(() => import("@/pages/auth/Register/Register"));
+const NoteDetailsPage = lazy(() => import("@/pages/NoteDetails/NoteDetails"));
+const ChatPage = lazy(() => import("@/pages/Chats/Chat"));
 
 setupIonicReact();
 
@@ -51,16 +53,16 @@ export default function App() {
         <IonReactRouter>
           <IonRouterOutlet>
             <Route path={Routes.AppRoot} render={() => <TabRoutes />} />
-            <Route path={Routes.Login} exact>
-              <LoginPage />
-            </Route>
-            <Route path={Routes.Register} exact>
-              <RegisterPage />
-            </Route>
-            <Route path={Routes.Settings} exact>
-              <SettingsPage />
-            </Route>
+            <Route path={Routes.Login} component={LoginPage} exact />
+            <Route path={Routes.Register} component={RegisterPage} exact />
+            <Route path={Routes.Settings} component={SettingsPage} exact />
             <Route path={Routes.Tag} component={TagPage} exact />
+            <Route
+              path={`${Routes.Notes}/:id`}
+              exact
+              component={NoteDetailsPage}
+            />
+            <Route path={`${Routes.Chats}/:id`} component={ChatPage} exact />
             <Route path="/" exact component={AppOrLogin} />
           </IonRouterOutlet>
         </IonReactRouter>

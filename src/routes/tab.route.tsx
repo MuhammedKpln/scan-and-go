@@ -1,8 +1,6 @@
 import { useAuthContext } from "@/context/AuthContext";
-import ChatPage from "@/pages/Chats/Chat";
 import ChatsPage from "@/pages/Chats/Chats";
 import HomePage from "@/pages/Home/Home";
-import NoteDetails from "@/pages/NoteDetails/NoteDetails";
 import ProfilePage from "@/pages/Profile/ProfilePage";
 import ScanPage from "@/pages/Scan";
 import {
@@ -57,12 +55,6 @@ export default function TabRoutes() {
         </Route>
         <Route path={Routes.Profile} exact>
           <ProfilePage />
-        </Route>
-        <Route path={`${Routes.Notes}/:id`} exact>
-          <NoteDetails />
-        </Route>
-        <Route path={`${Routes.Chats}/:id`} exact>
-          <ChatPage />
         </Route>
         <Route path={Routes.AppRoot} exact>
           <Redirect to={Routes.Home} />

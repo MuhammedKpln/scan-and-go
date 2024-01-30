@@ -1,11 +1,8 @@
 import AppModalHeader from "@/components/App/AppModalHeader";
 import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
-import { useUpdateDoc } from "@/hooks/useUpdateDoc";
-import { FirebaseCollections } from "@/models/firebase_collections.model";
-import { db } from "@/services/firebase.service";
-import { IUserReducerType, useUserStore } from "@/stores/user.store";
-import { doc } from "@firebase/firestore";
+import { QueryKeys } from "@/models/query_keys.model";
+import { profileService } from "@/services/profile.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IonButton,
@@ -18,8 +15,9 @@ import {
   IonModal,
   IonTitle,
 } from "@ionic/react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { logoTwitter } from "ionicons/icons";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -27,31 +25,44 @@ const formValidator = z.object({
   twitterUsername: z.string().startsWith("@"),
 });
 
+interface IUpdateTwitterMutationVars {
+  twitter: string;
+}
+
 export default function TwitterSetting() {
   const modalRef = useRef<HTMLIonModalElement>(null);
   const { user } = useAuthContext();
-  const userStoreDispatch = useUserStore((state) => state.dispatch);
-  const userTwitter = useUserStore(
-    (state) => state.socialMediaAccounts?.twitter
-  );
+
+  const query = useQuery({
+    queryKey: [QueryKeys.UserSocialMediaAccounts, user?.uid],
+    queryFn: () => profileService.fetchSocialMediaAccounts(user!.uid),
+  });
+
+  const mutation = useMutation<void, void, IUpdateTwitterMutationVars>({
+    mutationKey: [QueryKeys.UserSocialMediaAccounts, user?.uid],
+    mutationFn: ({ twitter }) => {
+      return profileService.updateSocialMediaAccounts(user!.uid, {
+        twitter,
+      });
+    },
+  });
+
+  console.log("mutation", mutation);
+  console.log("query", query);
+
   const { showToast } = useAppToast();
   const { control, handleSubmit } = useForm<typeof formValidator._type>({
     resolver: zodResolver(formValidator),
     reValidateMode: "onSubmit",
     defaultValues: {
-      twitterUsername: userTwitter,
+      twitterUsername: query.data?.data()?.twitter,
     },
   });
-  const docRef = useMemo(
-    () => doc(db, FirebaseCollections.Profiles, user!.uid),
-    []
-  );
-  const { mutate } = useUpdateDoc(docRef);
 
   const onSubmit = useCallback(async (inputs: typeof formValidator._type) => {
     try {
-      await mutate({
-        "socialMediaAccounts.twitter": inputs.twitterUsername,
+      await mutation.mutateAsync({
+        twitter: inputs.twitterUsername,
       });
 
       showToast({
@@ -59,14 +70,6 @@ export default function TwitterSetting() {
         status: ToastStatus.Success,
       });
 
-      userStoreDispatch({
-        type: IUserReducerType.UpdateSocialMediaAccounts,
-        args: {
-          socialMediaAccounts: {
-            twitter: inputs.twitterUsername,
-          },
-        },
-      });
       modalRef.current?.dismiss(undefined, "confirm");
     } catch (error) {
       showToast({
