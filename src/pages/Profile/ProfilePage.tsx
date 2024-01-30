@@ -18,16 +18,18 @@ import {
   IonText,
   IonTitle,
   IonToolbar,
+  useIonRouter,
   useIonViewDidEnter,
 } from "@ionic/react";
 import { doc } from "firebase/firestore";
 import { logoTwitter, settingsOutline } from "ionicons/icons";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import styles from "./Profile.module.scss";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<IUser | undefined>();
   const authContext = useContext(AuthContext);
+  const router = useIonRouter();
   const updateUserDispatch = useUserStore((state) => state.dispatch);
   const storeHasFetched = useUserStore((state) => state.hasBeenFetched);
   const userFromStore = useUserStore();
@@ -52,6 +54,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (_profile.status === QueryStatus.Success) {
       setProfile(_profile.data);
+      console.log("");
 
       updateUserDispatch({
         type: IUserReducerType.UpdateUser,
@@ -62,6 +65,11 @@ export default function ProfilePage() {
       });
     }
   }, [_profile.status]);
+
+  const onLogout = useCallback(async () => {
+    await authContext?.logout();
+    router.push("/", "root", "replace");
+  }, []);
 
   if (!storeHasFetched && _profile.status === QueryStatus.Error) {
     return (
@@ -127,9 +135,7 @@ export default function ProfilePage() {
             </IonButton>
             <IonButton color="secondary">Redigera</IonButton>
           </div>
-          <IonButton onClick={() => authContext?.logout()}>
-            Visa QR-Koden
-          </IonButton>
+          <IonButton onClick={onLogout}>Visa QR-Koden</IonButton>
         </div>
       </IonContent>
     </IonPage>

@@ -1,8 +1,10 @@
 import { auth } from "@/services/firebase.service";
+import { useUserStore } from "@/stores/user.store";
 import { User, onAuthStateChanged, signOut } from "firebase/auth";
 import {
   PropsWithChildren,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -30,6 +32,11 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const resetState = useUserStore((s) => s.resetState);
+
+  const resetStoreState = useCallback(() => {
+    resetState();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -38,6 +45,7 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
         setUser(user);
       } else {
         setIsSignedIn(false);
+        resetStoreState();
       }
 
       setIsLoadingUser(false);
@@ -46,7 +54,13 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
     return () => unsubscribe();
   }, []);
 
-  const logout = useMemo(() => async () => await signOut(auth), []);
+  const logout = useMemo(
+    () => async () => {
+      resetStoreState();
+      await signOut(auth);
+    },
+    []
+  );
 
   const value = useMemo(() => {
     return {
