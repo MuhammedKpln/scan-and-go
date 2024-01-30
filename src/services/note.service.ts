@@ -11,9 +11,9 @@ class NoteService extends BaseService {
   fetchLatestNotes(userUid: string) {
     const queryRef = query(
       this.collectionRef,
-      orderBy("created_at", "desc"),
       where("userUid", "==", userUid),
-      where("expire_at", "==", new Date()),
+      where("expire_at", ">", new Date()),
+      orderBy("expire_at", "asc"),
       limit(1)
     ).withConverter(this.converter<INote>());
 

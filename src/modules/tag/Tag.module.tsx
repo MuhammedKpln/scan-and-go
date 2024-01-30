@@ -83,9 +83,14 @@ export default function TagModule(props: TagDetailPageProps) {
         <IonText color="medium">{profileData?.bio?.toString()}</IonText>
       </div>
 
-      <div className={styles.noteContainer}>
-        {notesQuery.isLoading ? <IonSpinner /> : <>{userLatestNote}</>}
-      </div>
+      <IonItem className={styles.noteContainer} lines="none">
+        <IonLabel>
+          <p>Anteckning</p>
+          <h6>
+            {notesQuery.isLoading ? <IonSpinner /> : <>{userLatestNote}</>}I
+          </h6>
+        </IonLabel>
+      </IonItem>
 
       <div id="userQr" className={styles.qrCodeContainer}>
         <img
@@ -94,7 +99,7 @@ export default function TagModule(props: TagDetailPageProps) {
         />
       </div>
 
-      <IonList inset className="w-full">
+      <IonList>
         <IonItem>
           <IonIcon icon={phonePortraitOutline} slot="start" />
           <IonLabel>

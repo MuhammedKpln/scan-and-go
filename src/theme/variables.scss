@@ -44,12 +44,12 @@
     --ion-color-danger-shade: #ba2929;
     --ion-color-danger-tint: #d74444;
 
-    --ion-color-light: #eae9ef;
+    --ion-color-light: var(--ion-item-background);
     --ion-color-light-rgb: 234, 233, 239;
     --ion-color-light-contrast: #000000;
     --ion-color-light-contrast-rgb: 0, 0, 0;
-    --ion-color-light-shade: #cecdd2;
-    --ion-color-light-tint: #ecebf1;
+    --ion-color-light-shade: var(--ion-item-background);
+    --ion-color-light-tint: var(--ion-item-background);
 
     --ion-color-medium: #92949c;
     --ion-color-medium-rgb: 146, 148, 156;
