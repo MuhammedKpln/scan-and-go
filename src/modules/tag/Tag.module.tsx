@@ -96,7 +96,7 @@ export default function TagModule(props: TagDetailPageProps) {
     }
 
     return tagQuery?.data?.data()?.tagNote;
-  }, [notesQuery]);
+  }, [notesQuery, tagQuery]);
 
   const profileData = useMemo(() => profileQuery.data?.data(), [profileQuery]);
   const socialData = useMemo(
@@ -144,7 +144,7 @@ export default function TagModule(props: TagDetailPageProps) {
         <IonLabel>
           <p>Anteckning</p>
           <h6>
-            {notesQuery.isLoading ? <IonSpinner /> : <>{userLatestNote}</>}I
+            {notesQuery.isLoading ? <IonSpinner /> : <>{userLatestNote}</>}
           </h6>
         </IonLabel>
       </IonItem>
