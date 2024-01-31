@@ -19,22 +19,21 @@ import "@ionic/react/css/text-transformation.css";
 /* Theme variables */
 import TagPage from "@/pages/Tag/Tag";
 import { IonReactRouter } from "@ionic/react-router";
-import { Suspense, lazy } from "react";
+import { Suspense } from "react";
 import { Route } from "react-router";
 import AppLoading from "./components/App/AppLoading";
 import AppOrLogin from "./components/AppOrLogin";
 import { useAuthContext } from "./context/AuthContext";
 import { useAppTheme } from "./hooks/app/useAppTheme";
 import { useSplashScreen } from "./hooks/app/useSplashScreen";
+import ChatPage from "./pages/Chats/Chat";
+import NoteDetailsPage from "./pages/NoteDetails/NoteDetails";
+import SettingsPage from "./pages/Settings/Settings";
+import RegisterPage from "./pages/auth/Register/Register";
+import LoginPage from "./pages/auth/login";
 import { Routes } from "./routes/routes";
 import TabRoutes from "./routes/tab.route";
 import "./theme/variables.scss";
-
-const SettingsPage = lazy(() => import("@/pages/Settings/Settings"));
-const LoginPage = lazy(() => import("@/pages/auth/login"));
-const RegisterPage = lazy(() => import("@/pages/auth/Register/Register"));
-const NoteDetailsPage = lazy(() => import("@/pages/NoteDetails/NoteDetails"));
-const ChatPage = lazy(() => import("@/pages/Chats/Chat"));
 
 setupIonicReact();
 
