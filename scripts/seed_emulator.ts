@@ -1,5 +1,9 @@
 import { INote } from "@/models/note.model";
-import { IUser } from "@/models/user.model";
+import {
+  IUser,
+  IUserPrivatePhone,
+  IUserPrivateSocialMediaAccounts,
+} from "@/models/user.model";
 import { faker } from "@faker-js/faker";
 import "dotenv/config";
 import { initializeApp } from "firebase/app";
@@ -83,18 +87,27 @@ const tagsSeeder = () => {
 };
 
 const profilesSeeder = async () => {
-  const profilesCollection = doc(db, "profiles", user.user.uid).withConverter(
-    converter<IUser>()
+  const parentDocRef = doc(db, "profiles", user.user.uid);
+  const profilesCollection = parentDocRef.withConverter(converter<IUser>());
+  const subCollectionRef = collection(parentDocRef, "private");
+  const phoneDocRef = doc(subCollectionRef, "phone").withConverter(
+    converter<IUserPrivatePhone>()
   );
+  const socialMediaAccountsDocRef = doc(
+    subCollectionRef,
+    "socialMediaAccounts"
+  ).withConverter(converter<IUserPrivateSocialMediaAccounts>());
+
+  await setDoc(phoneDocRef, { value: faker.phone.number() });
+  await setDoc(socialMediaAccountsDocRef, {
+    twitter: faker.internet.userName(),
+  });
 
   await setDoc(profilesCollection, {
     bio: faker.person.bio(),
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     profileImageRef: faker.image.avatar(),
-    socialMediaAccounts: {
-      twitter: faker.internet.userName(),
-    },
   });
 
   console.log("Profile seeded");
