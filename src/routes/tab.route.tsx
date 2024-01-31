@@ -2,7 +2,6 @@ import { useAuthContext } from "@/context/AuthContext";
 import ChatsPage from "@/pages/Chats/Chats";
 import HomePage from "@/pages/Home/Home";
 import ProfilePage from "@/pages/Profile/ProfilePage";
-import ScanPage from "@/pages/Scan";
 import {
   IonFabButton,
   IonIcon,
@@ -18,9 +17,11 @@ import {
   personCircleOutline,
   qrCodeOutline,
 } from "ionicons/icons";
-import { useEffect } from "react";
+import { lazy, useEffect } from "react";
 import { Redirect, Route, useHistory } from "react-router";
 import { Routes } from "./routes";
+
+const ScanPage = lazy(() => import("@/pages/Scan"));
 
 export default function TabRoutes() {
   const router = useHistory();
@@ -47,9 +48,7 @@ export default function TabRoutes() {
         <Route path={Routes.Notes} exact>
           <HomePage />
         </Route>
-        <Route path={Routes.Scan} exact>
-          <ScanPage />
-        </Route>
+        <Route path={Routes.Scan} component={ScanPage} exact />
         <Route path={Routes.Chats} exact>
           <ChatsPage />
         </Route>

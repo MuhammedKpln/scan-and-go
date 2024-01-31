@@ -80,11 +80,9 @@ export default function ProfilePage() {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonButtons slot="start">
-            <IonTitle>
-              {`${profile?.firstName} ${profile?.lastName}` ?? "No name"}
-            </IonTitle>
-          </IonButtons>
+          <IonTitle>
+            {`${profile?.firstName} ${profile?.lastName}` ?? "No name"}
+          </IonTitle>
           <IonButtons slot="end">
             <IonButton routerLink={Routes.Settings}>
               <IonIcon icon={settingsOutline} />

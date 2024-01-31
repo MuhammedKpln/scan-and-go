@@ -8,7 +8,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 
-export default function NoteDetails() {
+export default function NoteDetailsPage() {
   return (
     <IonPage>
       <IonHeader>
