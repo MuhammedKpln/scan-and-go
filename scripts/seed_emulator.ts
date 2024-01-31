@@ -108,6 +108,7 @@ const profilesSeeder = async () => {
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     profileImageRef: faker.image.avatar(),
+    showPhoneNumber: false,
   });
 
   console.log("Profile seeded");
