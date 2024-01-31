@@ -1,6 +1,7 @@
 import AppHeader from "@/components/App/AppHeader";
 import DividerWithText from "@/components/DividerWithText/DividerWithText";
 import LoginModule from "@/modules/auth/login.module";
+import { Routes } from "@/routes/routes";
 import {
   IonButton,
   IonContent,
@@ -39,7 +40,9 @@ export default function LoginPage() {
           </IonButton>
 
           <DividerWithText text="eller" />
-          <IonButton fill="clear">Skapa ett konto</IonButton>
+          <IonButton fill="clear" routerLink={Routes.Register}>
+            Skapa ett konto
+          </IonButton>
         </div>
       </IonContent>
     </IonPage>

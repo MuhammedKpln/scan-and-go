@@ -17,6 +17,7 @@ import "@ionic/react/css/text-alignment.css";
 import "@ionic/react/css/text-transformation.css";
 
 /* Theme variables */
+import TagPage from "@/pages/Tag/Tag";
 import { IonReactRouter } from "@ionic/react-router";
 import { Suspense, lazy } from "react";
 import { Route } from "react-router";
@@ -29,7 +30,6 @@ import { Routes } from "./routes/routes";
 import TabRoutes from "./routes/tab.route";
 import "./theme/variables.scss";
 
-const TagPage = lazy(() => import("@/pages/Tag/Tag"));
 const SettingsPage = lazy(() => import("@/pages/Settings/Settings"));
 const LoginPage = lazy(() => import("@/pages/auth/login"));
 const RegisterPage = lazy(() => import("@/pages/auth/Register/Register"));
@@ -49,7 +49,7 @@ export default function App() {
 
   return (
     <IonApp>
-      <Suspense fallback={<AppLoading />}>
+      <Suspense fallback={<AppLoading message="Loading route..." />}>
         <IonReactRouter>
           <IonRouterOutlet>
             <Route path={Routes.AppRoot} render={() => <TabRoutes />} />

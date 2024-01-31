@@ -1,12 +1,9 @@
 import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
-import { AuthContext } from "@/context/AuthContext";
-import { QueryStatus } from "@/hooks/base";
-import { useColletionDataOnce } from "@/hooks/useCollectionDataOnce";
-import { IUser } from "@/models/user.model";
+import { useAuthContext } from "@/context/AuthContext";
+import { QueryKeys } from "@/models/query_keys.model";
 import { Routes } from "@/routes/routes";
-import { converter, db } from "@/services/firebase.service";
-import { IUserReducerType, useUserStore } from "@/stores/user.store";
+import { profileService } from "@/services/profile.service";
 import {
   IonAvatar,
   IonButton,
@@ -19,59 +16,53 @@ import {
   IonTitle,
   IonToolbar,
   useIonRouter,
-  useIonViewDidEnter,
 } from "@ionic/react";
-import { doc } from "firebase/firestore";
+import { useQueries } from "@tanstack/react-query";
 import { logoTwitter, settingsOutline } from "ionicons/icons";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import styles from "./Profile.module.scss";
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<IUser | undefined>();
-  const authContext = useContext(AuthContext);
+  const authContext = useAuthContext();
   const router = useIonRouter();
-  const updateUserDispatch = useUserStore((state) => state.dispatch);
-  const storeHasFetched = useUserStore((state) => state.hasBeenFetched);
-  const userFromStore = useUserStore();
-  const docRef = useMemo(
-    () =>
-      doc(db, "profiles", authContext!.user!.uid).withConverter<IUser>(
-        converter()
-      ),
-    []
-  );
+  const [profileQuery, socialMediaAccountsQuery] = useQueries({
+    queries: [
+      {
+        queryKey: [QueryKeys.Profile, authContext.user?.uid],
+        queryFn: async () => {
+          const profile = await profileService.fetchProfile(
+            authContext.user!.uid
+          );
 
-  const _profile = useColletionDataOnce<IUser>(docRef, { isAsync: true });
-
-  useIonViewDidEnter(() => {
-    if (storeHasFetched) {
-      setProfile(userFromStore);
-    } else {
-      _profile.mutate?.call(undefined);
-    }
-  }, [userFromStore, storeHasFetched]);
-
-  useEffect(() => {
-    if (_profile.status === QueryStatus.Success) {
-      setProfile(_profile.data);
-      console.log("");
-
-      updateUserDispatch({
-        type: IUserReducerType.UpdateUser,
-        args: {
-          hasBeenFetched: true,
-          ..._profile.data!,
+          return profile.data();
         },
-      });
-    }
-  }, [_profile.status]);
+      },
+      {
+        queryKey: [QueryKeys.UserSocialMediaAccounts, authContext.user?.uid],
+        queryFn: async () => {
+          const socialMedia = await profileService.fetchSocialMediaAccounts(
+            authContext.user!.uid
+          );
+
+          return socialMedia.data();
+        },
+      },
+    ],
+  });
+
+  const profile = useMemo(() => profileQuery?.data, [profileQuery]);
+
+  const socialMediaAccounts = useMemo(
+    () => socialMediaAccountsQuery?.data,
+    [socialMediaAccountsQuery]
+  );
 
   const onLogout = useCallback(async () => {
     await authContext?.logout();
     router.push("/", "root", "replace");
   }, []);
 
-  if (!storeHasFetched && _profile.status === QueryStatus.Error) {
+  if (profileQuery.isError) {
     return (
       <IonPage>
         <IonContent>
@@ -81,7 +72,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (!storeHasFetched && _profile.status === QueryStatus.Loading) {
+  if (profileQuery.isLoading) {
     return <AppLoading />;
   }
 
@@ -118,10 +109,10 @@ export default function ProfilePage() {
             <IonText>{profile?.bio}</IonText>
 
             <IonButtons className="mt-5">
-              {profile?.socialMediaAccounts?.twitter && (
+              {socialMediaAccounts?.twitter && (
                 <IonButton
                   fill="clear"
-                  href={`https://twitter.com/${profile?.socialMediaAccounts.twitter}`}
+                  href={`https://twitter.com/${socialMediaAccounts.twitter}`}
                   target="_blank"
                 >
                   <IonIcon icon={logoTwitter} />
