@@ -61,7 +61,7 @@ class ProfileService extends BaseService {
       const docRef = doc(
         collectionRef,
         FirebaseSubCollectionDocs.PhoneToProfilePrivateSub
-      ).withConverter<IUserPrivatePhone["phone"]>(this.converter());
+      ).withConverter<IUserPrivatePhone>(this.converter());
 
       return getDoc(docRef);
     } catch (error) {

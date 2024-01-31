@@ -1,7 +1,3 @@
-interface ISocialMediaAccounts {
-  twitter?: string;
-}
-
 export type IUser = {
   firstName: string;
   lastName: string;
@@ -11,9 +7,7 @@ export type IUser = {
 };
 
 export type IUserPrivatePhone = {
-  phone: {
-    value: string;
-  };
+  value: string;
 };
 
 export type IUserPrivateSocialMediaAccounts = {

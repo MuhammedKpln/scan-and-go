@@ -1,13 +1,22 @@
-import { FirebaseCollections } from "@/models/firebase_collections.model";
-import { IRegisterUserForm, IUser } from "@/models/user.model";
+import {
+  FirebaseCollections,
+  FirebaseSubCollectionDocs,
+  FirebaseSubCollections,
+} from "@/models/firebase_collections.model";
+import {
+  IRegisterUserForm,
+  IUser,
+  IUserPrivatePhone,
+  IUserPrivateSocialMediaAccounts,
+} from "@/models/user.model";
 import {
   Auth,
   User,
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
-import { Firestore, doc, setDoc } from "firebase/firestore";
-import { converter } from "./firebase.service";
+import { Firestore, addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { converter, db } from "./firebase.service";
 
 export class FirebaseAuthService {
   private auth: Auth;
@@ -28,7 +37,7 @@ export class FirebaseAuthService {
 
       if (user) {
         await this.createProfile(user.user.uid, data);
-
+        await this.createProfileSubCollections(user.user.uid);
         await this.sendVerificationEmail(user.user);
       }
     } catch (error) {
@@ -38,6 +47,27 @@ export class FirebaseAuthService {
 
   async sendVerificationEmail(user: User) {
     await sendEmailVerification(user);
+  }
+
+  private async createProfileSubCollections(uid: string) {
+    const socialRef = collection(
+      db,
+      FirebaseCollections.Profiles,
+      uid,
+      FirebaseSubCollections.PrivateSubToProfile,
+      FirebaseSubCollectionDocs.SocialMediaToProfilePrivateSub
+    ).withConverter<IUserPrivateSocialMediaAccounts>(converter());
+
+    const phoneRef = collection(
+      db,
+      FirebaseCollections.Profiles,
+      uid,
+      FirebaseSubCollections.PrivateSubToProfile,
+      FirebaseSubCollectionDocs.PhoneToProfilePrivateSub
+    ).withConverter<IUserPrivatePhone>(converter());
+
+    addDoc(socialRef, {});
+    addDoc(phoneRef, { value: "" });
   }
 
   private async createProfile(uid: string, data: IUser) {
@@ -53,6 +83,7 @@ export class FirebaseAuthService {
         lastName: data.lastName,
         bio: "",
         profileImageRef: "",
+        showPhoneNumber: false,
       });
     } catch (error) {
       throw error;
