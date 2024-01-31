@@ -34,6 +34,7 @@ export default function TagModule(props: TagDetailPageProps) {
   const tagQuery = useQuery({
     queryKey: [QueryKeys.Tag, props.match.params.tagUid],
     queryFn: fetchTag,
+    networkMode: "online",
   });
 
   const fetchProfile = useCallback(() => {
@@ -44,6 +45,7 @@ export default function TagModule(props: TagDetailPageProps) {
     queryKey: [QueryKeys.Profile, tagQuery?.data?.data()?.userUid],
     queryFn: fetchProfile,
     enabled: !!tagQuery?.data?.data()?.userUid && tagQuery.data.exists(),
+    networkMode: "online",
   });
 
   const fetchPhoneNumber = useCallback(() => {
@@ -65,6 +67,7 @@ export default function TagModule(props: TagDetailPageProps) {
       {
         queryKey: [QueryKeys.UserPhone, tagQuery?.data?.data()?.userUid],
         queryFn: fetchPhoneNumber,
+        networkMode: "online",
         enabled:
           !!tagQuery?.data?.data()?.userUid &&
           tagQuery.data.exists() &&
@@ -75,10 +78,12 @@ export default function TagModule(props: TagDetailPageProps) {
           QueryKeys.UserSocialMediaAccounts,
           tagQuery?.data?.data()?.userUid,
         ],
+        networkMode: "online",
         queryFn: fetchSocialMediaAccounts,
         enabled: !!tagQuery?.data?.data()?.userUid && tagQuery.data.exists(),
       },
       {
+        networkMode: "online",
         queryKey: [QueryKeys.Notes, tagQuery?.data?.data()?.userUid],
         queryFn: fetchLatestNotes,
         enabled: !!tagQuery?.data?.data()?.userUid && tagQuery.data.exists(),
