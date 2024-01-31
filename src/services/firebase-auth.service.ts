@@ -3,19 +3,14 @@ import {
   FirebaseSubCollectionDocs,
   FirebaseSubCollections,
 } from "@/models/firebase_collections.model";
-import {
-  IRegisterUserForm,
-  IUser,
-  IUserPrivatePhone,
-  IUserPrivateSocialMediaAccounts,
-} from "@/models/user.model";
+import { IRegisterUserForm, IUser } from "@/models/user.model";
 import {
   Auth,
   User,
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
-import { Firestore, addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { Firestore, collection, doc, setDoc } from "firebase/firestore";
 import { converter, db } from "./firebase.service";
 
 export class FirebaseAuthService {
@@ -50,24 +45,28 @@ export class FirebaseAuthService {
   }
 
   private async createProfileSubCollections(uid: string) {
-    const socialRef = collection(
-      db,
-      FirebaseCollections.Profiles,
-      uid,
-      FirebaseSubCollections.PrivateSubToProfile,
-      FirebaseSubCollectionDocs.SocialMediaToProfilePrivateSub
-    ).withConverter<IUserPrivateSocialMediaAccounts>(converter());
-
-    const phoneRef = collection(
-      db,
-      FirebaseCollections.Profiles,
-      uid,
-      FirebaseSubCollections.PrivateSubToProfile,
+    const parentDocRef = doc(db, FirebaseCollections.Profiles, uid);
+    const subCollectionRef = collection(
+      parentDocRef,
+      FirebaseSubCollections.PrivateSubToProfile
+    );
+    const phoneDoc = doc(
+      subCollectionRef,
       FirebaseSubCollectionDocs.PhoneToProfilePrivateSub
-    ).withConverter<IUserPrivatePhone>(converter());
+    );
+    const socialMediaAccounts = doc(
+      subCollectionRef,
+      FirebaseSubCollectionDocs.SocialMediaToProfilePrivateSub
+    );
 
-    addDoc(socialRef, {});
-    addDoc(phoneRef, { value: "" });
+    return Promise.all([
+      setDoc(phoneDoc, {
+        value: null,
+      }),
+      setDoc(socialMediaAccounts, {
+        value: null,
+      }),
+    ]);
   }
 
   private async createProfile(uid: string, data: IUser) {

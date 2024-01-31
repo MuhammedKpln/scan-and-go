@@ -24,7 +24,7 @@ service cloud.firestore {
 
       match /private/phone {
         allow read: if get(/databases/$(database)/documents/profiles/$(profile)).data.showPhoneNumber;
-        allow write: if isUserAuthenticated() && request.resource.id == request.auth.uid;
+        allow write: if isUserAuthenticated() && profile == request.auth.uid;
       }
 
       match /private/socialMediaAccounts {
