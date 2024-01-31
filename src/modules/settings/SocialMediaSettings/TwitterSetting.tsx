@@ -2,6 +2,7 @@ import AppModalHeader from "@/components/App/AppModalHeader";
 import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { QueryKeys } from "@/models/query_keys.model";
+import { IUserPrivateSocialMediaAccounts } from "@/models/user.model";
 import { profileService } from "@/services/profile.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -15,9 +16,9 @@ import {
   IonModal,
   IonTitle,
 } from "@ionic/react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoTwitter } from "ionicons/icons";
-import { useCallback, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -32,11 +33,14 @@ interface IUpdateTwitterMutationVars {
 export default function TwitterSetting() {
   const modalRef = useRef<HTMLIonModalElement>(null);
   const { user } = useAuthContext();
+  const queryClient = useQueryClient();
 
-  const query = useQuery({
-    queryKey: [QueryKeys.UserSocialMediaAccounts, user?.uid],
-    queryFn: () => profileService.fetchSocialMediaAccounts(user!.uid),
-  });
+  const userSocialAccounts = useMemo(() => {
+    return queryClient.getQueryData<IUserPrivateSocialMediaAccounts>([
+      QueryKeys.UserSocialMediaAccounts,
+      user?.uid,
+    ]);
+  }, []);
 
   const mutation = useMutation<void, void, IUpdateTwitterMutationVars>({
     mutationKey: [QueryKeys.UserSocialMediaAccounts, user?.uid],
@@ -47,15 +51,12 @@ export default function TwitterSetting() {
     },
   });
 
-  console.log("mutation", mutation);
-  console.log("query", query);
-
   const { showToast } = useAppToast();
   const { control, handleSubmit } = useForm<typeof formValidator._type>({
     resolver: zodResolver(formValidator),
     reValidateMode: "onSubmit",
     defaultValues: {
-      twitterUsername: query.data?.data()?.twitter,
+      twitterUsername: userSocialAccounts?.twitter,
     },
   });
 
