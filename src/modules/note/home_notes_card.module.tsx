@@ -1,11 +1,8 @@
 import AppInfoCard from "@/components/App/AppInfoCard";
 import { useAuthContext } from "@/context/AuthContext";
-import { QueryStatus } from "@/hooks/base";
-import { useCollection } from "@/hooks/useCollection";
-import { FirebaseCollections } from "@/models/firebase_collections.model";
-import { INote } from "@/models/note.model";
+import { QueryKeys } from "@/models/query_keys.model";
 import { Routes } from "@/routes/routes";
-import { db } from "@/services/firebase.service";
+import { noteService } from "@/services/note.service";
 import {
   IonCard,
   IonCardContent,
@@ -16,34 +13,18 @@ import {
   IonLabel,
   IonList,
   IonSpinner,
-  useIonRouter,
 } from "@ionic/react";
+import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { sv } from "date-fns/locale/sv";
-import { collection, limit, query, where } from "firebase/firestore";
-import { useMemo } from "react";
 
 export default function HomeNotesCard() {
-  const router = useIonRouter();
-  const authContext = useAuthContext();
-  const notesCollection = useMemo(
-    () => collection(db, FirebaseCollections.Notes),
-    []
-  );
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
-  const notesQuery = useMemo(
-    () =>
-      query(
-        notesCollection,
-        where("userUid", "==", authContext.user?.uid),
-        where("expire_at", ">", new Date(Date.now() + 10000)),
-        limit(4)
-      ),
-    []
-  );
+  const { user } = useAuthContext();
 
-  const notes = useCollection<INote>(notesQuery);
+  const notes = useQuery({
+    queryKey: [QueryKeys.Notes, user?.uid],
+    queryFn: () => noteService.fetchLatestNotes(user!.uid),
+  });
 
   return (
     <IonCard>
@@ -53,14 +34,14 @@ export default function HomeNotesCard() {
       </IonCardHeader>
 
       <IonCardContent>
-        {notes.status === QueryStatus.Loading ? (
+        {notes.isLoading ? (
           <IonSpinner />
         ) : (
           <IonList>
             {notes.data?.empty ? (
               <AppInfoCard message="Inga temporär anteckningar" />
             ) : (
-              notes.data?.docs.map((e) => {
+              notes.data!.docs.map((e) => {
                 const note = e.data();
                 const date = formatDistanceToNow(note.expire_at.toDate(), {
                   addSuffix: true,

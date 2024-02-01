@@ -1,11 +1,10 @@
 import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
-import { QueryStatus } from "@/hooks/base";
-import { useAddDoc } from "@/hooks/useAddDoc";
-import { useCollection } from "@/hooks/useCollection";
 import { INote } from "@/models/note.model";
-import { converter, db } from "@/services/firebase.service";
+import { QueryKeys } from "@/models/query_keys.model";
+import { noteService } from "@/services/note.service";
+import { tagService } from "@/services/tag.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IonButton,
@@ -27,8 +26,9 @@ import {
   useIonAlert,
   useIonToast,
 } from "@ionic/react";
-import { Timestamp, collection, query, where } from "firebase/firestore";
-import { useCallback, useEffect, useMemo } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Timestamp } from "firebase/firestore";
+import { useCallback, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -53,28 +53,25 @@ export default function NewNoteModule(props: IProps) {
   });
   const [showAlert, dismissAlert] = useIonAlert();
 
-  const authContext = useAuthContext();
+  const { user } = useAuthContext();
   const [showToast] = useIonToast();
-  const tagsCollection = useMemo(() => collection(db, "tags"), []);
-  const notesRef = useMemo(
-    () => collection(db, "notes").withConverter<INote>(converter()),
-    []
-  );
-  const tagsQuery = query(
-    tagsCollection,
-    where("userUid", "==", authContext.user?.uid)
-  ).withConverter(converter<ITag>());
-  const addNewDoc = useAddDoc(notesRef);
 
-  const tags = useCollection<ITag>(tagsQuery);
+  const tags = useQuery({
+    queryKey: [QueryKeys.Tags, user?.uid],
+    queryFn: () => tagService.fetchTags(user!.uid),
+  });
+
+  const addNewDoc = useMutation<any, any, INote>({
+    mutationKey: [QueryKeys.Notes, user.uid],
+    mutationFn: (note) => noteService.addNewNote(note),
+  });
 
   const onSubmitForm = useCallback(
     async (data: typeof newNoteFormSchema._type) => {
-      console.log("ae");
-      await addNewDoc.mutate({
-        content: data.content.toString(),
+      await addNewDoc.mutateAsync({
+        content: data.content,
         expire_at: Timestamp.fromDate(data.expireAt),
-        userUid: authContext.user!.uid,
+        userUid: user!.uid,
         created_at: Timestamp.fromDate(new Date()),
       });
 
@@ -89,7 +86,7 @@ export default function NewNoteModule(props: IProps) {
   );
 
   useEffect(() => {
-    if (tags.status === QueryStatus.Success && tags.data?.empty) {
+    if (tags.isFetched && tags.data?.empty) {
       showAlert({
         message: "You don't have any registered tags, please register one.",
         onWillDismiss: () => props.onDismiss(undefined, "cancel"),
@@ -104,9 +101,7 @@ export default function NewNoteModule(props: IProps) {
     }
   }, [tags]);
 
-  console.log(tags);
-
-  if (tags.status === QueryStatus.Loading) {
+  if (tags.isLoading) {
     return <AppLoading />;
   }
 
@@ -126,7 +121,7 @@ export default function NewNoteModule(props: IProps) {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {tags.status === QueryStatus.Error && (
+        {tags.isError && (
           <AppInfoCard
             message="Ett fel har uppstot! var snäll prova igen senare"
             status={InfoCardStatus.Error}

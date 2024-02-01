@@ -1,5 +1,14 @@
 import { FirebaseCollections } from "@/models/firebase_collections.model";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  PartialWithFieldValue,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { BaseService } from "./base.service";
 
 class TagService extends BaseService {
@@ -13,6 +22,32 @@ class TagService extends BaseService {
     );
 
     return getDoc(docRef);
+  }
+
+  async fetchTags(userUid: string) {
+    try {
+      const queryRef = query(
+        this.collectionRef,
+        where("userUid", "==", userUid)
+      ).withConverter<ITag>(this.converter());
+
+      return getDocs(queryRef);
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async addNewTag(userUid: string, data: PartialWithFieldValue<ITag>) {
+    try {
+      const collectionRef = collection(
+        this.db,
+        FirebaseCollections.Tags
+      ).withConverter<ITag>(this.converter());
+
+      return addDoc(collectionRef, data);
+    } catch (error) {
+      throw new Error(error as string);
+    }
   }
 }
 
