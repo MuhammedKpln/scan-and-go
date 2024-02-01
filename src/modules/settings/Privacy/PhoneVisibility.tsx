@@ -31,8 +31,9 @@ export default function PhoneVisibility() {
         showPhoneNumber: checked,
       });
     },
-    onMutate(variables) {
+    onSuccess(data, variables, context) {
       const qKey = [QueryKeys.Profile, user?.uid];
+
       queryClient.setQueryData<IUser>(qKey, (v) => {
         return {
           ...v,
