@@ -6,20 +6,18 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
-import { PropsWithChildren, RefObject } from "react";
+import { PropsWithChildren } from "react";
 
 interface IProps extends PropsWithChildren {
-  modalRef: RefObject<HTMLIonModalElement>;
+  onClose: () => void;
 }
 
-export default function AppModalHeader({ children, modalRef }: IProps) {
+export default function AppModalHeader({ children, onClose }: IProps) {
   return (
     <IonHeader>
       <IonToolbar>
         <IonButtons slot="start">
-          <IonButton
-            onClick={() => modalRef.current?.dismiss(undefined, "cancel")}
-          >
+          <IonButton onClick={onClose}>
             <IonIcon icon={closeOutline} />
           </IonButton>
         </IonButtons>

@@ -1,5 +1,5 @@
 import { IonLabel, IonList, IonListHeader } from "@ionic/react";
-import TwitterSetting from "./TwitterSetting";
+import TwitterSetting from "./Twitter/TwitterSetting";
 
 export default function SocialMediaSettings() {
   return (

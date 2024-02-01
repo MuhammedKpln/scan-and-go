@@ -9,18 +9,20 @@ import {
   IonButton,
   IonButtons,
   IonContent,
-  IonIcon,
   IonInput,
-  IonItem,
   IonLabel,
-  IonModal,
+  IonPage,
   IonTitle,
 } from "@ionic/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { logoTwitter } from "ionicons/icons";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+
+interface IProps {
+  onClose: () => void;
+  onConfirm: () => void;
+}
 
 const formValidator = z.object({
   twitterUsername: z.string().startsWith("@"),
@@ -30,8 +32,7 @@ interface IUpdateTwitterMutationVars {
   twitter: string;
 }
 
-export default function TwitterSetting() {
-  const modalRef = useRef<HTMLIonModalElement>(null);
+export default function TwitterSettingModal(props: IProps) {
   const { user } = useAuthContext();
   const queryClient = useQueryClient();
 
@@ -71,7 +72,7 @@ export default function TwitterSetting() {
         status: ToastStatus.Success,
       });
 
-      modalRef.current?.dismiss(undefined, "confirm");
+      props.onConfirm();
     } catch (error) {
       showToast({
         message: "Error!",
@@ -81,53 +82,41 @@ export default function TwitterSetting() {
   }, []);
 
   return (
-    <>
-      <IonItem button id="open-twitter-setting">
-        <IonIcon icon={logoTwitter} slot="start" />
-        <IonLabel>Twitter</IonLabel>
-      </IonItem>
+    <IonPage>
+      <AppModalHeader onClose={props.onClose}>
+        <IonTitle>Twitter</IonTitle>
 
-      <IonModal
-        ref={modalRef}
-        trigger="open-twitter-setting"
-        initialBreakpoint={0.5}
-        breakpoints={[0, 0.25, 0.5, 0.75]}
-      >
-        <AppModalHeader modalRef={modalRef}>
-          <IonTitle>Twitter</IonTitle>
+        <IonButtons slot="end">
+          <IonButton onClick={handleSubmit(onSubmit)}>
+            <IonLabel>Save</IonLabel>
+          </IonButton>
+        </IonButtons>
+      </AppModalHeader>
 
-          <IonButtons slot="end">
-            <IonButton onClick={handleSubmit(onSubmit)}>
-              <IonLabel>Save</IonLabel>
-            </IonButton>
-          </IonButtons>
-        </AppModalHeader>
-
-        <IonContent class="ion-padding">
-          <Controller
-            name="twitterUsername"
-            control={control}
-            render={({
-              field: { onBlur, onChange, value },
-              fieldState: { error, isTouched },
-            }) => {
-              return (
-                <IonInput
-                  className={`${!error ? "ion-valid" : "ion-invalid"} ${
-                    isTouched ? "ion-touched" : null
-                  }`}
-                  placeholder="@username"
-                  helperText="Your Twitter username"
-                  onIonChange={onChange}
-                  value={value}
-                  onIonBlur={onBlur}
-                  errorText={error && error.message}
-                />
-              );
-            }}
-          />
-        </IonContent>
-      </IonModal>
-    </>
+      <IonContent class="ion-padding">
+        <Controller
+          name="twitterUsername"
+          control={control}
+          render={({
+            field: { onBlur, onChange, value },
+            fieldState: { error, isTouched },
+          }) => {
+            return (
+              <IonInput
+                className={`${!error ? "ion-valid" : "ion-invalid"} ${
+                  isTouched ? "ion-touched" : null
+                }`}
+                placeholder="@username"
+                helperText="Your Twitter username"
+                onIonChange={onChange}
+                value={value}
+                onIonBlur={onBlur}
+                errorText={error && error.message}
+              />
+            );
+          }}
+        />
+      </IonContent>
+    </IonPage>
   );
 }
