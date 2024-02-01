@@ -62,7 +62,7 @@ export default function NewNoteModule(props: IProps) {
   });
 
   const addNewDoc = useMutation<any, any, INote>({
-    mutationKey: [QueryKeys.Notes, user.uid],
+    mutationKey: [QueryKeys.Notes, user?.uid],
     mutationFn: (note) => noteService.addNewNote(note),
   });
 
