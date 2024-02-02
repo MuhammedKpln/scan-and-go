@@ -14,7 +14,6 @@ export interface AuthContextProps {
   isInitialized: boolean;
   user: User | null;
   isSignedIn: boolean;
-  isLoadingUser: boolean;
   logout: () => Promise<void>;
 }
 
@@ -28,12 +27,9 @@ export const useAuthContext = () => {
 
 export const AuthContextProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const client = useQueryClient();
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     auth.authStateReady().then(() => {
@@ -47,8 +43,6 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
       } else {
         setIsSignedIn(false);
       }
-
-      setIsLoadingUser(false);
     });
     return () => unsubscribe();
   }, []);
@@ -64,12 +58,11 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
   const value = useMemo(() => {
     return {
       user,
-      isLoadingUser,
       isSignedIn,
       logout,
       isInitialized,
     };
-  }, [user, isLoadingUser, isSignedIn, logout, isInitialized]);
+  }, [user, isSignedIn, logout, isInitialized]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

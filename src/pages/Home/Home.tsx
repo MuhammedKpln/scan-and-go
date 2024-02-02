@@ -1,4 +1,5 @@
 import HomeNotesCard from "@/modules/note/home_notes_card.module";
+import NewNoteModule from "@/modules/note/new_note.module";
 import {
   IonButton,
   IonContent,
@@ -10,16 +11,13 @@ import {
   useIonModal,
 } from "@ionic/react";
 import { addOutline } from "ionicons/icons";
-import { lazy, useCallback } from "react";
+import { useCallback } from "react";
 import styles from "./Home.module.scss";
 
 export default function HomePage() {
-  const [showModal, hideModal] = useIonModal(
-    lazy(() => import("@/modules/note/new_note.module")),
-    {
-      onDismiss: (data: string, role: string) => hideModal(data, role),
-    }
-  );
+  const [showModal, hideModal] = useIonModal(NewNoteModule, {
+    onDismiss: (data: string, role: string) => hideModal(data, role),
+  });
 
   const onClickAddNote = useCallback(() => {
     showModal();

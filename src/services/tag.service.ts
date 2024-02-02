@@ -7,6 +7,7 @@ import {
   getDoc,
   getDocs,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { BaseService } from "./base.service";
@@ -45,6 +46,20 @@ class TagService extends BaseService {
       ).withConverter<ITag>(this.converter());
 
       return addDoc(collectionRef, data);
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async updateTag(tagUid: string, data: PartialWithFieldValue<ITag>) {
+    try {
+      const docRef = doc(
+        this.db,
+        FirebaseCollections.Tags,
+        tagUid
+      ).withConverter<ITag>(this.converter());
+
+      return updateDoc(docRef, data);
     } catch (error) {
       throw new Error(error as string);
     }

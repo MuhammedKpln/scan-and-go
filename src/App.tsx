@@ -29,6 +29,7 @@ import { useSplashScreen } from "./hooks/app/useSplashScreen";
 import ChatPage from "./pages/Chats/Chat";
 import NoteDetailsPage from "./pages/NoteDetails/NoteDetails";
 import SettingsPage from "./pages/Settings/Settings";
+import EditTagPage from "./pages/Tags/EditTag";
 import RegisterPage from "./pages/auth/Register/Register";
 import LoginPage from "./pages/auth/login";
 import { Routes } from "./routes/routes";
@@ -42,7 +43,7 @@ export default function App() {
   useAppTheme();
   useSplashScreen();
 
-  if (!authContext?.isInitialized) {
+  if (!authContext.isInitialized) {
     return <AppLoading message="Starting App..." />;
   }
 
@@ -62,6 +63,7 @@ export default function App() {
               component={NoteDetailsPage}
             />
             <Route path={`${Routes.Chats}/:id`} component={ChatPage} exact />
+            <Route path={Routes.EditTag} component={EditTagPage} exact />
             <Route path="/" exact component={AppOrLogin} />
           </IonRouterOutlet>
         </IonReactRouter>

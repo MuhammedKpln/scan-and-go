@@ -2,6 +2,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import ChatsPage from "@/pages/Chats/Chats";
 import HomePage from "@/pages/Home/Home";
 import ProfilePage from "@/pages/Profile/ProfilePage";
+import TagsPage from "@/pages/Tags/Tags";
 import {
   IonFabButton,
   IonIcon,
@@ -45,8 +46,8 @@ export default function TabRoutes() {
         <Route path={Routes.Home} exact>
           <HomePage />
         </Route>
-        <Route path={Routes.Notes} exact>
-          <HomePage />
+        <Route path={Routes.Tags} exact>
+          <TagsPage />
         </Route>
         <Route path={Routes.Scan} component={ScanPage} exact />
         <Route path={Routes.Chats} exact>
@@ -64,7 +65,7 @@ export default function TabRoutes() {
         <IonTabButton tab="home" href={Routes.Home}>
           <IonIcon aria-hidden="true" icon={homeOutline} />
         </IonTabButton>
-        <IonTabButton tab="notes" href={Routes.Notes}>
+        <IonTabButton tab="tags" href={Routes.Tags}>
           <IonIcon aria-hidden="true" icon={albumsOutline} />
         </IonTabButton>
         <IonTabButton tab="scan" href={Routes.Scan}>
