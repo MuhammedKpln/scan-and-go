@@ -33,7 +33,13 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const client = useQueryClient();
 
+  useEffect(() => {}, []);
+
   useEffect(() => {
+    auth.authStateReady().then(() => {
+      setIsInitialized(true);
+    });
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setIsSignedIn(true);
@@ -43,7 +49,6 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
       }
 
       setIsLoadingUser(false);
-      setIsInitialized(true);
     });
     return () => unsubscribe();
   }, []);
