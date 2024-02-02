@@ -1,10 +1,12 @@
 import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
+import { NO_AVATAR_IMAGE } from "@/constants";
 import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
 import ChangeProfilePicture from "@/modules/profile/ChangeProfilePicture.module";
 import { Routes } from "@/routes/routes";
 import { profileService } from "@/services/profile.service";
+import { storageService } from "@/services/storage.service";
 import {
   IonAvatar,
   IonButton,
@@ -18,15 +20,17 @@ import {
   IonToolbar,
   useIonModal,
   useIonRouter,
+  useIonViewDidEnter,
 } from "@ionic/react";
 import { useQueries } from "@tanstack/react-query";
 import { logoTwitter, pencilOutline, settingsOutline } from "ionicons/icons";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import styles from "./Profile.module.scss";
 
 export default function ProfilePage() {
   const authContext = useAuthContext();
   const router = useIonRouter();
+  const [profilePicture, setProfilePicture] = useState<string>(NO_AVATAR_IMAGE);
   const [showProfilePictureModal, hideProfilePictureModal] = useIonModal(
     ChangeProfilePicture,
     {
@@ -34,6 +38,18 @@ export default function ProfilePage() {
       onConfirm: () => hideProfilePictureModal(undefined, "confirm"),
     }
   );
+
+  useIonViewDidEnter(() => {
+    async function s() {
+      const image = await storageService.getAvatar(authContext.user!.uid);
+      if (image) {
+        setProfilePicture(image);
+      }
+    }
+
+    s();
+  });
+
   const [profileQuery, socialMediaAccountsQuery] = useQueries({
     queries: [
       {
@@ -110,10 +126,7 @@ export default function ProfilePage() {
         <div className={`${styles.ionPage} ion-padding`}>
           <div className="flex justify-center items-center flex-col">
             <IonAvatar onClick={onClickAvatar}>
-              <img
-                alt="Silhouette of a person's head"
-                src="https://ionicframework.com/docs/img/demos/avatar.svg"
-              />
+              <img alt="Silhouette of a person's head" src={profilePicture} />
               <IonIcon
                 icon={pencilOutline}
                 className={styles.editBadgeAvatar}

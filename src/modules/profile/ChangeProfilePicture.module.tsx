@@ -1,9 +1,12 @@
 import AppModalHeader from "@/components/App/AppModalHeader";
 import { useAuthContext } from "@/context/AuthContext";
+import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { useGallery } from "@/hooks/useGallery";
 import { QueryKeys } from "@/models/query_keys.model";
 import { IUser } from "@/models/user.model";
-import { storage } from "@/services/firebase.service";
+import { profileService } from "@/services/profile.service";
+import { storageService } from "@/services/storage.service";
+import { Photo } from "@capacitor/camera";
 import {
   IonAvatar,
   IonButton,
@@ -13,7 +16,6 @@ import {
   IonTitle,
 } from "@ionic/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { ref, uploadString } from "firebase/storage";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface IProps {
@@ -23,9 +25,10 @@ interface IProps {
 
 export default function ChangeProfilePicture(props: IProps) {
   const queryClient = useQueryClient();
+  const { showToast } = useAppToast();
   const { user } = useAuthContext();
   const { getPhoto, initialize } = useGallery();
-  const [selectedImage, setSelectedImage] = useState<string | undefined>();
+  const [selectedImage, setSelectedImage] = useState<Photo | undefined>();
   const profilePicture = useMemo(() => {
     return queryClient.getQueryData<IUser>([QueryKeys.Profile, user?.uid]);
   }, []);
@@ -37,13 +40,24 @@ export default function ChangeProfilePicture(props: IProps) {
   const onClickAvatar = useCallback(async () => {
     const photo = await getPhoto();
     if (photo) {
-      setSelectedImage(photo!.dataUrl!);
+      setSelectedImage(photo);
     }
   }, []);
 
-  const onSave = useCallback(() => {
-    const storageRef = ref(storage, user?.uid);
-    uploadString(storageRef, selectedImage!).then((v) => props.onConfirm());
+  const onSave = useCallback(async () => {
+    const ref = await storageService.uploadAvatar(
+      user!.uid,
+      selectedImage!.dataUrl!
+    );
+
+    await profileService.updateProfile(user!.uid, {
+      profileImageRef: ref.ref.fullPath,
+    });
+
+    showToast({
+      message: "New pp uploaded",
+      status: ToastStatus.Success,
+    });
   }, [selectedImage]);
 
   return (
@@ -60,7 +74,9 @@ export default function ChangeProfilePicture(props: IProps) {
       <IonContent>
         <div className="flex flex-col justify-center items-center ion-padding gap-5">
           <IonAvatar onClick={onClickAvatar}>
-            <img src={selectedImage ?? profilePicture?.profileImageRef} />
+            <img
+              src={selectedImage?.dataUrl ?? profilePicture?.profileImageRef}
+            />
           </IonAvatar>
 
           <IonButton fill="outline" onClick={onClickAvatar}>
