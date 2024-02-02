@@ -13,6 +13,7 @@ import {
   persistentLocalCache,
   persistentMultipleTabManager,
 } from "firebase/firestore";
+import { connectStorageEmulator, getStorage } from "firebase/storage";
 
 const config = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -35,11 +36,14 @@ export const auth = initializeAuth(app, {
   persistence: [browserLocalPersistence, indexedDBLocalPersistence],
 });
 
+export const storage = getStorage(app);
+
 if (!import.meta.env.PROD) {
   connectAuthEmulator(auth, "http://localhost:9099", {
     disableWarnings: true,
   });
   connectFirestoreEmulator(db, "localhost", 8080);
+  connectStorageEmulator(storage, "127.0.0.1", 9199);
 }
 
 export const converter = <T>() => ({

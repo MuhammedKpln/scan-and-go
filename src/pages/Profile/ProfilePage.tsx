@@ -2,6 +2,7 @@ import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
+import ChangeProfilePicture from "@/modules/profile/ChangeProfilePicture.module";
 import { Routes } from "@/routes/routes";
 import { profileService } from "@/services/profile.service";
 import {
@@ -15,16 +16,24 @@ import {
   IonText,
   IonTitle,
   IonToolbar,
+  useIonModal,
   useIonRouter,
 } from "@ionic/react";
 import { useQueries } from "@tanstack/react-query";
-import { logoTwitter, settingsOutline } from "ionicons/icons";
+import { logoTwitter, pencilOutline, settingsOutline } from "ionicons/icons";
 import { useCallback, useMemo } from "react";
 import styles from "./Profile.module.scss";
 
 export default function ProfilePage() {
   const authContext = useAuthContext();
   const router = useIonRouter();
+  const [showProfilePictureModal, hideProfilePictureModal] = useIonModal(
+    ChangeProfilePicture,
+    {
+      onClose: () => hideProfilePictureModal(undefined, "cancel"),
+      onConfirm: () => hideProfilePictureModal(undefined, "confirm"),
+    }
+  );
   const [profileQuery, socialMediaAccountsQuery] = useQueries({
     queries: [
       {
@@ -62,6 +71,13 @@ export default function ProfilePage() {
     router.push("/", "root", "replace");
   }, []);
 
+  const onClickAvatar = useCallback(() => {
+    showProfilePictureModal({
+      breakpoints: [0.25, 0.5, 0.75],
+      initialBreakpoint: 0.5,
+    });
+  }, []);
+
   if (profileQuery.isError) {
     return (
       <IonPage>
@@ -93,10 +109,14 @@ export default function ProfilePage() {
       <IonContent>
         <div className={`${styles.ionPage} ion-padding`}>
           <div className="flex justify-center items-center flex-col">
-            <IonAvatar>
+            <IonAvatar onClick={onClickAvatar}>
               <img
                 alt="Silhouette of a person's head"
                 src="https://ionicframework.com/docs/img/demos/avatar.svg"
+              />
+              <IonIcon
+                icon={pencilOutline}
+                className={styles.editBadgeAvatar}
               />
             </IonAvatar>
             <IonText>
