@@ -24,7 +24,7 @@ class NoteService extends BaseService {
       where("expire_at", ">", new Date(Date.now() + 10000)),
       orderBy("expire_at", "asc"),
       limit(1)
-    ).withConverter(this.converter<INote>());
+    ).withConverter<INote>(this.converter());
 
     try {
       return getDocs(queryRef);

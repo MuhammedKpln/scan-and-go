@@ -23,14 +23,14 @@ export default function HomeNotesCard() {
 
   const notes = useQuery({
     queryKey: [QueryKeys.Notes, user?.uid],
-    queryFn: () => noteService.fetchLatestNotes(user!.uid),
+    queryFn: () => noteService.fetchLatestNote(user!.uid),
   });
 
   return (
     <IonCard>
       <IonCardHeader>
-        <IonCardTitle>Anteckningar</IonCardTitle>
-        <IonCardSubtitle>Sparade anteckningar</IonCardSubtitle>
+        <IonCardTitle>Noteringar</IonCardTitle>
+        <IonCardSubtitle>Senaste notering</IonCardSubtitle>
       </IonCardHeader>
 
       <IonCardContent>
@@ -39,7 +39,7 @@ export default function HomeNotesCard() {
         ) : (
           <IonList>
             {notes.data?.empty ? (
-              <AppInfoCard message="Inga temporär anteckningar" />
+              <AppInfoCard message="Inga temporär notering" />
             ) : (
               notes.data!.docs.map((e) => {
                 const note = e.data();
