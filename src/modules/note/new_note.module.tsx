@@ -73,6 +73,7 @@ export default function NewNoteModule(props: IProps) {
         expire_at: Timestamp.fromDate(data.expireAt),
         userUid: user!.uid,
         created_at: Timestamp.fromDate(new Date()),
+        tagUid: data.tag,
       });
 
       props.onDismiss(undefined, "confirm");

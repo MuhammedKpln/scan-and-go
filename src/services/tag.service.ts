@@ -25,14 +25,18 @@ class TagService extends BaseService {
     return getDoc(docRef);
   }
 
-  async fetchTags(userUid: string) {
+  async fetchTags(userUid: string): Promise<ITagWithId[]> {
     try {
       const queryRef = query(
         this.collectionRef,
         where("userUid", "==", userUid)
       ).withConverter<ITag>(this.converter());
 
-      return getDocs(queryRef);
+      const docs = await getDocs(queryRef);
+
+      return docs.docs.map((e) => ({
+        [e.id]: e.data(),
+      }));
     } catch (error) {
       throw new Error(error as string);
     }

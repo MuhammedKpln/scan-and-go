@@ -4,10 +4,13 @@ import {
   PartialWithFieldValue,
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   getDocs,
   limit,
   orderBy,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { BaseService } from "./base.service";
@@ -56,6 +59,30 @@ class NoteService extends BaseService {
       ).withConverter<INote>(this.converter());
 
       return addDoc(collectionRef, data);
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  deleteNote(noteUid: string) {
+    try {
+      const docRef = doc(this.db, FirebaseCollections.Notes, noteUid);
+
+      return deleteDoc(docRef);
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  updateNote(noteUid: string, data: PartialWithFieldValue<INote>) {
+    try {
+      const docRef = doc(
+        this.db,
+        FirebaseCollections.Notes,
+        noteUid
+      ).withConverter<INote>(this.converter());
+
+      return updateDoc(docRef, data);
     } catch (error) {
       throw new Error(error as string);
     }

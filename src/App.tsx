@@ -27,6 +27,7 @@ import { useAuthContext } from "./context/AuthContext";
 import { useAppTheme } from "./hooks/app/useAppTheme";
 import { useSplashScreen } from "./hooks/app/useSplashScreen";
 import ChatPage from "./pages/Chats/Chat";
+import EditNotePage from "./pages/EditNote/EditNote";
 import NoteDetailsPage from "./pages/NoteDetails/NoteDetails";
 import SettingsPage from "./pages/Settings/Settings";
 import EditTagPage from "./pages/Tags/EditTag";
@@ -64,6 +65,7 @@ export default function App() {
             />
             <Route path={`${Routes.Chats}/:id`} component={ChatPage} exact />
             <Route path={Routes.EditTag} component={EditTagPage} exact />
+            <Route path={Routes.EditNote} component={EditNotePage} exact />
             <Route path="/" exact component={AppOrLogin} />
           </IonRouterOutlet>
         </IonReactRouter>

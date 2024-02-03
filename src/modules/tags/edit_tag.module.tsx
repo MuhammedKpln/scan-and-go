@@ -1,4 +1,5 @@
 import { useAuthContext } from "@/context/AuthContext";
+import { updateIdWithDataValue } from "@/helpers";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { QueryKeys } from "@/models/query_keys.model";
 import { tagService } from "@/services/tag.service";
@@ -46,19 +47,8 @@ export default function EditTagModule({ tagUid, tag }: IProps) {
       queryClient.setQueryData<ITagWithId[]>(
         [QueryKeys.Tag, user?.uid],
         (v) => {
-          for (const key of tags!) {
-            for (const k of Object.keys(key)) {
-              if (tagUid === k) {
-                key[k] = {
-                  ...key[k],
-                  isAvailable: variables.isAvailable,
-                  tagName: variables.tagName,
-                  tagNote: variables.tagNote,
-                };
-
-                return tags;
-              }
-            }
+          if (tags) {
+            return updateIdWithDataValue<ITag>(tags, tagUid, variables);
           }
         }
       );

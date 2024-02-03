@@ -13,4 +13,5 @@ export enum Routes {
   Register = "/register",
   Settings = "/settings",
   Tag = "/tag/:tagUid",
+  EditNote = "/edit-note/:noteUid",
 }

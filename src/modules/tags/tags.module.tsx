@@ -1,5 +1,6 @@
 import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
+import { renderIdWithData } from "@/helpers";
 import { QueryKeys } from "@/models/query_keys.model";
 import { tagService } from "@/services/tag.service";
 import {
@@ -15,13 +16,7 @@ export default function TagsModule() {
 
   const queryTags = useQuery<ITagWithId[], void>({
     queryKey: [QueryKeys.Tags, user?.uid],
-    queryFn: async () => {
-      const tags = await tagService.fetchTags(user!.uid);
-
-      return tags.docs.map<ITagWithId>((e) => ({
-        [e.id]: e.data(),
-      }));
-    },
+    queryFn: () => tagService.fetchTags(user!.uid),
   });
 
   if (queryTags.isLoading) {
@@ -30,20 +25,13 @@ export default function TagsModule() {
 
   return (
     <>
-      {queryTags.data!.map((item, index) => (
-        <div key={index}>
-          {Object.keys(item).map((key) => {
-            const tag: ITag = item[key];
-            return (
-              <IonCard routerLink={`/tags/${key}`} key={key}>
-                <IonCardHeader>
-                  <IonCardTitle>{tag.tagName}</IonCardTitle>
-                  <IonCardSubtitle>{tag.tagNote}</IonCardSubtitle>
-                </IonCardHeader>
-              </IonCard>
-            );
-          })}
-        </div>
+      {renderIdWithData<ITag>(queryTags.data!, (data, id) => (
+        <IonCard routerLink={`/tags/${id}`} key={id}>
+          <IonCardHeader>
+            <IonCardTitle>{data.tagName}</IonCardTitle>
+            <IonCardSubtitle>{data.tagNote}</IonCardSubtitle>
+          </IonCardHeader>
+        </IonCard>
       ))}
     </>
   );
