@@ -5,7 +5,6 @@ import {
   indexedDBLocalPersistence,
   initializeAuth,
 } from "firebase/auth";
-import { connectDatabaseEmulator, getDatabase } from "firebase/database";
 import {
   PartialWithFieldValue,
   QueryDocumentSnapshot,
@@ -38,7 +37,6 @@ export const auth = initializeAuth(app, {
 });
 
 export const storage = getStorage(app);
-export const realtimeDb = getDatabase(app);
 
 if (!import.meta.env.PROD) {
   connectAuthEmulator(auth, "http://localhost:9099", {
@@ -46,7 +44,6 @@ if (!import.meta.env.PROD) {
   });
   connectFirestoreEmulator(db, "localhost", 8080);
   connectStorageEmulator(storage, "127.0.0.1", 9199);
-  connectDatabaseEmulator(realtimeDb, "127.0.0.1", 9000);
 }
 
 export const converter = <T>() => ({

@@ -40,6 +40,7 @@ connectAuthEmulator(auth, "http://localhost:9099");
 connectFirestoreEmulator(db, "localhost", 8080);
 
 let user: UserCredential;
+
 export const converter = <T>() => ({
   toFirestore: (data: PartialWithFieldValue<T>) => data,
   fromFirestore: (snap: QueryDocumentSnapshot): T => {
@@ -55,13 +56,12 @@ const notesSeeder = () => {
   );
   Array(5)
     .fill("")
-    .forEach(async (v, index) => {
+    .forEach(async () => {
       await addDoc(notesCollection, {
         content: faker.lorem.words(5),
         expire_at: faker.date.soon(),
         created_at: new Date(),
         userUid: user.user.uid,
-        tagUid: "tag" + index,
       });
     });
 
@@ -69,16 +69,14 @@ const notesSeeder = () => {
 };
 
 const tagsSeeder = () => {
-  const tagsCollection = collection(db, "tags");
+  const tagsCollection = collection(db, "tags").withConverter(
+    converter<ITag>()
+  );
 
   Array(5)
     .fill("")
-    .forEach(async (v, index) => {
-      const docRef = doc(tagsCollection, "tag" + index).withConverter<ITag>(
-        converter()
-      );
-
-      const selam = await setDoc(docRef, {
+    .forEach(async () => {
+      await addDoc(tagsCollection, {
         isAvailable: true,
         tagName: faker.company.name(),
         tagNote: faker.lorem.words(5),
@@ -123,8 +121,9 @@ const seedFirestore = async (): Promise<void> => {
     "admin@admin.com",
     "admin123"
   );
-  tagsSeeder();
+
   notesSeeder();
+  tagsSeeder();
   profilesSeeder();
 };
 
