@@ -12,6 +12,10 @@
       "host": "0.0.0.0",
       "rules": "./firestore.rules"
     },
+    "database": {
+      "port": 9000,
+      "host": "0.0.0.0"
+    },
     "storage": {
       "port": 9199,
       "host": "0.0.0.0"
@@ -37,5 +41,8 @@
   },
   "storage": {
     "rules": "storage.rules"
+  },
+  "database": {
+    "rules": "database.rules.json"
   }
 }
