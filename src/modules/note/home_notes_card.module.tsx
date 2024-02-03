@@ -54,7 +54,7 @@ export default function HomeNotesCard() {
   const notes = useQuery({
     queryKey: [QueryKeys.Notes, user?.uid],
     queryFn: async () => {
-      const notes = await noteService.fetchLatestNote(user!.uid);
+      const notes = await noteService.fetchLatestNotes(user!.uid);
 
       return notes.docs.map<INoteWithId>((e) => ({
         [e.id]: e.data(),
