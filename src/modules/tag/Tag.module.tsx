@@ -7,6 +7,7 @@ import { profileService } from "@/services/profile.service";
 import { tagService } from "@/services/tag.service";
 import {
   IonIcon,
+  IonImg,
   IonItem,
   IonLabel,
   IonList,
@@ -133,7 +134,7 @@ export default function TagModule(props: TagDetailPageProps) {
   return (
     <div className={styles.container}>
       <div id="userDetails" className="">
-        <img
+        <IonImg
           src={profileData?.profileImageRef?.toString()}
           className="w-32 h-32 rounded-full"
         />
@@ -155,7 +156,7 @@ export default function TagModule(props: TagDetailPageProps) {
       </IonItem>
 
       <div id="userQr" className={styles.qrCodeContainer}>
-        <img
+        <IonImg
           src="https://docs.lightburnsoftware.com/img/QRCode/ExampleCode.png"
           className="w-36 h-36"
         />

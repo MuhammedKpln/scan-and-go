@@ -1,6 +1,7 @@
 import { IUser } from "@/models/user.model";
 import {
   IonAvatar,
+  IonImg,
   IonItem,
   IonItemOption,
   IonItemOptions,
@@ -28,7 +29,7 @@ export default function Chat({
     <IonItemSliding>
       <IonItem button onClick={onClick} className={styles.selam}>
         <IonAvatar slot="start">
-          <img
+          <IonImg
             alt="Silhouette of a person's head"
             src="https://ionicframework.com/docs/img/demos/avatar.svg"
           />

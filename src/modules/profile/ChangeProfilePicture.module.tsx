@@ -1,4 +1,5 @@
 import AppModalHeader from "@/components/App/AppModalHeader";
+import { NO_AVATAR_IMAGE } from "@/constants";
 import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { useGallery } from "@/hooks/useGallery";
@@ -12,6 +13,7 @@ import {
   IonButton,
   IonButtons,
   IonContent,
+  IonImg,
   IonPage,
   IonTitle,
 } from "@ionic/react";
@@ -29,9 +31,11 @@ export default function ChangeProfilePicture(props: IProps) {
   const { user } = useAuthContext();
   const { getPhoto, initialize } = useGallery();
   const [selectedImage, setSelectedImage] = useState<Photo | undefined>();
-  const profilePicture = useMemo(() => {
+  const [userImage, setUserImage] = useState<string>(NO_AVATAR_IMAGE);
+
+  const userProfile = useMemo(() => {
     return queryClient.getQueryData<IUser>([QueryKeys.Profile, user?.uid]);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     initialize();
@@ -39,6 +43,7 @@ export default function ChangeProfilePicture(props: IProps) {
 
   const onClickAvatar = useCallback(async () => {
     const photo = await getPhoto();
+
     if (photo) {
       setSelectedImage(photo);
     }
@@ -58,7 +63,28 @@ export default function ChangeProfilePicture(props: IProps) {
       message: "New pp uploaded",
       status: ToastStatus.Success,
     });
-  }, [selectedImage]);
+
+    queryClient.setQueryData<IUser>([QueryKeys.Profile, user?.uid], (v) => {
+      return {
+        ...v,
+        profileImageRef: ref.ref.fullPath,
+      } as IUser;
+    });
+
+    props.onConfirm();
+  }, [selectedImage, user]);
+
+  useEffect(() => {
+    async function load() {
+      if (userProfile?.profileImageRef) {
+        const s = await storageService.getAvatar(userProfile?.profileImageRef);
+
+        setUserImage(s);
+      }
+    }
+
+    load();
+  }, []);
 
   return (
     <IonPage>
@@ -74,14 +100,14 @@ export default function ChangeProfilePicture(props: IProps) {
       <IonContent>
         <div className="flex flex-col justify-center items-center ion-padding gap-5">
           <IonAvatar onClick={onClickAvatar}>
-            <img
-              src={selectedImage?.dataUrl ?? profilePicture?.profileImageRef}
-            />
+            <IonImg src={selectedImage?.dataUrl ?? userImage} />
           </IonAvatar>
 
-          <IonButton fill="outline" onClick={onClickAvatar}>
-            Välj en bild
-          </IonButton>
+          {!selectedImage && (
+            <IonButton fill="outline" onClick={onClickAvatar}>
+              Välj en bild
+            </IonButton>
+          )}
         </div>
       </IonContent>
     </IonPage>

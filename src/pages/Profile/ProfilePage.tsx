@@ -14,17 +14,17 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
+  IonImg,
   IonPage,
   IonText,
   IonTitle,
   IonToolbar,
   useIonModal,
   useIonRouter,
-  useIonViewDidEnter,
 } from "@ionic/react";
 import { useQueries } from "@tanstack/react-query";
 import { logoTwitter, pencilOutline, settingsOutline } from "ionicons/icons";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./Profile.module.scss";
 
 export default function ProfilePage() {
@@ -38,17 +38,6 @@ export default function ProfilePage() {
       onConfirm: () => hideProfilePictureModal(undefined, "confirm"),
     }
   );
-
-  useIonViewDidEnter(() => {
-    async function s() {
-      const image = await storageService.getAvatar(authContext.user!.uid);
-      if (image) {
-        setProfilePicture(image);
-      }
-    }
-
-    s();
-  });
 
   const [profileQuery, socialMediaAccountsQuery] = useQueries({
     queries: [
@@ -76,6 +65,17 @@ export default function ProfilePage() {
   });
 
   const profile = useMemo(() => profileQuery?.data, [profileQuery]);
+
+  useEffect(() => {
+    async function loadAvatar() {
+      if (profile?.profileImageRef) {
+        const image = await storageService.getAvatar(profile?.profileImageRef);
+        setProfilePicture(image);
+      }
+    }
+
+    loadAvatar();
+  }, [profile]);
 
   const socialMediaAccounts = useMemo(
     () => socialMediaAccountsQuery?.data,
@@ -126,7 +126,7 @@ export default function ProfilePage() {
         <div className={`${styles.ionPage} ion-padding`}>
           <div className="flex justify-center items-center flex-col">
             <IonAvatar onClick={onClickAvatar}>
-              <img alt="Silhouette of a person's head" src={profilePicture} />
+              <IonImg src={profilePicture} />
               <IonIcon
                 icon={pencilOutline}
                 className={styles.editBadgeAvatar}
@@ -151,10 +151,8 @@ export default function ProfilePage() {
               )}
             </IonButtons>
           </div>
-          <div className="flex flex-col w-full">
-            <IonButton color="secondary" className="mb-5">
-              Anteckningar
-            </IonButton>
+          <div className="flex flex-col w-full gap-5">
+            <IonButton color="secondary">Anteckningar</IonButton>
             <IonButton color="secondary">Redigera</IonButton>
           </div>
           <IonButton onClick={onLogout}>Visa QR-Koden</IonButton>

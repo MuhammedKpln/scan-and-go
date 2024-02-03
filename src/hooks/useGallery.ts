@@ -1,9 +1,10 @@
-import { Camera, CameraResultType } from "@capacitor/camera";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { useCallback } from "react";
 
 export function useGallery() {
   const getPhoto = useCallback(() => {
     return Camera.getPhoto({
+      source: CameraSource.Photos,
       resultType: CameraResultType.DataUrl,
     });
   }, []);

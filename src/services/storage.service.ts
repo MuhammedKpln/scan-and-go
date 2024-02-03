@@ -13,11 +13,8 @@ class StorageService {
     return uploadString(storageRef, data_url, "data_url");
   }
 
-  getAvatar(userUid: string) {
-    const storageRef = ref(
-      this.storage,
-      `${StorageFolders.Avatars}/${userUid}`
-    );
+  getAvatar(path: string) {
+    const storageRef = ref(this.storage, path);
 
     return getDownloadURL(storageRef);
   }
