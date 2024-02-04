@@ -5,7 +5,7 @@ export enum Routes {
   Notes = "/app/notes",
   Scan = "/app/scan",
   Chats = "/app/chats",
-  Chat = "/app/chat",
+  Chat = "/chat/:roomUid",
   Profile = "/app/profile",
   Tags = "/app/tags",
   EditTag = "/tags/:tagUid",

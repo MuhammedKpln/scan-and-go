@@ -1,5 +1,11 @@
+import AppLoading from "@/components/App/AppLoading";
 import Chat from "@/components/Chat/Chat";
+import { useAuthContext } from "@/context/AuthContext";
+import { renderIdWithData } from "@/helpers";
+import { QueryKeys } from "@/models/query_keys.model";
+import { IRoom, IRoomWithId } from "@/models/room.model";
 import { Routes } from "@/routes/routes";
+import { messagesService } from "@/services/messages.service";
 import {
   IonContent,
   IonHeader,
@@ -9,9 +15,20 @@ import {
   IonToolbar,
   useIonRouter,
 } from "@ionic/react";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ChatsPage() {
   const router = useIonRouter();
+  const { user } = useAuthContext();
+
+  const data = useQuery<IRoomWithId[] | undefined>({
+    queryKey: [QueryKeys.Chats, user?.uid],
+    queryFn: () => messagesService.fetchRooms(user!.uid),
+  });
+
+  if (data.isLoading) {
+    return <AppLoading />;
+  }
 
   return (
     <IonPage>
@@ -27,17 +44,22 @@ export default function ChatsPage() {
           </IonToolbar>
         </IonHeader>
         <IonList inset>
-          <Chat
-            onClick={() => router.push(`${Routes.Chats}/23`)}
-            subtitle="Burasi chattir sana buradan yaziyotum götun asla kalkmasin"
-            user={{
-              firstName: "Muhammed",
-              lastName: "Kaplan",
-              profileImageRef: "null",
-              showPhoneNumber: false,
-            }}
-            onClickDelete={() => null}
-          />
+          {renderIdWithData<IRoom>(data.data!, (data, id) => {
+            return (
+              <Chat
+                key={id}
+                onClick={() => router.push(Routes.Chat.replace(":roomUid", id))}
+                subtitle={data.recentMessage.message}
+                user={{
+                  firstName: data.recentMessage.user!.firstName,
+                  lastName: data.recentMessage.user!.lastName,
+                  profileImageRef: data.recentMessage.user!.profileImageRef,
+                  showPhoneNumber: false,
+                }}
+                onClickDelete={() => null}
+              />
+            );
+          })}
         </IonList>
       </IonContent>
     </IonPage>

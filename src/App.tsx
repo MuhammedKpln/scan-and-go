@@ -63,7 +63,7 @@ export default function App() {
               exact
               component={NoteDetailsPage}
             />
-            <Route path={`${Routes.Chats}/:id`} component={ChatPage} exact />
+            <Route path={Routes.Chat} component={ChatPage} exact />
             <Route path={Routes.EditTag} component={EditTagPage} exact />
             <Route path={Routes.EditNote} component={EditNotePage} exact />
             <Route path="/" exact component={AppOrLogin} />

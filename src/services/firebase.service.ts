@@ -11,7 +11,7 @@ import {
   connectFirestoreEmulator,
   initializeFirestore,
   persistentLocalCache,
-  persistentMultipleTabManager,
+  persistentSingleTabManager,
 } from "firebase/firestore";
 import { connectStorageEmulator, getStorage } from "firebase/storage";
 
@@ -29,7 +29,7 @@ const app = initializeApp(config);
 
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache({
-    tabManager: persistentMultipleTabManager(),
+    tabManager: persistentSingleTabManager({}),
   }),
 });
 export const auth = initializeAuth(app, {
@@ -48,9 +48,5 @@ if (!import.meta.env.PROD) {
 
 export const converter = <T>() => ({
   toFirestore: (data: PartialWithFieldValue<T>) => data,
-  fromFirestore: (snap: QueryDocumentSnapshot): T => {
-    console.log(snap);
-
-    return snap.data() as T;
-  },
+  fromFirestore: (snap: QueryDocumentSnapshot): T => snap.data() as T,
 });

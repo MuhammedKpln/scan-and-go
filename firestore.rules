@@ -17,6 +17,15 @@ service cloud.firestore {
       allow write: if isUserAuthenticated()
     }
 
+    match /rooms/{room} {
+      allow read, write:if isUserAuthenticated() ;
+
+
+      match /messages/{message} {
+        allow read, write: if isUserAuthenticated() && request.auth.uid in get(/databases/$(database)/documents/rooms/$(room)).data.users;
+      }
+    }
+
     match /profiles/{profile} {
       allow read: if true;
       allow write: if isUserAuthenticated() && request.resource.id == request.auth.uid

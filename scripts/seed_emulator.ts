@@ -1,4 +1,5 @@
 import { INote } from "@/models/note.model";
+import { IMessage, IRoom } from "@/models/room.model";
 import {
   IUser,
   IUserPrivatePhone,
@@ -16,6 +17,7 @@ import {
 import {
   PartialWithFieldValue,
   QueryDocumentSnapshot,
+  Timestamp,
   addDoc,
   collection,
   connectFirestoreEmulator,
@@ -40,6 +42,7 @@ connectAuthEmulator(auth, "http://localhost:9099");
 connectFirestoreEmulator(db, "localhost", 8080);
 
 let user: UserCredential;
+let user1: UserCredential;
 
 export const converter = <T>() => ({
   toFirestore: (data: PartialWithFieldValue<T>) => data,
@@ -87,35 +90,102 @@ const tagsSeeder = () => {
 };
 
 const profilesSeeder = async () => {
-  const parentDocRef = doc(db, "profiles", user.user.uid);
-  const profilesCollection = parentDocRef.withConverter(converter<IUser>());
-  const subCollectionRef = collection(parentDocRef, "private");
-  const phoneDocRef = doc(subCollectionRef, "phone").withConverter(
-    converter<IUserPrivatePhone>()
-  );
-  const socialMediaAccountsDocRef = doc(
-    subCollectionRef,
-    "socialMediaAccounts"
-  ).withConverter(converter<IUserPrivateSocialMediaAccounts>());
+  const userSeeder = async () => {
+    const parentDocRef = doc(db, "profiles", user.user.uid);
+    const profilesCollection = parentDocRef.withConverter(converter<IUser>());
+    const subCollectionRef = collection(parentDocRef, "private");
+    const phoneDocRef = doc(subCollectionRef, "phone").withConverter(
+      converter<IUserPrivatePhone>()
+    );
+    const socialMediaAccountsDocRef = doc(
+      subCollectionRef,
+      "socialMediaAccounts"
+    ).withConverter(converter<IUserPrivateSocialMediaAccounts>());
 
-  await setDoc(phoneDocRef, { value: faker.phone.number() });
-  await setDoc(socialMediaAccountsDocRef, {
-    twitter: faker.internet.userName(),
-  });
+    await setDoc(phoneDocRef, { value: faker.phone.number() });
+    await setDoc(socialMediaAccountsDocRef, {
+      twitter: faker.internet.userName(),
+    });
 
-  await setDoc(profilesCollection, {
-    bio: faker.person.bio(),
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    profileImageRef: faker.image.avatar(),
-    showPhoneNumber: false,
-  });
+    await setDoc(profilesCollection, {
+      bio: faker.person.bio(),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      profileImageRef: faker.image.avatar(),
+      showPhoneNumber: false,
+    });
+  };
 
+  const user1Seeder = async () => {
+    const parentDocRef = doc(db, "profiles", user1.user.uid);
+    const profilesCollection = parentDocRef.withConverter(converter<IUser>());
+    const subCollectionRef = collection(parentDocRef, "private");
+    const phoneDocRef = doc(subCollectionRef, "phone").withConverter(
+      converter<IUserPrivatePhone>()
+    );
+    const socialMediaAccountsDocRef = doc(
+      subCollectionRef,
+      "socialMediaAccounts"
+    ).withConverter(converter<IUserPrivateSocialMediaAccounts>());
+
+    await setDoc(phoneDocRef, { value: faker.phone.number() });
+    await setDoc(socialMediaAccountsDocRef, {
+      twitter: faker.internet.userName(),
+    });
+
+    await setDoc(profilesCollection, {
+      bio: faker.person.bio(),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      profileImageRef: faker.image.avatar(),
+      showPhoneNumber: false,
+    });
+  };
+
+  userSeeder();
+  user1Seeder();
   console.log("Profile seeded");
+};
+
+export const roomsSeeder = async () => {
+  const roomsCollection = collection(db, "rooms").withConverter(
+    converter<IRoom>()
+  );
+  const messages: IMessage[] = [];
+
+  Array(5)
+    .fill("")
+    .forEach(async (v, index) => {
+      const message: IMessage = {
+        message: faker.lorem.text(),
+        created_at: Timestamp.fromDate(faker.date.anytime()),
+        sendBy:
+          Math.floor(Math.random() * index) > 0
+            ? user.user.uid
+            : user1.user.uid,
+      };
+
+      messages.push(message);
+    });
+
+  await addDoc(roomsCollection, {
+    messages,
+    created_at: Timestamp.fromDate(new Date()),
+    recentMessage: messages[messages.length - 1],
+    users: [user.user.uid, user1.user.uid],
+  });
+
+  console.log("Rooms seeded");
 };
 
 // Function to seed Firestore
 const seedFirestore = async (): Promise<void> => {
+  user1 = await createUserWithEmailAndPassword(
+    auth,
+    "admin1@admin.com",
+    "admin123"
+  );
+
   user = await createUserWithEmailAndPassword(
     auth,
     "admin@admin.com",
@@ -125,6 +195,7 @@ const seedFirestore = async (): Promise<void> => {
   notesSeeder();
   tagsSeeder();
   profilesSeeder();
+  roomsSeeder();
 };
 
 // Invoke the seeding function
