@@ -5,4 +5,6 @@ export enum QueryKeys {
   Tags = "tags",
   Profile = "profile",
   Notes = "notes",
+  Chats = "chats",
+  Chat = "chat",
 }

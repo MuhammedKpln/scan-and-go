@@ -14,6 +14,23 @@ export function renderIdWithData<T>(
     });
   });
 }
+export function getIdSingleWithData<T>(
+  data: BaseIdWithData<T>,
+  children: (data: T, id: string) => void
+) {
+  return Object.keys(data).map((key) => {
+    return children(data[key], key);
+  });
+}
+
+export function renderIdSingleWithData<T>(
+  data: BaseIdWithData<T>,
+  children: (data: T, id: string) => React.ReactNode
+): React.ReactNode {
+  return Object.keys(data).map((key) => {
+    return children(data[key], key);
+  });
+}
 
 export function updateIdWithDataValue<T>(
   data: BaseIdWithData<T>[],

@@ -9,10 +9,10 @@ import {
   IUserPrivateSocialMediaAccounts,
 } from "@/models/user.model";
 import {
-  DocumentSnapshot,
   collection,
   doc,
   getDoc,
+  getDocFromCache,
   updateDoc,
 } from "firebase/firestore";
 import { BaseService } from "./base.service";
@@ -83,12 +83,16 @@ class ProfileService extends BaseService {
     }
   }
 
-  fetchProfile(userUid: string): Promise<DocumentSnapshot<IUser>> {
+  fetchProfile(userUid: string, fromCache?: boolean) {
     const docRef = doc(this.collectionRef, userUid).withConverter<IUser>(
       this.converter()
     );
 
     try {
+      if (fromCache) {
+        return getDocFromCache(docRef);
+      }
+
       return getDoc(docRef);
     } catch (error) {
       throw new Error(
