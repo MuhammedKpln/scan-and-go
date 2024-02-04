@@ -1,3 +1,4 @@
+import AppInfoCard from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import Chat from "@/components/Chat/Chat";
 import { useAuthContext } from "@/context/AuthContext";
@@ -30,6 +31,8 @@ export default function ChatsPage() {
     return <AppLoading />;
   }
 
+  console.log(data.data);
+
   return (
     <IonPage>
       <IonHeader translucent={true}>
@@ -43,24 +46,31 @@ export default function ChatsPage() {
             <IonTitle size="large">Chattar</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonList inset>
-          {renderIdWithData<IRoom>(data.data!, (data, id) => {
-            return (
-              <Chat
-                key={id}
-                onClick={() => router.push(Routes.Chat.replace(":roomUid", id))}
-                subtitle={data.recentMessage.message}
-                user={{
-                  firstName: data.recentMessage.user!.firstName,
-                  lastName: data.recentMessage.user!.lastName,
-                  profileImageRef: data.recentMessage.user!.profileImageRef,
-                  showPhoneNumber: false,
-                }}
-                onClickDelete={() => null}
-              />
-            );
-          })}
-        </IonList>
+
+        {data.data!.length < 1 ? (
+          <AppInfoCard message="No messages found" />
+        ) : (
+          <IonList inset>
+            {renderIdWithData<IRoom>(data.data!, (data, id) => {
+              return (
+                <Chat
+                  key={id}
+                  onClick={() =>
+                    router.push(Routes.Chat.replace(":roomUid", id))
+                  }
+                  subtitle={data.recentMessage.message}
+                  user={{
+                    firstName: data.recentMessage.user!.firstName,
+                    lastName: data.recentMessage.user!.lastName,
+                    profileImageRef: data.recentMessage.user!.profileImageRef,
+                    showPhoneNumber: false,
+                  }}
+                  onClickDelete={() => null}
+                />
+              );
+            })}
+          </IonList>
+        )}
       </IonContent>
     </IonPage>
   );
