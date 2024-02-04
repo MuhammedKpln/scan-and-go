@@ -202,10 +202,8 @@ export default function SendMessageModule(props: IProps) {
             onIonChange={(ev) => setSelectedMessage(ev.target.value)}
           >
             {messages.map((message) => (
-              <IonItem>
-                <IonRadio key={message.id} value={message}>
-                  {message.name}
-                </IonRadio>
+              <IonItem key={message.id}>
+                <IonRadio value={message}>{message.name}</IonRadio>
               </IonItem>
             ))}
           </IonRadioGroup>
