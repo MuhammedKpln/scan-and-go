@@ -4,6 +4,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import { renderIdWithData, updateIdWithDataValue } from "@/helpers";
 import { INote, INoteWithId } from "@/models/note.model";
 import { QueryKeys } from "@/models/query_keys.model";
+import { ITag } from "@/models/tag.model";
 import { noteService } from "@/services/note.service";
 import { tagService } from "@/services/tag.service";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,7 +20,6 @@ import {
   IonSelect,
   IonSelectOption,
   IonTextarea,
-  useIonAlert,
   useIonToast,
 } from "@ionic/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -56,7 +56,6 @@ export default function EditNoteModule(props: IProps) {
       tag: props.note.tagUid,
     },
   });
-  const [showAlert, dismissAlert] = useIonAlert();
 
   const { user } = useAuthContext();
   const [showToast] = useIonToast();
@@ -66,10 +65,10 @@ export default function EditNoteModule(props: IProps) {
     queryFn: () => tagService.fetchTags(user!.uid),
   });
 
-  const updateNote = useMutation<any, any, UpdateNoteMutationVariables>({
+  const updateNote = useMutation<void, void, UpdateNoteMutationVariables>({
     mutationKey: [QueryKeys.Notes, user?.uid],
     mutationFn: ({ note, noteUid }) => noteService.updateNote(noteUid, note),
-    onSuccess(data, variables, context) {
+    onSuccess(data, variables) {
       queryClient.setQueryData<INoteWithId[]>(
         [QueryKeys.Notes, user?.uid],
         (v) => {
@@ -170,7 +169,7 @@ export default function EditNoteModule(props: IProps) {
             <Controller
               control={control}
               name="expireAt"
-              render={({ field: { onBlur, onChange, value } }) => (
+              render={({ field: { onBlur, onChange } }) => (
                 <IonDatetime
                   id="datetime"
                   presentation="time"

@@ -2,6 +2,7 @@ import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
 import { renderIdWithData } from "@/helpers";
 import { QueryKeys } from "@/models/query_keys.model";
+import { ITag, ITagWithId } from "@/models/tag.model";
 import { tagService } from "@/services/tag.service";
 import {
   IonCard,

@@ -1,5 +1,6 @@
 import { INote } from "@/models/note.model";
 import { IMessage, IRoom } from "@/models/room.model";
+import { ITag } from "@/models/tag.model";
 import {
   IUser,
   IUserPrivatePhone,

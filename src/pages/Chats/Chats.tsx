@@ -63,6 +63,8 @@ export default function ChatsPage() {
                     firstName: data.recentMessage.user!.firstName,
                     lastName: data.recentMessage.user!.lastName,
                     profileImageRef: data.recentMessage.user!.profileImageRef,
+                    sendMessageAllowed:
+                      data.recentMessage.user!.sendMessageAllowed,
                     showPhoneNumber: false,
                   }}
                   onClickDelete={() => null}

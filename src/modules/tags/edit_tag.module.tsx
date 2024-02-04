@@ -2,6 +2,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import { updateIdWithDataValue } from "@/helpers";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { QueryKeys } from "@/models/query_keys.model";
+import { ITag, ITagWithId } from "@/models/tag.model";
 import { tagService } from "@/services/tag.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -11,7 +12,6 @@ import {
   IonList,
   IonTextarea,
   IonToggle,
-  useIonAlert,
 } from "@ionic/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
@@ -31,7 +31,6 @@ const editTagFormSchema = z.object({
 
 export default function EditTagModule({ tagUid, tag }: IProps) {
   const queryClient = useQueryClient();
-  const [showAlert, dismissAlert] = useIonAlert();
   const { user } = useAuthContext();
   const { showToast } = useAppToast();
 
@@ -44,14 +43,11 @@ export default function EditTagModule({ tagUid, tag }: IProps) {
       return tagService.updateTag(tagUid, tag);
     },
     onSuccess: (data, variables) => {
-      queryClient.setQueryData<ITagWithId[]>(
-        [QueryKeys.Tag, user?.uid],
-        (v) => {
-          if (tags) {
-            return updateIdWithDataValue<ITag>(tags, tagUid, variables);
-          }
+      queryClient.setQueryData<ITagWithId[]>([QueryKeys.Tag, user?.uid], () => {
+        if (tags) {
+          return updateIdWithDataValue<ITag>(tags, tagUid, variables);
         }
-      );
+      });
     },
   });
 

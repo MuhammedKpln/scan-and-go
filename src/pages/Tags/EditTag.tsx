@@ -2,6 +2,7 @@ import AppHeader from "@/components/App/AppHeader";
 import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
+import { ITag, ITagWithId } from "@/models/tag.model";
 import EditTagModule from "@/modules/tags/edit_tag.module";
 import { Routes } from "@/routes/routes";
 import { IonContent, IonPage, IonTitle } from "@ionic/react";

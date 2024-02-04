@@ -1,4 +1,5 @@
 import { FirebaseCollections } from "@/models/firebase_collections.model";
+import { ITag, ITagWithId } from "@/models/tag.model";
 import {
   PartialWithFieldValue,
   addDoc,
