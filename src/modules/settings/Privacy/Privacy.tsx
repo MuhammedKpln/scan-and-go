@@ -1,4 +1,5 @@
 import { IonLabel, IonList, IonListHeader } from "@ionic/react";
+import AllowMessages from "./AllowMessages";
 import PhoneVisibility from "./PhoneVisibility";
 
 export default function Privacy() {
@@ -9,6 +10,7 @@ export default function Privacy() {
       </IonListHeader>
 
       <PhoneVisibility />
+      <AllowMessages />
     </IonList>
   );
 }

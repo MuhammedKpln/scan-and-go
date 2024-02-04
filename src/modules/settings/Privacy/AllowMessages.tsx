@@ -12,7 +12,7 @@ interface IMutationVariables {
   checked: boolean;
 }
 
-export default function PhoneVisibility() {
+export default function AllowMessages() {
   const { user } = useAuthContext();
   const queryClient = useQueryClient();
 
@@ -25,19 +25,20 @@ export default function PhoneVisibility() {
       return profile.data();
     },
   });
-  const updateShowPhoneNumber = useMutation<void, void, IMutationVariables>({
+
+  const updateShowMessages = useMutation<void, void, IMutationVariables>({
     mutationFn: async ({ checked, userUid }) => {
       return profileService.updateProfile(userUid, {
-        showPhoneNumber: checked,
+        sendMessageAllowed: checked,
       });
     },
-    onSuccess(data, variables) {
+    onSuccess(_data, variables) {
       const qKey = [QueryKeys.Profile, user?.uid];
 
       queryClient.setQueryData<IUser>(qKey, (v) => {
         return {
           ...v,
-          showPhoneNumber: variables.checked,
+          sendMessageAllowed: variables.checked,
         } as IUser;
       });
     },
@@ -45,7 +46,7 @@ export default function PhoneVisibility() {
 
   const onChange = useCallback(
     async (e: IonToggleCustomEvent<ToggleChangeEventDetail<boolean>>) => {
-      await updateShowPhoneNumber.mutateAsync({
+      await updateShowMessages.mutateAsync({
         checked: e.target.checked,
         userUid: user!.uid,
       });
@@ -57,10 +58,10 @@ export default function PhoneVisibility() {
     <IonItem>
       <IonToggle
         onIonChange={onChange}
-        checked={query.data?.showPhoneNumber}
+        checked={query.data?.sendMessageAllowed}
         enableOnOffLabels
       >
-        Visa mitt telefonnummer
+        Tillåt sändning av meddelanden
       </IonToggle>
     </IonItem>
   );
