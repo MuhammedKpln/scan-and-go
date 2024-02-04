@@ -1,5 +1,6 @@
 import AppLoading from "@/components/App/AppLoading";
 import { NO_AVATAR_IMAGE } from "@/constants";
+import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
 import { TagDetailPageProps } from "@/pages/Tag/Tag";
 import styles from "@/pages/Tag/Tag.module.scss";
@@ -32,6 +33,7 @@ import SendMessageModule from "./send_message.module";
 export default function TagModule(props: TagDetailPageProps) {
   const [showAlert] = useIonAlert();
   const router = useIonRouter();
+  const { isSignedIn } = useAuthContext();
   const [profilePicture, setProfilePicture] = useState<string>(NO_AVATAR_IMAGE);
 
   const fetchTag = useCallback(() => {
@@ -175,7 +177,7 @@ export default function TagModule(props: TagDetailPageProps) {
         <IonText color="medium">{profileData?.bio}</IonText>
       </div>
 
-      {profileData?.sendMessageAllowed && (
+      {profileData?.sendMessageAllowed && isSignedIn && (
         <IonButton onClick={sendMessage} fill="solid">
           Skicka meddelande
         </IonButton>
