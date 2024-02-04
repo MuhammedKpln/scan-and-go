@@ -18,12 +18,8 @@ service cloud.firestore {
     }
 
     match /rooms/{room} {
-      allow read, write:if isUserAuthenticated();
-
-
-      match /messages/{message} {
-        allow read, write: if isUserAuthenticated() && request.auth.uid in get(/databases/$(database)/documents/rooms/$(room)).data.users;
-      }
+      allow read:if isUserAuthenticated();
+      allow write: if isUserAuthenticated() && get(/databases/$(database)/documents/profiles/$(request.resource.data.users[0])).data.sendMessageAllowed;
     }
 
     match /profiles/{profile} {

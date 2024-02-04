@@ -21,9 +21,10 @@ import {
   IonPage,
   IonRow,
   IonTitle,
-  useIonViewDidEnter,
+  useIonViewWillEnter,
+  useIonViewWillLeave,
 } from "@ionic/react";
-import { useQueryClient } from "@tanstack/react-query";
+import { Unsubscribe } from "firebase/auth";
 import {
   PartialWithFieldValue,
   Timestamp,
@@ -31,7 +32,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { paperPlaneOutline } from "ionicons/icons";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { RouteComponentProps } from "react-router";
 
 export interface ChatPageProps
@@ -41,31 +42,32 @@ export interface ChatPageProps
 
 export default function ChatPage(props: ChatPageProps) {
   const { user } = useAuthContext();
-  const queryClient = useQueryClient();
   const [data, setData] = useState<IRoomWithId | undefined>();
+  const unsubscribeListenRoom = useRef<Unsubscribe | undefined>();
 
-  // const data = useQuery<IRoomWithId | undefined>({
-  //   queryKey: [QueryKeys.Chat, user?.uid],
-  //   networkMode: "offlineFirst",
-  //   queryFn: async () =>
-  // });
+  const listenRoom = useCallback(() => {
+    unsubscribeListenRoom.current = messagesService.listenRoom(
+      props.match.params.roomUid,
+      async (item) => {
+        if (item?.data()) {
+          const newItem = await messagesService.mapUserDetails(
+            item.data()!,
+            item.id
+          );
 
-  useIonViewDidEnter(() => {
-    // await messagesService.fetchRoom(props.match.params.roomUid),
-
-    messagesService.listenRoom(props.match.params.roomUid, async (item) => {
-      if (item?.data()) {
-        const newItem = await messagesService.mapUserDetails(
-          item.data()!,
-          item.id
-        );
-
-        setData(newItem);
+          setData(newItem);
+        }
       }
-    });
+    );
+  }, []);
+
+  useIonViewWillEnter(() => {
+    listenRoom();
   });
 
-  console.log(data);
+  useIonViewWillLeave(() => {
+    unsubscribeListenRoom.current?.call(undefined);
+  });
 
   const sendMessage = useCallback(() => {
     const docRef = doc(
@@ -80,8 +82,6 @@ export default function ChatPage(props: ChatPageProps) {
         sendBy: user!.uid,
         created_at: Timestamp.fromDate(new Date()),
       });
-
-      console.log(item);
 
       await updateDoc(docRef, item as PartialWithFieldValue<IRoom>);
     });

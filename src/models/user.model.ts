@@ -2,6 +2,7 @@ export type IUser = {
   firstName: string;
   lastName: string;
   showPhoneNumber: boolean;
+  sendMessageAllowed: boolean;
   profileImageRef?: string;
   bio?: string;
 };

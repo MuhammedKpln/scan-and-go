@@ -23,6 +23,17 @@ export function getIdSingleWithData<T>(
   });
 }
 
+export function getIdWithData<T>(
+  data: BaseIdWithData<T>[],
+  callback: (data: T, id: string) => Promise<BaseIdWithData<T> | void>
+) {
+  return data.map((item) => {
+    return Object.keys(item).map((key) => {
+      return callback(item[key], key);
+    });
+  });
+}
+
 export function renderIdSingleWithData<T>(
   data: BaseIdWithData<T>,
   children: (data: T, id: string) => React.ReactNode

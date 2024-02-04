@@ -2,14 +2,22 @@ import { FirebaseCollections } from "@/models/firebase_collections.model";
 import { IRoom, IRoomWithId } from "@/models/room.model";
 import {
   DocumentSnapshot,
+  PartialWithFieldValue,
+  QuerySnapshot,
+  Unsubscribe,
+  addDoc,
+  collection,
   doc,
   getDoc,
+  getDocFromCache,
   getDocs,
+  getDocsFromCache,
   onSnapshot,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
-import { BaseService } from "./base.service";
+import { BaseService, IGeneralOptions } from "./base.service";
 import { profileService } from "./profile.service";
 
 class MessagesService extends BaseService {
@@ -17,14 +25,20 @@ class MessagesService extends BaseService {
     super(FirebaseCollections.Rooms);
   }
 
-  async fetchRooms(userUid: string) {
+  async fetchRooms(userUid: string, options?: IGeneralOptions) {
     const queryRef = query(
       this.collectionRef,
       where("users", "array-contains", userUid)
     ).withConverter<IRoom>(this.converter());
 
     try {
-      const data = await getDocs(queryRef);
+      let data: QuerySnapshot<IRoom>;
+
+      if (options?.fromCache) {
+        data = await getDocsFromCache(queryRef);
+      } else {
+        data = await getDocs(queryRef);
+      }
 
       const s = await Promise.all(
         data.docs.map(async (e) => {
@@ -53,7 +67,10 @@ class MessagesService extends BaseService {
     }
   }
 
-  async fetchRoom(roomUid: string): Promise<IRoomWithId | undefined> {
+  async fetchRoom(
+    roomUid: string,
+    options?: IGeneralOptions
+  ): Promise<IRoomWithId | undefined> {
     const docRef = doc(
       this.db,
       FirebaseCollections.Rooms,
@@ -61,7 +78,14 @@ class MessagesService extends BaseService {
     ).withConverter<IRoom>(this.converter());
 
     try {
-      const query = await getDoc(docRef);
+      let query: DocumentSnapshot<IRoom>;
+
+      if (options?.fromCache) {
+        query = await getDocFromCache(docRef);
+      } else {
+        query = await getDoc(docRef);
+      }
+
       const data = query.data();
 
       if (data) {
@@ -74,10 +98,10 @@ class MessagesService extends BaseService {
     }
   }
 
-  async listenRoom(
+  listenRoom(
     roomUid: string,
     callback: (item: DocumentSnapshot<IRoom>) => void
-  ) {
+  ): Unsubscribe {
     const docRef = doc(
       this.db,
       FirebaseCollections.Rooms,
@@ -85,9 +109,34 @@ class MessagesService extends BaseService {
     ).withConverter<IRoom>(this.converter());
 
     try {
-      onSnapshot(docRef, (item) => {
+      return onSnapshot(docRef, (item) => {
         callback(item);
       });
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  sendMessage(
+    data: IRoom,
+    documentData?: PartialWithFieldValue<IRoom>,
+    documentId?: string
+  ) {
+    const collectionRef = collection(
+      this.db,
+      FirebaseCollections.Rooms
+    ).withConverter<IRoom>(this.converter());
+
+    try {
+      if (documentData) {
+        const docRef = doc(this.collectionRef, documentId).withConverter<IRoom>(
+          this.converter()
+        );
+
+        return updateDoc(docRef, documentData);
+      }
+
+      return addDoc(collectionRef, data);
     } catch (error) {
       throw new Error(error as string);
     }

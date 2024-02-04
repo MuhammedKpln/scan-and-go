@@ -6,6 +6,7 @@ import { noteService } from "@/services/note.service";
 import { profileService } from "@/services/profile.service";
 import { tagService } from "@/services/tag.service";
 import {
+  IonButton,
   IonIcon,
   IonImg,
   IonItem,
@@ -14,6 +15,7 @@ import {
   IonSpinner,
   IonText,
   useIonAlert,
+  useIonModal,
   useIonRouter,
 } from "@ionic/react";
 import { useQueries, useQuery } from "@tanstack/react-query";
@@ -23,6 +25,7 @@ import {
   phonePortraitOutline,
 } from "ionicons/icons";
 import { useCallback, useMemo } from "react";
+import SendMessageModule from "./send_message.module";
 
 export default function TagModule(props: TagDetailPageProps) {
   const [showAlert] = useIonAlert();
@@ -38,9 +41,24 @@ export default function TagModule(props: TagDetailPageProps) {
     networkMode: "online",
   });
 
+  const [showSendMessageModal, hideSendMessageModal] = useIonModal(
+    SendMessageModule,
+    {
+      onCancel: () => hideSendMessageModal(undefined, "cancel"),
+      onConfirm: () => hideSendMessageModal(undefined, "confirm"),
+      toUserUid: tagQuery?.data?.data()?.userUid,
+    }
+  );
+
   const fetchProfile = useCallback(() => {
     return profileService.fetchProfile(tagQuery?.data!.data()!.userUid);
   }, [tagQuery]);
+
+  const sendMessage = useCallback(() => {
+    showSendMessageModal({
+      initialBreakpoint: 0.5,
+    });
+  }, []);
 
   const profileQuery = useQuery({
     queryKey: [QueryKeys.Profile, tagQuery?.data?.data()?.userUid],
@@ -115,8 +133,6 @@ export default function TagModule(props: TagDetailPageProps) {
     return <AppLoading message="Loading tag..." />;
   }
 
-  console.log(phoneData);
-
   if (!tagQuery?.data?.exists()) {
     showAlert({
       message: "Kunde inte hitta taggen",
@@ -134,17 +150,22 @@ export default function TagModule(props: TagDetailPageProps) {
   return (
     <div className={styles.container}>
       <div id="userDetails" className="">
-        <IonImg
-          src={profileData?.profileImageRef?.toString()}
+        <img
+          src={profileData?.profileImageRef}
           className="w-32 h-32 rounded-full"
         />
 
         <h1>
-          {profileData?.firstName?.toString()}{" "}
-          {profileData?.lastName?.toString()}
+          {profileData?.firstName} {profileData?.lastName}
         </h1>
-        <IonText color="medium">{profileData?.bio?.toString()}</IonText>
+        <IonText color="medium">{profileData?.bio}</IonText>
       </div>
+
+      {profileData?.sendMessageAllowed && (
+        <IonButton onClick={sendMessage} fill="solid">
+          Skicka meddelande
+        </IonButton>
+      )}
 
       <IonItem className={styles.noteContainer} lines="none">
         <IonLabel>
