@@ -1,33 +1,28 @@
 import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
+import ProfileView from "@/components/ProfileView/ProfileView";
 import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
 import UpdateProfileModule from "@/modules/profile/UpdateProfile.module";
 import { Routes } from "@/routes/routes";
 import { profileService } from "@/services/profile.service";
 import {
-  IonAvatar,
   IonButton,
   IonButtons,
   IonContent,
   IonHeader,
   IonIcon,
-  IonImg,
   IonPage,
-  IonText,
   IonTitle,
   IonToolbar,
   useIonModal,
-  useIonRouter,
 } from "@ionic/react";
 import { useQueries } from "@tanstack/react-query";
-import { logoTwitter, pencilOutline, settingsOutline } from "ionicons/icons";
+import { pencilOutline, settingsOutline } from "ionicons/icons";
 import { useCallback, useMemo } from "react";
-import styles from "./Profile.module.scss";
 
 export default function ProfilePage() {
   const authContext = useAuthContext();
-  const router = useIonRouter();
   const [showProfilePictureModal, hideProfilePictureModal] = useIonModal(
     UpdateProfileModule,
     {
@@ -35,6 +30,13 @@ export default function ProfilePage() {
       onConfirm: () => hideProfilePictureModal(undefined, "confirm"),
     }
   );
+
+  const onClickEdit = useCallback(() => {
+    showProfilePictureModal({
+      breakpoints: [0.25, 0.5, 0.75],
+      initialBreakpoint: 0.75,
+    });
+  }, []);
 
   const [profileQuery, socialMediaAccountsQuery] = useQueries({
     queries: [
@@ -68,18 +70,6 @@ export default function ProfilePage() {
     [socialMediaAccountsQuery]
   );
 
-  const onLogout = useCallback(async () => {
-    await authContext?.logout();
-    router.push("/", "root", "replace");
-  }, []);
-
-  const onClickAvatar = useCallback(() => {
-    showProfilePictureModal({
-      breakpoints: [0.25, 0.5, 0.75],
-      initialBreakpoint: 0.75,
-    });
-  }, []);
-
   if (profileQuery.isError) {
     return (
       <IonPage>
@@ -105,44 +95,22 @@ export default function ProfilePage() {
             <IonButton routerLink={Routes.Settings}>
               <IonIcon icon={settingsOutline} />
             </IonButton>
+            <IonButton onClick={onClickEdit}>
+              <IonIcon icon={pencilOutline} />
+            </IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <IonContent>
-        <div className={`${styles.ionPage} ion-padding`}>
-          <div className="flex justify-center items-center flex-col">
-            <IonAvatar onClick={onClickAvatar}>
-              <IonImg src={profile?.profileImageRef} />
-              <IonIcon
-                icon={pencilOutline}
-                className={styles.editBadgeAvatar}
-              />
-            </IonAvatar>
-            <IonText>
-              <h3>
-                {`${profile?.firstName} ${profile?.lastName}` ?? "No name"}
-              </h3>
-            </IonText>
-            <IonText>{profile?.bio}</IonText>
-
-            <IonButtons className="mt-5">
-              {socialMediaAccounts?.twitter && (
-                <IonButton
-                  fill="clear"
-                  href={`https://twitter.com/${socialMediaAccounts.twitter}`}
-                  target="_blank"
-                >
-                  <IonIcon icon={logoTwitter} />
-                </IonButton>
-              )}
-            </IonButtons>
-          </div>
-          <div className="flex flex-col w-full gap-5">
-            <IonButton color="secondary">Anteckningar</IonButton>
-            <IonButton color="secondary">Redigera</IonButton>
-          </div>
-          <IonButton onClick={onLogout}>Visa QR-Koden</IonButton>
-        </div>
+      <IonContent className="ion-padding">
+        {profile && (
+          <ProfileView
+            bioContent={profile.bio!}
+            bioText="Biografi"
+            profileData={profile!}
+            showSocial
+            socialData={socialMediaAccounts}
+          />
+        )}
       </IonContent>
     </IonPage>
   );

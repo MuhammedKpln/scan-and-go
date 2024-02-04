@@ -1,26 +1,13 @@
 import AppLoading from "@/components/App/AppLoading";
+import ProfileView from "@/components/ProfileView/ProfileView";
 import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
 import { TagDetailPageProps } from "@/pages/Tag/Tag";
-import styles from "@/pages/Tag/Tag.module.scss";
 import { noteService } from "@/services/note.service";
 import { profileService } from "@/services/profile.service";
 import { tagService } from "@/services/tag.service";
-import {
-  IonButton,
-  IonIcon,
-  IonImg,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonSpinner,
-  IonText,
-  useIonAlert,
-  useIonModal,
-  useIonRouter,
-} from "@ionic/react";
+import { useIonAlert, useIonModal, useIonRouter } from "@ionic/react";
 import { useQueries, useQuery } from "@tanstack/react-query";
-import { logoTwitter, phonePortraitOutline } from "ionicons/icons";
 import { useCallback, useMemo } from "react";
 import SendMessageModule from "./send_message.module";
 
@@ -146,74 +133,18 @@ export default function TagModule(props: TagDetailPageProps) {
   }
 
   return (
-    <div className={styles.container}>
-      <div id="userDetails" className="">
-        <img
-          src={profileData?.profileImageRef}
-          className="w-32 h-32 rounded-full"
-        />
-
-        <h1>
-          {profileData?.firstName} {profileData?.lastName}
-        </h1>
-        <IonText color="medium">{profileData?.bio}</IonText>
-      </div>
-
-      {profileData?.sendMessageAllowed && isSignedIn && (
-        <IonButton onClick={sendMessage} fill="solid">
-          Skicka meddelande
-        </IonButton>
-      )}
-
-      <IonItem className={styles.noteContainer} lines="none">
-        <IonLabel>
-          <p>Anteckning</p>
-          <h6>
-            {notesQuery.isLoading ? <IonSpinner /> : <>{userLatestNote}</>}
-          </h6>
-        </IonLabel>
-      </IonItem>
-
-      <div id="userQr" className={styles.qrCodeContainer}>
-        <IonImg
-          src="https://docs.lightburnsoftware.com/img/QRCode/ExampleCode.png"
-          className="w-36 h-36"
-        />
-      </div>
-
-      <IonList>
-        {phoneData && (
-          <IonItem
-            href={`tel:${phoneData.value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <IonIcon icon={phonePortraitOutline} slot="start" />
-            <IonLabel>
-              <p>Phone</p>
-              <h6>
-                <a>{phoneData.value}</a>
-              </h6>
-            </IonLabel>
-          </IonItem>
-        )}
-
-        {socialData?.twitter && (
-          <IonItem
-            href={`https://twitter.com/${socialData.twitter}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <IonIcon icon={logoTwitter} slot="start" />
-            <IonLabel>
-              <p>Twitter</p>
-              <h6>
-                <a>{socialData.twitter}</a>
-              </h6>
-            </IonLabel>
-          </IonItem>
-        )}
-      </IonList>
-    </div>
+    <ProfileView
+      bioContent={userLatestNote!}
+      bioText="Anteckning"
+      profileData={profileData!}
+      bioIsLoading={notesQuery.isLoading}
+      onSendMessage={sendMessage}
+      phoneData={phoneData}
+      socialData={socialData}
+      isSignedIn={isSignedIn}
+      showPhone
+      showSendMessageBtn
+      showSocial
+    />
   );
 }
