@@ -38,13 +38,13 @@ export const auth = initializeAuth(app, {
 
 export const storage = getStorage(app);
 
-// if (!import.meta.env.PROD) {
-connectAuthEmulator(auth, "http://localhost:9099", {
-  disableWarnings: true,
-});
-connectFirestoreEmulator(db, "localhost", 8080);
-connectStorageEmulator(storage, "127.0.0.1", 9199);
-// }
+if (!import.meta.env.PROD) {
+  connectAuthEmulator(auth, "http://localhost:9099", {
+    disableWarnings: true,
+  });
+  connectFirestoreEmulator(db, "localhost", 8080);
+  connectStorageEmulator(storage, "127.0.0.1", 9199);
+}
 
 export const converter = <T>() => ({
   toFirestore: (data: PartialWithFieldValue<T>) => data,
