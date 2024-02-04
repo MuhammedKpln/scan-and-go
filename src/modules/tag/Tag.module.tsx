@@ -20,11 +20,7 @@ import {
   useIonRouter,
 } from "@ionic/react";
 import { useQueries, useQuery } from "@tanstack/react-query";
-import {
-  logoTwitter,
-  mailOpenOutline,
-  phonePortraitOutline,
-} from "ionicons/icons";
+import { logoTwitter, phonePortraitOutline } from "ionicons/icons";
 import { useCallback, useMemo } from "react";
 import SendMessageModule from "./send_message.module";
 
@@ -202,22 +198,7 @@ export default function TagModule(props: TagDetailPageProps) {
           </IonItem>
         )}
 
-        <IonItem
-          href={`mailto:email@address.com`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <IonIcon icon={mailOpenOutline} slot="start" />
-
-          <IonLabel>
-            <p>Email</p>
-            <h6>
-              <a>email@address.com</a>
-            </h6>
-          </IonLabel>
-        </IonItem>
-
-        {socialData && (
+        {socialData?.twitter && (
           <IonItem
             href={`https://twitter.com/${socialData.twitter}`}
             target="_blank"
