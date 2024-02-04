@@ -4,6 +4,7 @@ import { getIdWithData } from "@/helpers";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { QueryKeys } from "@/models/query_keys.model";
 import { IMessage, IRoom, IRoomWithId } from "@/models/room.model";
+import { IUser } from "@/models/user.model";
 import { messagesService } from "@/services/messages.service";
 import {
   IonButton,
@@ -24,6 +25,7 @@ interface IProps {
   onCancel: () => void;
   onConfirm: () => void;
   toUserUid: string;
+  toUser: IUser;
 }
 
 interface SendMessageMutationVariables {
@@ -187,11 +189,11 @@ export default function SendMessageModule(props: IProps) {
   return (
     <IonPage>
       <AppModalHeader onClose={props.onCancel}>
-        <IonTitle>Selam</IonTitle>
+        <IonTitle>Skicka meddelande till {props.toUser.firstName}</IonTitle>
 
         {selectedMessage && (
           <IonButtons slot="end">
-            <IonButton onClick={sendMessage}>Send message</IonButton>
+            <IonButton onClick={sendMessage}>Skicka meddelande</IonButton>
           </IonButtons>
         )}
       </AppModalHeader>

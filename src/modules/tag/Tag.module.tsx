@@ -26,15 +26,6 @@ export default function TagModule(props: TagDetailPageProps) {
     networkMode: "online",
   });
 
-  const [showSendMessageModal, hideSendMessageModal] = useIonModal(
-    SendMessageModule,
-    {
-      onCancel: () => hideSendMessageModal(undefined, "cancel"),
-      onConfirm: () => hideSendMessageModal(undefined, "confirm"),
-      toUserUid: tagQuery?.data?.data()?.userUid,
-    }
-  );
-
   const fetchProfile = useCallback(() => {
     return profileService.fetchProfile(tagQuery?.data!.data()!.userUid);
   }, [tagQuery]);
@@ -113,6 +104,16 @@ export default function TagModule(props: TagDetailPageProps) {
     [socialMediaQuery]
   );
   const phoneData = useMemo(() => phoneQuery.data?.data(), [phoneQuery]);
+
+  const [showSendMessageModal, hideSendMessageModal] = useIonModal(
+    SendMessageModule,
+    {
+      onCancel: () => hideSendMessageModal(undefined, "cancel"),
+      onConfirm: () => hideSendMessageModal(undefined, "confirm"),
+      toUserUid: tagQuery?.data?.data()?.userUid,
+      toUser: profileData,
+    }
+  );
 
   if (tagQuery.isLoading || profileQuery.isLoading) {
     return <AppLoading message="Loading tag..." />;
