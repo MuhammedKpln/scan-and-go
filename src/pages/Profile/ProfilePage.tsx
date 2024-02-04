@@ -2,7 +2,7 @@ import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
-import ChangeProfilePicture from "@/modules/profile/ChangeProfilePicture.module";
+import UpdateProfileModule from "@/modules/profile/UpdateProfile.module";
 import { Routes } from "@/routes/routes";
 import { profileService } from "@/services/profile.service";
 import {
@@ -29,7 +29,7 @@ export default function ProfilePage() {
   const authContext = useAuthContext();
   const router = useIonRouter();
   const [showProfilePictureModal, hideProfilePictureModal] = useIonModal(
-    ChangeProfilePicture,
+    UpdateProfileModule,
     {
       onClose: () => hideProfilePictureModal(undefined, "cancel"),
       onConfirm: () => hideProfilePictureModal(undefined, "confirm"),
@@ -76,7 +76,7 @@ export default function ProfilePage() {
   const onClickAvatar = useCallback(() => {
     showProfilePictureModal({
       breakpoints: [0.25, 0.5, 0.75],
-      initialBreakpoint: 0.5,
+      initialBreakpoint: 0.75,
     });
   }, []);
 
