@@ -83,6 +83,7 @@ export class FirebaseAuthService {
         bio: "",
         profileImageRef: "",
         showPhoneNumber: false,
+        sendMessageAllowed: false,
       });
     } catch (error) {
       throw error;
