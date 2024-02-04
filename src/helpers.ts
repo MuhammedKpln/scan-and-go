@@ -16,7 +16,7 @@ export function renderIdWithData<T>(
 }
 export function getIdSingleWithData<T>(
   data: BaseIdWithData<T>,
-  children: (data: T, id: string) => void
+  children: (data: T, id: string) => Promise<BaseIdWithData<T> | void>
 ) {
   return Object.keys(data).map((key) => {
     return children(data[key], key);

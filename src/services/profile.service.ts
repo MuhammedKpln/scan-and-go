@@ -15,7 +15,7 @@ import {
   getDocFromCache,
   updateDoc,
 } from "firebase/firestore";
-import { BaseService } from "./base.service";
+import { BaseService, IGeneralOptions } from "./base.service";
 
 class ProfileService extends BaseService {
   constructor() {
@@ -83,13 +83,13 @@ class ProfileService extends BaseService {
     }
   }
 
-  fetchProfile(userUid: string, fromCache?: boolean) {
+  fetchProfile(userUid: string, options?: IGeneralOptions) {
     const docRef = doc(this.collectionRef, userUid).withConverter<IUser>(
       this.converter()
     );
 
     try {
-      if (fromCache) {
+      if (options?.fromCache) {
         return getDocFromCache(docRef);
       }
 

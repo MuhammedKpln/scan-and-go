@@ -8,6 +8,10 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase.service";
 
+export interface IGeneralOptions {
+  fromCache?: boolean;
+}
+
 export class BaseService {
   protected db: Firestore;
   protected collectionRef: CollectionReference;

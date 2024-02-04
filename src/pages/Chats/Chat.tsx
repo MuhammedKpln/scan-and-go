@@ -3,11 +3,9 @@ import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
 import { getIdSingleWithData, renderIdSingleWithData } from "@/helpers";
 import { FirebaseCollections } from "@/models/firebase_collections.model";
-import { QueryKeys } from "@/models/query_keys.model";
 import { IRoom, IRoomWithId } from "@/models/room.model";
 import { converter, db } from "@/services/firebase.service";
 import { messagesService } from "@/services/messages.service";
-import { profileService } from "@/services/profile.service";
 import {
   IonCard,
   IonCardContent,
@@ -25,7 +23,7 @@ import {
   IonTitle,
   useIonViewDidEnter,
 } from "@ionic/react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   PartialWithFieldValue,
   Timestamp,
@@ -33,7 +31,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { paperPlaneOutline } from "ionicons/icons";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { RouteComponentProps } from "react-router";
 
 export interface ChatPageProps
@@ -44,55 +42,30 @@ export interface ChatPageProps
 export default function ChatPage(props: ChatPageProps) {
   const { user } = useAuthContext();
   const queryClient = useQueryClient();
+  const [data, setData] = useState<IRoomWithId | undefined>();
 
-  const data = useQuery<IRoomWithId | undefined>({
-    queryKey: [QueryKeys.Chat, user?.uid],
-    networkMode: "offlineFirst",
-    queryFn: async () =>
-      await messagesService.fetchRoom(props.match.params.roomUid),
-  });
+  // const data = useQuery<IRoomWithId | undefined>({
+  //   queryKey: [QueryKeys.Chat, user?.uid],
+  //   networkMode: "offlineFirst",
+  //   queryFn: async () =>
+  // });
 
   useIonViewDidEnter(() => {
-    messagesService.listenRoom(props.match.params.roomUid, (item) => {
-      queryClient.setQueryData(
-        [QueryKeys.Chat, user?.uid],
-        async (v: IRoomWithId) => {
-          const data = item.data();
+    // await messagesService.fetchRoom(props.match.params.roomUid),
 
-          if (data && v) {
-            const recent = await profileService.fetchProfile(
-              data.recentMessage.sendBy,
-              true
-            );
+    messagesService.listenRoom(props.match.params.roomUid, async (item) => {
+      if (item?.data()) {
+        const newItem = await messagesService.mapUserDetails(
+          item.data()!,
+          item.id
+        );
 
-            const _messages = data.messages.map(async (e) => {
-              const user = await profileService.fetchProfile(e.sendBy, true);
-
-              return {
-                ...e,
-                user: user.data(),
-              };
-            });
-
-            const messages = await Promise.all(_messages);
-
-            const recentm = {
-              ...data.recentMessage,
-              user: recent.data(),
-            };
-
-            getIdSingleWithData<IRoom>(v, (ss, dds) => {
-              ss.messages.push();
-            });
-
-            return v as unknown as IRoomWithId[];
-          }
-
-          return v as unknown as IRoomWithId[];
-        }
-      );
+        setData(newItem);
+      }
     });
   });
+
+  console.log(data);
 
   const sendMessage = useCallback(() => {
     const docRef = doc(
@@ -101,11 +74,9 @@ export default function ChatPage(props: ChatPageProps) {
       props.match.params.roomUid
     ).withConverter<IRoom>(converter());
 
-    getIdSingleWithData<IRoom>(data.data!, async (item, id) => {
-      console.log(item);
-
+    getIdSingleWithData<IRoom>(data!, async (item, id) => {
       item.messages.push({
-        message: "testtir babbbabaaaaaAA",
+        message: "testtir babbbabaaaaaAA " + user!.email,
         sendBy: user!.uid,
         created_at: Timestamp.fromDate(new Date()),
       });
@@ -116,7 +87,7 @@ export default function ChatPage(props: ChatPageProps) {
     });
   }, [data]);
 
-  if (data.isLoading) {
+  if (data === undefined) {
     return <AppLoading />;
   }
 
@@ -126,7 +97,7 @@ export default function ChatPage(props: ChatPageProps) {
         <IonTitle>Title</IonTitle>
       </AppHeader>
       <IonContent>
-        {renderIdSingleWithData(data.data!, (data, id) => {
+        {renderIdSingleWithData(data!, (data, id) => {
           return data.messages.map((e) => (
             <IonCard key={id + e.sendBy + e.created_at}>
               <IonCardHeader>

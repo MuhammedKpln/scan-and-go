@@ -33,17 +33,6 @@ class MessagesService extends BaseService {
             data.recentMessage.sendBy
           );
 
-          const _messages = data.messages.map(async (e) => {
-            const user = await profileService.fetchProfile(e.sendBy);
-
-            return {
-              ...e,
-              user: user.data(),
-            };
-          });
-
-          const messages = await Promise.all(_messages);
-
           const recentm = {
             ...data.recentMessage,
             user: recent.data(),
@@ -53,7 +42,6 @@ class MessagesService extends BaseService {
             [e.id]: {
               ...data,
               recentMessage: recentm,
-              messages,
             },
           };
         })
@@ -77,34 +65,9 @@ class MessagesService extends BaseService {
       const data = query.data();
 
       if (data) {
-        const recent = await profileService.fetchProfile(
-          data.recentMessage.sendBy,
-          true
-        );
-
-        const _messages = data.messages.map(async (e) => {
-          const user = await profileService.fetchProfile(e.sendBy, true);
-
-          return {
-            ...e,
-            user: user.data(),
-          };
-        });
-
-        const messages = await Promise.all(_messages);
-
-        const recentm = {
-          ...data.recentMessage,
-          user: recent.data(),
-        };
-
-        return {
-          [query.id]: {
-            ...data,
-            recentMessage: recentm,
-            messages,
-          },
-        };
+        return this.mapUserDetails(data, query.id);
+      } else {
+        console.log("???");
       }
     } catch (error) {
       throw new Error(error as string);
@@ -122,12 +85,40 @@ class MessagesService extends BaseService {
     ).withConverter<IRoom>(this.converter());
 
     try {
-      onSnapshot(docRef, async (item) => {
+      onSnapshot(docRef, (item) => {
         callback(item);
       });
     } catch (error) {
       throw new Error(error as string);
     }
+  }
+
+  async mapUserDetails(data: IRoom, roomUid: string): Promise<IRoomWithId> {
+    // Fetch all user details once
+    data?.users.forEach(async (user) =>
+      (await profileService.fetchProfile(user, { fromCache: true })).data()
+    );
+
+    // Fetch user details from all users and map it to user field.
+    const _messages = data.messages.map(async (e) => {
+      const user = await profileService.fetchProfile(e.sendBy, {
+        fromCache: true,
+      });
+
+      return {
+        ...e,
+        user: user.data(),
+      };
+    });
+
+    const messages = await Promise.all(_messages);
+
+    return {
+      [roomUid]: {
+        ...data,
+        messages,
+      },
+    };
   }
 }
 
