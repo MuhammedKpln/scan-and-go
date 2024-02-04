@@ -81,7 +81,7 @@ export default function SendMessageModule(props: IProps) {
       return messagesService.sendMessage(room, data, documentId);
     },
 
-    onSuccess(data, variables, context) {
+    onSuccess(data, variables) {
       if (!data) return;
 
       queryClient.setQueryData<IRoomWithId[]>(

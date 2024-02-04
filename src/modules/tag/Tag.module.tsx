@@ -1,12 +1,10 @@
 import AppLoading from "@/components/App/AppLoading";
-import { NO_AVATAR_IMAGE } from "@/constants";
 import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
 import { TagDetailPageProps } from "@/pages/Tag/Tag";
 import styles from "@/pages/Tag/Tag.module.scss";
 import { noteService } from "@/services/note.service";
 import { profileService } from "@/services/profile.service";
-import { storageService } from "@/services/storage.service";
 import { tagService } from "@/services/tag.service";
 import {
   IonButton,
@@ -27,14 +25,13 @@ import {
   mailOpenOutline,
   phonePortraitOutline,
 } from "ionicons/icons";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import SendMessageModule from "./send_message.module";
 
 export default function TagModule(props: TagDetailPageProps) {
   const [showAlert] = useIonAlert();
   const router = useIonRouter();
   const { isSignedIn } = useAuthContext();
-  const [profilePicture, setProfilePicture] = useState<string>(NO_AVATAR_IMAGE);
 
   const fetchTag = useCallback(() => {
     return tagService.fetchTag(props.match.params.tagUid);
@@ -134,20 +131,6 @@ export default function TagModule(props: TagDetailPageProps) {
   );
   const phoneData = useMemo(() => phoneQuery.data?.data(), [phoneQuery]);
 
-  useEffect(() => {
-    async function loadAvatar() {
-      if (profileData?.profileImageRef) {
-        const image = await storageService.getAvatar(
-          profileData.profileImageRef
-        );
-
-        setProfilePicture(image);
-      }
-    }
-
-    loadAvatar();
-  }, [profileData]);
-
   if (tagQuery.isLoading || profileQuery.isLoading) {
     return <AppLoading message="Loading tag..." />;
   }
@@ -169,7 +152,10 @@ export default function TagModule(props: TagDetailPageProps) {
   return (
     <div className={styles.container}>
       <div id="userDetails" className="">
-        <img src={profilePicture} className="w-32 h-32 rounded-full" />
+        <img
+          src={profileData?.profileImageRef}
+          className="w-32 h-32 rounded-full"
+        />
 
         <h1>
           {profileData?.firstName} {profileData?.lastName}

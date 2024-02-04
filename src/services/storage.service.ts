@@ -1,5 +1,5 @@
 import { StorageFolders } from "@/models/storage.model";
-import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import { ref, uploadString } from "firebase/storage";
 import { storage } from "./firebase.service";
 
 class StorageService {
@@ -11,12 +11,6 @@ class StorageService {
     );
 
     return uploadString(storageRef, data_url, "data_url");
-  }
-
-  getAvatar(path: string) {
-    const storageRef = ref(this.storage, path);
-
-    return getDownloadURL(storageRef);
   }
 }
 

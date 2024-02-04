@@ -1,5 +1,4 @@
 import AppModalHeader from "@/components/App/AppModalHeader";
-import { NO_AVATAR_IMAGE } from "@/constants";
 import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { useGallery } from "@/hooks/useGallery";
@@ -18,6 +17,8 @@ import {
   IonTitle,
 } from "@ionic/react";
 import { useQueryClient } from "@tanstack/react-query";
+import { updateProfile } from "firebase/auth";
+import { getDownloadURL } from "firebase/storage";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface IProps {
@@ -31,7 +32,6 @@ export default function ChangeProfilePicture(props: IProps) {
   const { user } = useAuthContext();
   const { getPhoto, initialize } = useGallery();
   const [selectedImage, setSelectedImage] = useState<Photo | undefined>();
-  const [userImage, setUserImage] = useState<string>(NO_AVATAR_IMAGE);
 
   const userProfile = useMemo(() => {
     return queryClient.getQueryData<IUser>([QueryKeys.Profile, user?.uid]);
@@ -55,8 +55,14 @@ export default function ChangeProfilePicture(props: IProps) {
       selectedImage!.dataUrl!
     );
 
+    const photoURL = await getDownloadURL(ref.ref);
+
+    updateProfile(user!, {
+      photoURL,
+    });
+
     await profileService.updateProfile(user!.uid, {
-      profileImageRef: ref.ref.fullPath,
+      profileImageRef: photoURL,
     });
 
     showToast({
@@ -67,24 +73,12 @@ export default function ChangeProfilePicture(props: IProps) {
     queryClient.setQueryData<IUser>([QueryKeys.Profile, user?.uid], (v) => {
       return {
         ...v,
-        profileImageRef: ref.ref.fullPath,
+        profileImageRef: photoURL,
       } as IUser;
     });
 
     props.onConfirm();
   }, [selectedImage, user]);
-
-  useEffect(() => {
-    async function load() {
-      if (userProfile?.profileImageRef) {
-        const s = await storageService.getAvatar(userProfile?.profileImageRef);
-
-        setUserImage(s);
-      }
-    }
-
-    load();
-  }, []);
 
   return (
     <IonPage>
@@ -100,7 +94,9 @@ export default function ChangeProfilePicture(props: IProps) {
       <IonContent>
         <div className="flex flex-col justify-center items-center ion-padding gap-5">
           <IonAvatar onClick={onClickAvatar}>
-            <IonImg src={selectedImage?.dataUrl ?? userImage} />
+            <IonImg
+              src={selectedImage?.dataUrl ?? userProfile?.profileImageRef}
+            />
           </IonAvatar>
 
           {!selectedImage && (
