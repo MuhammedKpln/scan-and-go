@@ -1,6 +1,7 @@
 import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
+import { renderIdWithData } from "@/helpers";
 import { INote } from "@/models/note.model";
 import { QueryKeys } from "@/models/query_keys.model";
 import { noteService } from "@/services/note.service";
@@ -87,7 +88,7 @@ export default function NewNoteModule(props: IProps) {
   );
 
   useEffect(() => {
-    if (tags.isFetched && tags.data?.empty) {
+    if (tags.isFetched && !tags.data) {
       showAlert({
         message: "You don't have any registered tags, please register one.",
         onWillDismiss: () => props.onDismiss(undefined, "cancel"),
@@ -141,12 +142,10 @@ export default function NewNoteModule(props: IProps) {
                     onIonChange={onChange}
                     onIonBlur={onBlur}
                   >
-                    {tags.data?.docs.map((e) => {
-                      const s = e.data();
-
+                    {renderIdWithData(tags.data!, (item, id) => {
                       return (
-                        <IonSelectOption value={e.id} key={e.id}>
-                          {s.tagName}
+                        <IonSelectOption value={id} key={id}>
+                          {item.tagName}
                         </IonSelectOption>
                       );
                     })}
