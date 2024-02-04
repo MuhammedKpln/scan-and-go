@@ -74,6 +74,10 @@ export default function HomeNotesCard() {
           title: "Delete",
           style: ActionSheetButtonStyle.Destructive,
         },
+        {
+          title: "Cancel",
+          style: ActionSheetButtonStyle.Cancel,
+        },
       ],
     });
 
