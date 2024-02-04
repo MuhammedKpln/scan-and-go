@@ -26,7 +26,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 
-const app = initializeApp({
+initializeApp({
   apiKey: process.env.VITE_FIREBASE_API_KEY,
   appId: process.env.VITE_FIREBASE_APP_ID,
   authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,

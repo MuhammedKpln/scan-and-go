@@ -56,7 +56,7 @@ const reducer = (
 
 export const useAppStore = create<IAppStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       darkMode: false,
       dispatch: (args) => set((state) => reducer(state, args)),
     }),

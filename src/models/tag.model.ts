@@ -1,9 +1,10 @@
-type ITag = {
+export type ITag = {
   userUid: string;
   tagName: string;
   tagNote: string;
   isAvailable: boolean;
 };
-type ITagWithId = {
+
+export type ITagWithId = {
   [key: string]: ITag;
 };

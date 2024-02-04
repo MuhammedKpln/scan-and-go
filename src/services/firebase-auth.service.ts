@@ -36,7 +36,7 @@ export class FirebaseAuthService {
         await this.sendVerificationEmail(user.user);
       }
     } catch (error) {
-      throw error;
+      throw new Error(error as string);
     }
   }
 
@@ -83,9 +83,10 @@ export class FirebaseAuthService {
         bio: "",
         profileImageRef: "",
         showPhoneNumber: false,
+        sendMessageAllowed: false,
       });
     } catch (error) {
-      throw error;
+      throw new Error(error as string);
     }
   }
 }
