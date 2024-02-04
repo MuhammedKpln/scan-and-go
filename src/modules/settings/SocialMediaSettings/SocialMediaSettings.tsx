@@ -1,4 +1,5 @@
 import { IonLabel, IonList, IonListHeader } from "@ionic/react";
+import LogoutSetting from "./LogoutSetting";
 import TwitterSetting from "./Twitter/TwitterSetting";
 
 export default function SocialMediaSettings() {
@@ -9,6 +10,7 @@ export default function SocialMediaSettings() {
       </IonListHeader>
 
       <TwitterSetting />
+      <LogoutSetting />
     </IonList>
   );
 }
