@@ -81,12 +81,8 @@ export default function ChatPage(props: ChatPageProps) {
               user: recent.data(),
             };
 
-            v.messages.push({
-              [item.id]: {
-                ...data,
-                recentMessage: recentm,
-                messages,
-              },
+            getIdSingleWithData<IRoom>(v, (ss, dds) => {
+              ss.messages.push();
             });
 
             return v as unknown as IRoomWithId[];
