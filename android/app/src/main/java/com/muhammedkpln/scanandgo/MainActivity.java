@@ -1,4 +1,4 @@
-package com.muhammedkpln.scanandgo;
+package com.muhammedkpln.scango;
 
 import com.getcapacitor.BridgeActivity;
 
