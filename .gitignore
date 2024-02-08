@@ -41,3 +41,5 @@ google-services.json
 .env
 
 
+# Android
+android/key.properties
