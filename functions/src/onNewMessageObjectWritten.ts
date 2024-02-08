@@ -1,12 +1,16 @@
 import * as admin from "firebase-admin";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
+import { DEFAULT_DEPLOY_REGION } from "./constants";
 import { converter } from "./converter";
 import { FirebaseCollections, IFcmToken, IRoom } from "./interfaces";
 
 admin.initializeApp();
 
 export default onDocumentWritten(
-  `${FirebaseCollections.Rooms}/{docId}`,
+  {
+    document: `${FirebaseCollections.Rooms}/{docId}`,
+    region: DEFAULT_DEPLOY_REGION,
+  },
   async (event) => {
     const roomDataAfter = event.data?.after.data() as IRoom;
     const roomDataBefore = event.data?.before.data() as IRoom;
