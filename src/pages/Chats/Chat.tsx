@@ -36,6 +36,12 @@ export default function ChatPage(props: ChatPageProps) {
           created_at: Timestamp.fromDate(new Date()),
         });
 
+        item.recentMessage = {
+          message: message,
+          sendBy: user!.uid,
+          created_at: Timestamp.fromDate(new Date()),
+        };
+
         await messagesService.sendMessage(
           item,
           item,
