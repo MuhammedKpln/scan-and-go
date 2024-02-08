@@ -1061,6 +1061,11 @@
   resolved "https://registry.yarnpkg.com/@capacitor/keyboard/-/keyboard-5.0.7.tgz#a9c02d768658da945b058c132cbe10599cb99d2a"
   integrity sha512-+6lW8z2nXTM2NOG7D7pOasCfIGicz26+EeDRXIj5AtJibbjwtE1Q5GIY+qGHgzpmwOF0qmcrGJBz4zagDwUapg==
 
+"@capacitor/push-notifications@^5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@capacitor/push-notifications/-/push-notifications-5.1.1.tgz#512cbd6926109a79fa9656a5a870c20e88304455"
+  integrity sha512-lPtjlMG/PXKZEQjFFI3uqDqC8XaVjOosStvMZMVgxHgn2U45J3QRznUdVR0d6XqLmHnilxLs8ZNislkie0QfPA==
+
 "@capacitor/splash-screen@^5.0.6":
   version "5.0.6"
   resolved "https://registry.yarnpkg.com/@capacitor/splash-screen/-/splash-screen-5.0.6.tgz#d29320de49cc68add59e17fecb64aa2f1a08447f"
