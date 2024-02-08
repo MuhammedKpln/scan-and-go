@@ -5,8 +5,8 @@ name: Generate Android APK and publish release on Github
 
 on:
   push:
-    tags:
-      - "*"
+    branches:
+      - main
 
 jobs:
   prepare_tools:
