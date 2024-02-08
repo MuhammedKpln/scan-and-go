@@ -90,7 +90,7 @@ class ProfileService extends BaseService {
 
     try {
       if (options?.fromCache) {
-        return getDocFromCache(docRef);
+        return getDocFromCache(docRef).catch(() => getDoc(docRef));
       }
 
       return getDoc(docRef);
