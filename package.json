@@ -69,9 +69,7 @@
     "vite": "^5.1.0",
     "vite-plugin-pwa": "^0.17.5",
     "vite-tsconfig-paths": "^4.3.1",
-    "vitest": "^0.34.6"
-  },
-  "optionalDependencies": {
+    "vitest": "^0.34.6",
     "@rollup/rollup-linux-x64-gnu": "4.9.6"
   },
   "description": "An Ionic project"
