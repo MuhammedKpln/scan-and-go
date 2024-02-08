@@ -31,8 +31,6 @@ export default function ChatsPage() {
     return <AppLoading />;
   }
 
-  console.log(data.data);
-
   return (
     <IonPage>
       <IonHeader translucent={true}>
