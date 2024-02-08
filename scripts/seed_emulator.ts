@@ -114,6 +114,7 @@ const profilesSeeder = async () => {
       lastName: faker.person.lastName(),
       profileImageRef: faker.image.avatar(),
       showPhoneNumber: false,
+      sendMessageAllowed: true,
     });
   };
 
@@ -140,6 +141,7 @@ const profilesSeeder = async () => {
       lastName: faker.person.lastName(),
       profileImageRef: faker.image.avatar(),
       showPhoneNumber: false,
+      sendMessageAllowed: true,
     });
   };
 
