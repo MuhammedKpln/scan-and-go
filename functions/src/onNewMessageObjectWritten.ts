@@ -11,9 +11,6 @@ export default onDocumentWritten(
     const roomDataAfter = event.data?.after.data() as IRoom;
     const roomDataBefore = event.data?.before.data() as IRoom;
 
-    console.log(roomDataAfter.recentMessage.sendBy);
-    console.log(roomDataAfter.users);
-
     const userToSendNotification = roomDataAfter.users.filter(
       (v) => v !== roomDataAfter.recentMessage.sendBy
     );
@@ -21,7 +18,6 @@ export default onDocumentWritten(
     if (userToSendNotification.length > 0) {
       if (roomDataBefore.recentMessage !== roomDataAfter.recentMessage) {
         const sendToUser = userToSendNotification[0];
-        console.log(sendToUser);
         const fcmToken = await admin
           .firestore()
           .collection(FirebaseCollections.FcmTokens)
