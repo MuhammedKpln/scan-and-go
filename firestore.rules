@@ -39,6 +39,11 @@ service cloud.firestore {
     }
 
 
+    match /fcmTokens/{token} {
+      allow read, write: if isUserAuthenticated()
+    }
+
+
     /* Functions */
 
     function isUserAuthenticated() {

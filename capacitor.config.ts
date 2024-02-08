@@ -1,10 +1,10 @@
 import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "com.muhammedkpln.scanandgo",
+  appId: "com.muhammedkpln.scango",
   appName: "Scan & Go",
   webDir: "dist",
-  bundledWebRuntime: true,
+  bundledWebRuntime: false,
   server: {
     androidScheme: "https",
   },

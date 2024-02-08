@@ -38,6 +38,11 @@ service cloud.firestore {
       }
     }
 
+    match /fcmTokens/{token} {
+      allow read, write: if true;
+    }
+
+
 
     /* Functions */
 

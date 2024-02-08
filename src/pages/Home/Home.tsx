@@ -1,3 +1,4 @@
+import { useFcmToken } from "@/hooks/useFcmToken";
 import HomeNotesCard from "@/modules/note/home_notes_card.module";
 import NewNoteModule from "@/modules/note/new_note.module";
 import {
@@ -11,16 +12,25 @@ import {
   useIonModal,
 } from "@ionic/react";
 import { addOutline } from "ionicons/icons";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import styles from "./Home.module.scss";
 
 export default function HomePage() {
+  const { deInit: fcmDeInit, init: fcmInit } = useFcmToken();
   const [showModal, hideModal] = useIonModal(NewNoteModule, {
     onDismiss: (data: string, role: string) => hideModal(data, role),
   });
 
   const onClickAddNote = useCallback(() => {
     showModal();
+  }, []);
+
+  useEffect(() => {
+    fcmInit();
+
+    return () => {
+      fcmDeInit();
+    };
   }, []);
 
   return (

@@ -3,6 +3,7 @@ export enum FirebaseCollections {
   Notes = "notes",
   Tags = "tags",
   Rooms = "rooms",
+  FcmTokens = "fcmTokens",
 }
 
 export enum FirebaseSubCollections {

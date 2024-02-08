@@ -39,11 +39,11 @@ export const auth = initializeAuth(app, {
 export const storage = getStorage(app);
 
 if (!import.meta.env.PROD) {
-  connectAuthEmulator(auth, "http://localhost:9099", {
+  connectAuthEmulator(auth, "http://192.168.1.227:9099", {
     disableWarnings: true,
   });
-  connectFirestoreEmulator(db, "localhost", 8080);
-  connectStorageEmulator(storage, "127.0.0.1", 9199);
+  connectFirestoreEmulator(db, "192.168.1.227", 8080);
+  connectStorageEmulator(storage, "192.168.1.227", 9199);
 }
 
 export const converter = <T>() => ({
