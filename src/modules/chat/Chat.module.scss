@@ -1,0 +1,13 @@
+.chatAvatar::part(image) {
+  @apply rounded-full;
+}
+.chatAvatar {
+  @apply w-6 h-6 order-2;
+}
+
+.chatAvatarL::part(image) {
+  @apply rounded-full;
+}
+.chatAvatarL {
+  @apply w-6 h-6  order-1;
+}
