@@ -14,10 +14,10 @@ android {
 
     signingConfigs {
         release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias'] ? keystoreProperties['keyAlias'] : System.getenv("KEYSTORE_KEY_ALIAS")
+            keyPassword keystoreProperties['keyPassword'] ? keystoreProperties['keyPassword'] : System.getenv("KEYSTORE_KEY_PASSWORD")
+            storeFile file(keystoreProperties['storeFile']) ? file(keystoreProperties['storeFile']) : file(System.getenv("KEYSTORE_PATH"))
+            storePassword keystoreProperties['storePassword'] ? keystoreProperties['storePassword'] : System.getenv("KEYSTORE_STORE_PASSWORD")
         }
     }
     defaultConfig {
