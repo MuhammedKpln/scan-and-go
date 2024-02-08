@@ -148,7 +148,9 @@ export default function UpdateProfileModule(props: IProps) {
                   />
                 </IonAvatar>
 
-                <IonButton fill="clear"> Välj en bild</IonButton>
+                <IonButton fill="clear" onClick={onClickAvatar}>
+                  Välj en bild
+                </IonButton>
               </div>
             </IonCardContent>
           </IonCard>
