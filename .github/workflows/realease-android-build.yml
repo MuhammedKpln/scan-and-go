@@ -16,7 +16,7 @@ jobs:
       - name: Get code from the current repository
         uses: actions/checkout@v4
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -64,6 +64,7 @@ jobs:
         id: firebase_google_services
         with:
           fileName: google-services.json
+          fileDir: ./android/app
           encodedString: ${{ secrets.FIREBASE_GOOGLE_SERVICES }}
 
       - name: Build Android
