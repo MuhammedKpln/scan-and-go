@@ -16,17 +16,29 @@ jobs:
       - name: Get code from the current repository
         uses: actions/checkout@v4
 
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Install Java
         uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 17
+          cache: "gradle"
 
       - name: Install Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Install Node.js
         uses: actions/setup-node@v4
+        with:
+          cache: npm
 
       - name: Install Ionic
         run: npm install -g @ionic/cli
