@@ -39,6 +39,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: yarn
+      - name: Install apksigner
+        run: sudo apt-get install -y apksigner
 
       - name: Install Ionic
         run: npm install -g @ionic/cli
@@ -69,7 +71,7 @@ jobs:
 
       - name: Build Android
         id: android_build
-        run: npx cap build android --keystorepath ${{ steps.android_keystore.outputs.filePath }} --keystorepass ${{ secrets.KEYSTORE_KEY_PASSWORD }} --keystorealias ${{ secrets.KEYSTORE_KEY_ALIAS }} --keystorealiaspass ${{ secrets.KEYSTORE_KEY_PASSWORD }} --androidreleasetype APK
+        run: npx cap build android --keystorepath ${{ steps.android_keystore.outputs.filePath }} --keystorepass ${{ secrets.KEYSTORE_KEY_PASSWORD }} --keystorealias ${{ secrets.KEYSTORE_KEY_ALIAS }} --keystorealiaspass ${{ secrets.KEYSTORE_KEY_PASSWORD }} --androidreleasetype APK --signing-type apksigner
         env:
           KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
           KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
