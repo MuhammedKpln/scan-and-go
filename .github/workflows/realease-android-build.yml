@@ -38,7 +38,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          cache: npm
+          cache: yarn
 
       - name: Install Ionic
         run: npm install -g @ionic/cli
