@@ -1,16 +1,9 @@
-import { AuthContext } from "@/context/AuthContext";
 import { IRegisterUserForm } from "@/models/user.model";
 import { FirebaseAuthService } from "@/services/firebase-auth.service";
 import { auth, db } from "@/services/firebase.service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  IonButton,
-  IonInput,
-  useIonLoading,
-  useIonRouter,
-  useIonToast,
-} from "@ionic/react";
-import { useCallback, useContext, useEffect } from "react";
+import { IonButton, IonInput, useIonRouter, useIonToast } from "@ionic/react";
+import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import styles from "./register.module.scss";
@@ -23,10 +16,8 @@ const registerFormSchema = z.object({
 });
 
 export default function RegisterModule() {
-  const [showToast, dismissToast] = useIonToast();
+  const [showToast] = useIonToast();
   const router = useIonRouter();
-  const [showLoading, dismissLoading] = useIonLoading();
-  const authContext = useContext(AuthContext);
 
   const {
     handleSubmit,
@@ -37,35 +28,11 @@ export default function RegisterModule() {
     reValidateMode: "onChange",
   });
 
-  useEffect(() => {
-    if (authContext?.isSignedIn) {
-      const interval = setInterval(async () => {
-        await authContext.user?.reload();
-      }, 5_000);
-
-      return () => {
-        dismissLoading();
-
-        clearInterval(interval);
-        showToast({
-          color: "success",
-          message: "Reg success",
-          duration: 2000,
-        });
-        router.push("/app", "forward", "replace");
-      };
-    }
-  }, []);
-
   const onSubmit = useCallback(async (data: IRegisterUserForm) => {
     const fbAuth = new FirebaseAuthService(auth, db);
 
     try {
       await fbAuth.createUser(data);
-
-      showLoading(
-        "Vi har skickat ett verifiering mejl, var snäll verifiera dig innan vi fortsätter."
-      );
     } catch (error) {
       showToast({
         color: "danger",
@@ -73,6 +40,13 @@ export default function RegisterModule() {
         duration: 2000,
       });
     }
+
+    showToast({
+      color: "success",
+      message: "Reg success",
+      duration: 2000,
+    });
+    router.push("/app", "forward", "replace");
   }, []);
 
   return (

@@ -1,10 +1,8 @@
 import * as admin from "firebase-admin";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
-import { DEFAULT_DEPLOY_REGION } from "./constants";
-import { converter } from "./converter";
-import { FirebaseCollections, IFcmToken, IRoom } from "./interfaces";
-
-admin.initializeApp();
+import { DEFAULT_DEPLOY_REGION } from "./helpers/constants";
+import { converter } from "./helpers/converter";
+import { FirebaseCollections, IFcmToken, IRoom } from "./helpers/interfaces";
 
 export default onDocumentWritten(
   {
