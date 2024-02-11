@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.muhammedkpln.scango",
+      "sha256_cert_fingerprints": [
+        "72:39:DA:30:5D:FC:3F:4A:B1:0D:90:91:14:A4:DB:A8:BC:D5:91:D2:A8:79:B5:17:6C:5A:B0:1E:61:83:83:3F"
+      ]
+    }
+  }
+]
