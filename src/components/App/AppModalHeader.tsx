@@ -8,11 +8,14 @@ import {
 import { closeOutline } from "ionicons/icons";
 import { PropsWithChildren } from "react";
 
-interface IProps extends PropsWithChildren {
+export interface AppModalHeaderProps extends PropsWithChildren {
   onClose: () => void;
 }
 
-export default function AppModalHeader({ children, onClose }: IProps) {
+export default function AppModalHeader({
+  children,
+  onClose,
+}: AppModalHeaderProps) {
   return (
     <IonHeader>
       <IonToolbar>

@@ -8,7 +8,7 @@ import {
 } from "firebase/auth";
 import { Firestore } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
-import { cloudFunctions } from "./firebase.service";
+import { auth, cloudFunctions, db } from "./firebase.service";
 
 export class FirebaseAuthService {
   private auth: Auth;
@@ -45,6 +45,10 @@ export class FirebaseAuthService {
   }
 
   async sendVerificationEmail(user: User) {
-    await sendEmailVerification(user);
+    await sendEmailVerification(user, {
+      url: "http://localhost:8100",
+    });
   }
 }
+
+export const fbAuthService = new FirebaseAuthService(auth, db);

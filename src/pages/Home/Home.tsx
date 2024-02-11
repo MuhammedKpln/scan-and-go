@@ -17,12 +17,13 @@ import styles from "./Home.module.scss";
 
 export default function HomePage() {
   const { deInit: fcmDeInit, init: fcmInit } = useFcmToken();
-  const [showModal, hideModal] = useIonModal(NewNoteModule, {
-    onDismiss: (data: string, role: string) => hideModal(data, role),
+
+  const [showNewNoteModal, hideNewNoteModal] = useIonModal(NewNoteModule, {
+    onDismiss: (data: string, role: string) => hideNewNoteModal(data, role),
   });
 
   const onClickAddNote = useCallback(() => {
-    showModal();
+    showNewNoteModal();
   }, []);
 
   useEffect(() => {
@@ -34,15 +35,23 @@ export default function HomePage() {
   }, []);
 
   return (
-    <IonPage className="ion-padding">
-      <IonHeader collapse="condense">
+    <IonPage>
+      <IonHeader translucent>
         <IonToolbar>
           <IonTitle>Hem</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent>
+      <IonContent className="ion-padding">
+        <IonHeader collapse="condense">
+          <IonToolbar>
+            <IonTitle size="large">Hem</IonTitle>
+          </IonToolbar>
+        </IonHeader>
         <div className={styles.ionPage}>
-          <HomeNotesCard />
+          <div>
+            {/* <UserAlerts /> */}
+            <HomeNotesCard />
+          </div>
 
           <IonButton onClick={onClickAddNote}>
             <IonIcon icon={addOutline} />

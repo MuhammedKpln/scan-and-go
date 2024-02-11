@@ -1,6 +1,6 @@
 import { IRegisterUserForm } from "@/models/user.model";
-import { FirebaseAuthService } from "@/services/firebase-auth.service";
-import { auth, db } from "@/services/firebase.service";
+import { Routes } from "@/routes/routes";
+import { fbAuthService } from "@/services/firebase-auth.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IonButton, IonInput, useIonRouter, useIonToast } from "@ionic/react";
 import { useCallback } from "react";
@@ -29,10 +29,15 @@ export default function RegisterModule() {
   });
 
   const onSubmit = useCallback(async (data: IRegisterUserForm) => {
-    const fbAuth = new FirebaseAuthService(auth, db);
-
     try {
-      await fbAuth.createUser(data);
+      await fbAuthService.createUser(data);
+
+      showToast({
+        color: "success",
+        message: "Reg success",
+        duration: 2000,
+      });
+      router.push(Routes.Verification, "forward", "replace");
     } catch (error) {
       showToast({
         color: "danger",
@@ -40,13 +45,6 @@ export default function RegisterModule() {
         duration: 2000,
       });
     }
-
-    showToast({
-      color: "success",
-      message: "Reg success",
-      duration: 2000,
-    });
-    router.push("/app", "forward", "replace");
   }, []);
 
   return (

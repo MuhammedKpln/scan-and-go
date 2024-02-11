@@ -33,6 +33,7 @@
     "@types/react-router-dom": "^5.3.3",
     "date-fns": "^3.3.1",
     "firebase": "^10.7.2",
+    "framer-motion": "^11.0.3",
     "ionicons": "^7.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -69,8 +70,7 @@
     "vite": "^5.1.0",
     "vite-plugin-pwa": "^0.17.5",
     "vite-tsconfig-paths": "^4.3.1",
-    "vitest": "^0.34.6",
-    "@rollup/rollup-linux-x64-gnu": "4.9.6"
+    "vitest": "^0.34.6"
   },
   "description": "An Ionic project"
 }

@@ -9,9 +9,10 @@ export enum Routes {
   Profile = "/app/profile",
   Tags = "/app/tags",
   EditTag = "/tags/:tagUid",
-  Login = "/login",
-  Register = "/register",
+  Login = "/auth/login",
+  Register = "/auth/register",
   Settings = "/settings",
   Tag = "/tag/:tagUid",
   EditNote = "/edit-note/:noteUid",
+  Verification = "/auth/verification",
 }

@@ -1,0 +1,9 @@
+.container {
+  @apply flex flex-col items-center justify-around content-center text-center h-full w-full;
+}
+
+.image {
+  &::part(image) {
+    @apply w-[30%]  m-auto;
+  }
+}
