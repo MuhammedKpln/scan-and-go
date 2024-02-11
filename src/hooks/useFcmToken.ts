@@ -18,6 +18,8 @@ export function useFcmToken() {
   }
 
   async function deInit() {
+    if (!Capacitor.isNativePlatform()) return;
+
     await fcmRegisteringService.removeAllListeners();
   }
 
