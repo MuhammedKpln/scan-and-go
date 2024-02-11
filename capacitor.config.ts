@@ -4,7 +4,6 @@ const config: CapacitorConfig = {
   appId: "com.muhammedkpln.scango",
   appName: "Scan & Go",
   webDir: "dist",
-  bundledWebRuntime: false,
   server: {
     androidScheme: "https",
   },
