@@ -6,17 +6,14 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
-import { Firestore } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
-import { auth, cloudFunctions, db } from "./firebase.service";
+import { auth, cloudFunctions } from "./firebase.service";
 
 export class FirebaseAuthService {
   private auth: Auth;
-  private firestore: Firestore;
 
-  constructor(auth: Auth, firestore: Firestore) {
+  constructor(auth: Auth) {
     this.auth = auth;
-    this.firestore = firestore;
   }
 
   async createUser(data: IRegisterUserForm) {
@@ -45,10 +42,14 @@ export class FirebaseAuthService {
   }
 
   async sendVerificationEmail(user: User) {
+    const returnUrl = import.meta.env.PROD
+      ? import.meta.env.VITE_FIREBASE_AUTH_RETURN_URL
+      : "http://localhost:8100";
+
     await sendEmailVerification(user, {
-      url: "http://localhost:8100",
+      url: returnUrl,
     });
   }
 }
 
-export const fbAuthService = new FirebaseAuthService(auth, db);
+export const fbAuthService = new FirebaseAuthService(auth);

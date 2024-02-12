@@ -50,6 +50,17 @@ export default function TwitterSettingModal(props: IProps) {
         twitter,
       });
     },
+    onMutate(variables) {
+      queryClient.setQueryData<IUserPrivateSocialMediaAccounts>(
+        [QueryKeys.UserSocialMediaAccounts, user?.uid],
+        (v) => {
+          return {
+            ...v,
+            ...variables,
+          };
+        }
+      );
+    },
   });
 
   const { showToast } = useAppToast();

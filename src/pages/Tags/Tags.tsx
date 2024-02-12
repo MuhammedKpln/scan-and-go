@@ -1,4 +1,4 @@
-import NotesModule from "@/modules/tags/tags.module";
+import TagsModule from "@/modules/tags/tags.module";
 import {
   IonContent,
   IonHeader,
@@ -21,7 +21,7 @@ export default function TagsPage() {
             <IonTitle size="large">Etiketter</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <NotesModule />
+        <TagsModule />
       </IonContent>
     </IonPage>
   );

@@ -1,3 +1,4 @@
+import AppInfoCard from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
 import { renderIdWithData } from "@/helpers";
@@ -26,14 +27,18 @@ export default function TagsModule() {
 
   return (
     <>
-      {renderIdWithData<ITag>(queryTags.data!, (data, id) => (
-        <IonCard routerLink={`/tags/${id}`} key={id}>
-          <IonCardHeader>
-            <IonCardTitle>{data.tagName}</IonCardTitle>
-            <IonCardSubtitle>{data.tagNote}</IonCardSubtitle>
-          </IonCardHeader>
-        </IonCard>
-      ))}
+      {queryTags.data!.length < 1 ? (
+        <AppInfoCard message="Inga registererade etiketter kunde hittas." />
+      ) : (
+        renderIdWithData<ITag>(queryTags.data!, (data, id) => (
+          <IonCard routerLink={`/tags/${id}`} key={id}>
+            <IonCardHeader>
+              <IonCardTitle>{data.tagName}</IonCardTitle>
+              <IonCardSubtitle>{data.tagNote}</IonCardSubtitle>
+            </IonCardHeader>
+          </IonCard>
+        ))
+      )}
     </>
   );
 }

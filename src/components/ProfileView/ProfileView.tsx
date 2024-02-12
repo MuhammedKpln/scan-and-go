@@ -1,3 +1,4 @@
+import NO_AVATAR_IMAGE from "@/assets/noavatar.svg";
 import {
   IUser,
   IUserPrivatePhone,
@@ -43,11 +44,16 @@ export default function ProfileView({
   phoneData,
   socialData,
 }: IProps) {
+  console.log(profileData.profileImageRef);
   return (
     <div className={styles.container}>
       <div id="userDetails" className="">
         <img
-          src={profileData?.profileImageRef}
+          src={
+            profileData?.profileImageRef !== ""
+              ? profileData.profileImageRef
+              : NO_AVATAR_IMAGE
+          }
           className="w-32 h-32 rounded-full"
         />
 
@@ -76,7 +82,7 @@ export default function ProfileView({
         />
       </div>
 
-      {(showPhone || showSocial) && (
+      {(showPhone || (showSocial && socialData)) && (
         <IonList>
           {showPhone && phoneData && (
             <IonItem

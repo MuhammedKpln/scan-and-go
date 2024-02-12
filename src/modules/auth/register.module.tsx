@@ -2,7 +2,13 @@ import { IRegisterUserForm } from "@/models/user.model";
 import { Routes } from "@/routes/routes";
 import { fbAuthService } from "@/services/firebase-auth.service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IonButton, IonInput, useIonRouter, useIonToast } from "@ionic/react";
+import {
+  IonButton,
+  IonInput,
+  useIonLoading,
+  useIonRouter,
+  useIonToast,
+} from "@ionic/react";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -18,6 +24,7 @@ const registerFormSchema = z.object({
 export default function RegisterModule() {
   const [showToast] = useIonToast();
   const router = useIonRouter();
+  const [showLoading, dismissLoading] = useIonLoading();
 
   const {
     handleSubmit,
@@ -30,8 +37,10 @@ export default function RegisterModule() {
 
   const onSubmit = useCallback(async (data: IRegisterUserForm) => {
     try {
+      await showLoading();
       await fbAuthService.createUser(data);
 
+      await dismissLoading();
       showToast({
         color: "success",
         message: "Reg success",
@@ -39,9 +48,10 @@ export default function RegisterModule() {
       });
       router.push(Routes.Verification, "forward", "replace");
     } catch (error) {
+      await dismissLoading();
       showToast({
         color: "danger",
-        message: "Reg error",
+        message: "Reg error " + error,
         duration: 2000,
       });
     }

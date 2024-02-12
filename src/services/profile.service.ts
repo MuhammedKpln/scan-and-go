@@ -13,6 +13,7 @@ import {
   doc,
   getDoc,
   getDocFromCache,
+  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { BaseService, IGeneralOptions } from "./base.service";
@@ -44,10 +45,10 @@ class ProfileService extends BaseService {
     const docRef = doc(
       collectionRef,
       FirebaseSubCollectionDocs.SocialMediaToProfilePrivateSub
-    ).withConverter<IUser>(this.converter());
+    ).withConverter<IUserPrivateSocialMediaAccounts>(this.converter());
 
     try {
-      return updateDoc(docRef, data);
+      return setDoc(docRef, data);
     } catch (error) {
       throw new Error(
         "Could not update profile with uid: " + userUid + ". Error: " + error

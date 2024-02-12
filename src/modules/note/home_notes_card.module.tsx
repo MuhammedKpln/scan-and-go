@@ -34,10 +34,10 @@ export default function HomeNotesCard() {
 
   const deleteMutation = useMutation<void, void, DeleteMutationVariables>({
     mutationFn: ({ noteUid }) => noteService.deleteNote(noteUid),
-    onSuccess(data, variables, context) {
+    onSuccess(data, variables) {
       queryClient.setQueryData<INoteWithId[]>(
         [QueryKeys.Tag, user?.uid],
-        (v) => {
+        () => {
           const notes = queryClient.getQueryData<INoteWithId[]>([
             QueryKeys.Notes,
             user?.uid,

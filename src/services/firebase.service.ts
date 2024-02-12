@@ -41,11 +41,11 @@ export const storage = getStorage(app);
 export const cloudFunctions = getFunctions(app, "europe-west1");
 
 if (!import.meta.env.PROD) {
-  connectAuthEmulator(auth, "http://192.168.1.227:9099", {
+  connectAuthEmulator(auth, "http://localhost:9099", {
     disableWarnings: true,
   });
-  connectFirestoreEmulator(db, "192.168.1.227", 8080);
-  connectStorageEmulator(storage, "192.168.1.227", 9199);
+  connectFirestoreEmulator(db, "localhost", 8080);
+  connectStorageEmulator(storage, "localhost", 9199);
   connectFunctionsEmulator(cloudFunctions, "localhost", 5001);
 }
 
