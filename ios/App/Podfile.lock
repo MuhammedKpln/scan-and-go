@@ -15,6 +15,8 @@ PODS:
   - CapacitorMlkitBarcodeScanning (5.3.0):
     - Capacitor
     - GoogleMLKit/BarcodeScanning (= 4.0.0)
+  - CapacitorPushNotifications (5.1.1):
+    - Capacitor
   - CapacitorSplashScreen (5.0.6):
     - Capacitor
   - CapacitorStatusBar (5.0.6):
@@ -83,6 +85,7 @@ DEPENDENCIES:
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorMlkitBarcodeScanning (from `../../node_modules/@capacitor-mlkit/barcode-scanning`)"
+  - "CapacitorPushNotifications (from `../../node_modules/@capacitor/push-notifications`)"
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
 
@@ -118,6 +121,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorMlkitBarcodeScanning:
     :path: "../../node_modules/@capacitor-mlkit/barcode-scanning"
+  CapacitorPushNotifications:
+    :path: "../../node_modules/@capacitor/push-notifications"
   CapacitorSplashScreen:
     :path: "../../node_modules/@capacitor/splash-screen"
   CapacitorStatusBar:
@@ -132,6 +137,7 @@ SPEC CHECKSUMS:
   CapacitorHaptics: 1fffc1217c7e64a472d7845be50fb0c2f7d4204c
   CapacitorKeyboard: ce5e01064cf57a2c05b32565310713b7fe6cc6f9
   CapacitorMlkitBarcodeScanning: ea08ef246e5d3511d5a231a59fae36b16ad9acb3
+  CapacitorPushNotifications: 2327900bc002f5ff49ee6d2231796d0635b4a1b0
   CapacitorSplashScreen: 5fa2ab5e46cf5cc530cf16a51c80c7a986579ccd
   CapacitorStatusBar: 565c0a1ebd79bb40d797606a8992b4a105885309
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
@@ -147,6 +153,6 @@ SPEC CHECKSUMS:
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
 
-PODFILE CHECKSUM: b59e3a8fc04a2cfe9025e4893767f407d2387c3c
+PODFILE CHECKSUM: 12ac4d10d997553a26920eb439a723c4d1829a12
 
 COCOAPODS: 1.14.2

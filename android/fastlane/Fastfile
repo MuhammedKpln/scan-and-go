@@ -1,0 +1,22 @@
+default_platform(:android)
+
+KEYSTORE_PATH = ENV["KEYSTORE_PATH"]
+KEYSTORE_KEY_ALIAS = ENV["KEYSTORE_KEY_ALIAS"]
+KEYSTORE_KEY_PASSWORD = ENV["KEYSTORE_KEY_PASSWORD"]
+KEYSTORE_STORE_PASSWORD = ENV["KEYSTORE_STORE_PASSWORD"]
+
+
+platform :android do
+  desc "Submit a new Beta Build to Crashlytics Beta"
+  lane :beta do
+    yarn(command: 'build', step_name: 'building_project', package_path: "../package.json")
+    sh "cd ../../ && npx cap copy android"
+    gradle(task: "assembleRelease")
+  end
+
+  desc "Deploy a new version to the Google Play"
+  lane :deploy do
+    gradle(task: "clean assembleRelease")
+    upload_to_play_store
+  end
+end
