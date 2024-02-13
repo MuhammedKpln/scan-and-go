@@ -39,8 +39,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: yarn
-      - name: Install apksigner
-        run: sudo apt-get install -y apksigner
 
       - name: Install Ionic
         run: npm install -g @ionic/cli
@@ -69,7 +67,11 @@ jobs:
           fileDir: ./android/app
           encodedString: ${{ secrets.FIREBASE_GOOGLE_SERVICES }}
 
-      - uses: maierj/fastlane-action@v2.3.0
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.0"
+          bundler-cache: true
+      - uses: maierj/fastlane-action@v3.0.0
         env:
           KEYSTORE_PATH: ${{ steps.android_keystore.outputs.filePath }}
           KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
