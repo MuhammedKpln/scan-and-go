@@ -46,12 +46,6 @@ jobs:
       - name: Install app dependencies
         run: yarn
 
-      - name: Build Ionic assets
-        run: yarn build
-
-      - name: Capacitor sync
-        run: npx cap sync
-
       - name: Decode Keystore File
         id: android_keystore
         uses: timheuer/base64-to-file@v1
@@ -69,6 +63,7 @@ jobs:
 
       - uses: ruby/setup-ruby@v1
         with:
+          ruby-version: "3.3.0"
           bundler-cache: true
 
       - name: Install Fastlane
