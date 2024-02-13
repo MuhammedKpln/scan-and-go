@@ -10,7 +10,7 @@ platform :android do
   desc "Submit a new Beta Build to Crashlytics Beta"
   lane :beta do
     yarn(command: 'build', step_name: 'building_project', package_path: "../package.json")
-    sh "cd ../../ && npx cap copy android"
+    sh "cd ../../ && npx cap sync android"
     gradle(task: "assembleRelease")
   end
 
