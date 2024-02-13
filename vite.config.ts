@@ -4,14 +4,16 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+const plugins = [react(), legacy(), tsconfigPaths()];
+
+if (!process.env.FIREBASE_GOOGLE_SERVICES) {
+  // Build is for Android
+  plugins.push(VitePWA({ registerType: "autoUpdate" }));
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    legacy(),
-    VitePWA({ registerType: "autoUpdate" }),
-    tsconfigPaths(),
-  ],
+  plugins,
   test: {
     globals: true,
     environment: "jsdom",
