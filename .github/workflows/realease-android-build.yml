@@ -67,7 +67,7 @@ jobs:
         run: cd android && bundle install && cd ..
 
       - name: Execute Fastlane command
-        run: cd android && fastlane debug
+        run: cd android && fastlane beta
         env:
           KEYSTORE_PATH: ${{ steps.android_keystore.outputs.filePath }}
           KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
@@ -84,5 +84,5 @@ jobs:
       - name: Upload generated and signed APK as artifact to Github
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: app-release
+          path: android/app/build/outputs/apk/release/app-release.apk
