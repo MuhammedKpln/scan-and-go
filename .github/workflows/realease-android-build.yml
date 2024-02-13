@@ -56,7 +56,7 @@ jobs:
       - name: Load Google Service file
         env:
           DATA: ${{ secrets.FIREBASE_GOOGLE_SERVICES }}
-        run: echo $DATA | base64 -di > app/google-services.json
+        run: echo $DATA | base64 -di > android/app/google-services.json
 
       - uses: ruby/setup-ruby@v1
         with:
