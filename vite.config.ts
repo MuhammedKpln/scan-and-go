@@ -6,7 +6,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 const plugins = [react(), legacy(), tsconfigPaths()];
 
-if (!process.env.FIREBASE_GOOGLE_SERVICES) {
+if (!process.env.KEYSTORE_PATH) {
   // Build is for Android
   plugins.push(VitePWA({ registerType: "autoUpdate" }));
 }
