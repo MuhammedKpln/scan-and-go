@@ -53,13 +53,10 @@ jobs:
           fileName: release-scango.jks
           encodedString: ${{ secrets.ANDROID_KEYSTORE_FILE }}
 
-      - name: Decode Firebase Google services
-        uses: timheuer/base64-to-file@v1
-        id: firebase_google_services
-        with:
-          fileName: google-services.json
-          fileDir: ./android/app
-          encodedString: ${{ secrets.FIREBASE_GOOGLE_SERVICES }}
+      - name: Load Google Service file
+        env:
+          DATA: ${{ secrets.FIREBASE_GOOGLE_SERVICES }}
+        run: echo $DATA | base64 -di > app/google-services.json
 
       - uses: ruby/setup-ruby@v1
         with:
