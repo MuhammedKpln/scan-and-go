@@ -11,7 +11,7 @@ import { useCallback } from "react";
 
 export default function ScanPage() {
   const router = useIonRouter();
-  const { isNative } = useIsNative();
+  const { isNative } = useIsNative(true);
   const [showModal, hideModal] = useIonModal(ScanModule, {
     onCancel: () => hideModal(undefined, "cancel"),
   });

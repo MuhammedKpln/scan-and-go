@@ -12,8 +12,12 @@ import {
   useIonModal,
 } from "@ionic/react";
 import { addOutline } from "ionicons/icons";
-import { useCallback, useEffect } from "react";
+import { lazy, useCallback, useEffect } from "react";
 import styles from "./Home.module.scss";
+
+const UserAlerts = lazy(
+  () => import("@/components/Home/UserAlerts/UserAlerts")
+);
 
 export default function HomePage() {
   const { deInit: fcmDeInit, init: fcmInit } = useFcmToken();
@@ -49,7 +53,7 @@ export default function HomePage() {
         </IonHeader>
         <div className={styles.ionPage}>
           <div>
-            {/* <UserAlerts /> */}
+            <UserAlerts />
             <HomeNotesCard />
           </div>
 
