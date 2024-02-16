@@ -1,7 +1,7 @@
 # This action will be executed when a tag is created and uploaded.
 # More information: https://github.com/davidcopano/github-actions-docs
 
-name: Generate Android APK and publish release on Github
+name: Generate Prod Android APK
 
 on:
   push:
