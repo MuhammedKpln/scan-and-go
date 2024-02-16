@@ -13,6 +13,12 @@ platform :android do
     sh "cd ../../ && npx cap sync android"
     gradle(task: "assembleRelease")
   end
+  
+  lane :debugProd do
+    yarn(command: 'build', step_name: 'building_project', package_path: "../package.json")
+    sh "cd ../../ && npx cap sync android"
+    gradle(task: "assembleDebug")
+  end
 
   desc "Deploy a new version to the Google Play"
   lane :deploy do

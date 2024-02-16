@@ -1,0 +1,88 @@
+# This action will be executed when a tag is created and uploaded.
+# More information: https://github.com/davidcopano/github-actions-docs
+
+name: Generate Android APK and publish release on Github
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  prepare_tools:
+    name: Prepare tools to generate the APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code from the current repository
+        uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 17
+          cache: "gradle"
+
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: yarn
+
+      - name: Install Ionic
+        run: npm install -g @ionic/cli
+
+      - name: Install app dependencies
+        run: yarn
+
+      - name: Decode Keystore File
+        id: android_keystore
+        uses: timheuer/base64-to-file@v1
+        with:
+          fileName: release-scango.jks
+          encodedString: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+
+      - name: Load Google Service file
+        env:
+          DATA: ${{ secrets.FIREBASE_GOOGLE_SERVICES }}
+        run: echo $DATA | base64 -di > android/app/google-services.json
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3.0"
+          bundler-cache: true
+
+      - name: Install Fastlane
+        run: cd android && bundle install && cd ..
+
+      - name: Execute Fastlane command
+        run: cd android && fastlane debug
+        env:
+          KEYSTORE_PATH: ${{ steps.android_keystore.outputs.filePath }}
+          KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+          KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_AUTH_RETURN_URL: ${{ secrets.VITE_FIREBASE_AUTH_RETURN_URL }}
+
+      - name: Upload generated and signed APK as artifact to Github
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
