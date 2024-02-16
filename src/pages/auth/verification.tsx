@@ -3,7 +3,6 @@ import AppHeader from "@/components/App/AppHeader";
 import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { Routes } from "@/routes/routes";
-import { fbAuthService } from "@/services/firebase-auth.service";
 import {
   IonButton,
   IonContent,
@@ -19,12 +18,12 @@ import { useCallback } from "react";
 import styles from "./verification.module.scss";
 
 export default function VerificationPage() {
-  const { user } = useAuthContext();
+  const { user, sendVerificationEmail } = useAuthContext();
   const { showToast } = useAppToast();
   const router = useIonRouter();
 
   useIonViewDidEnter(() => {
-    if (user?.emailVerified) {
+    if (user?.email_confirmed_at) {
       showToast({
         message: "Du har nu verifierad ditt emejl!",
         status: ToastStatus.Success,
@@ -37,7 +36,7 @@ export default function VerificationPage() {
   });
 
   const onClickResend = useCallback(async () => {
-    await fbAuthService.sendVerificationEmail(user!);
+    await sendVerificationEmail(user!.email!);
 
     showToast({
       message: "Vi har skickat ett nytt verifierings mejl.",

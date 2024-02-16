@@ -16,7 +16,10 @@ export type IUserPrivateSocialMediaAccounts = {
 };
 
 export interface IRegisterUserForm
-  extends Omit<IUser, "profileImageRef" | "bio"> {
+  extends Omit<
+    IUser,
+    "profileImageRef" | "bio" | "sendMessageAllowed" | "showPhoneNumber"
+  > {
   email: string;
   password: string;
 }

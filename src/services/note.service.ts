@@ -16,10 +16,6 @@ import {
 import { BaseService } from "./base.service";
 
 class NoteService extends BaseService {
-  constructor() {
-    super(FirebaseCollections.Notes);
-  }
-
   fetchLatestNote(userUid: string) {
     const queryRef = query(
       this.collectionRef,

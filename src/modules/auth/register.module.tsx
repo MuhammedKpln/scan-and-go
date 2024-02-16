@@ -1,6 +1,6 @@
+import { useAuthContext } from "@/context/AuthContext";
 import { IRegisterUserForm } from "@/models/user.model";
 import { Routes } from "@/routes/routes";
-import { fbAuthService } from "@/services/firebase-auth.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IonButton,
@@ -25,7 +25,7 @@ export default function RegisterModule() {
   const [showToast] = useIonToast();
   const router = useIonRouter();
   const [showLoading, dismissLoading] = useIonLoading();
-
+  const { signUp } = useAuthContext();
   const {
     handleSubmit,
     control,
@@ -38,7 +38,7 @@ export default function RegisterModule() {
   const onSubmit = useCallback(async (data: IRegisterUserForm) => {
     try {
       await showLoading();
-      await fbAuthService.createUser(data);
+      await signUp(data);
 
       await dismissLoading();
       showToast({

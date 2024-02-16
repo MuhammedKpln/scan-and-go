@@ -26,19 +26,19 @@ const ScanPage = lazy(() => import("@/pages/Scan"));
 
 export default function TabRoutes() {
   const router = useHistory();
-  const auth = useAuthContext();
+  const { isSignedIn } = useAuthContext();
 
   useEffect(() => {
     const unregister = router.listen(() => {
       if (router.location.pathname.startsWith("/app")) {
-        if (!auth.isSignedIn) {
+        if (!isSignedIn) {
           router.replace("/");
         }
       }
     });
 
     return unregister;
-  }, [auth]);
+  }, [isSignedIn]);
 
   return (
     <IonTabs>
