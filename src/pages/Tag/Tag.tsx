@@ -1,5 +1,5 @@
 import TagModule from "@/modules/tag/Tag.module";
-import { IonContent, IonPage } from "@ionic/react";
+import { IonPage } from "@ionic/react";
 import { RouteComponentProps } from "react-router";
 
 export interface TagDetailPageProps
@@ -10,9 +10,7 @@ export interface TagDetailPageProps
 export default function TagPage(props: TagDetailPageProps) {
   return (
     <IonPage>
-      <IonContent className="ion-padding">
-        <TagModule {...props} />
-      </IonContent>
+      <TagModule {...props} />
     </IonPage>
   );
 }

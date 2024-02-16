@@ -1,7 +1,7 @@
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { Routes } from "@/routes/routes";
 import { FirebaseAuthService } from "@/services/firebase-auth.service";
-import { auth, db } from "@/services/firebase.service";
+import { auth } from "@/services/firebase.service";
 import { signInWithEmailAndPassword } from "@firebase/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IonButton, IonInput, useIonAlert, useIonRouter } from "@ionic/react";
@@ -35,7 +35,7 @@ export default function LoginModule() {
   });
 
   const sendVerificationMail = useCallback(async (user: User) => {
-    const authService = new FirebaseAuthService(auth, db);
+    const authService = new FirebaseAuthService(auth);
     await authService.sendVerificationEmail(user);
 
     showToast({
@@ -75,6 +75,7 @@ export default function LoginModule() {
         });
       }
     } catch (error) {
+      console.log(error);
       showToast({
         message: "Kunde inte logga in, är du registrerad hos oss?",
         status: ToastStatus.Error,

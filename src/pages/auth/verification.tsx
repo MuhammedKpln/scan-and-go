@@ -2,6 +2,7 @@ import Verification from "@/assets/verification.svg";
 import AppHeader from "@/components/App/AppHeader";
 import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
+import { Routes } from "@/routes/routes";
 import { fbAuthService } from "@/services/firebase-auth.service";
 import {
   IonButton,
@@ -10,6 +11,8 @@ import {
   IonPage,
   IonText,
   IonTitle,
+  useIonRouter,
+  useIonViewDidEnter,
 } from "@ionic/react";
 import { motion } from "framer-motion";
 import { useCallback } from "react";
@@ -18,6 +21,20 @@ import styles from "./verification.module.scss";
 export default function VerificationPage() {
   const { user } = useAuthContext();
   const { showToast } = useAppToast();
+  const router = useIonRouter();
+
+  useIonViewDidEnter(() => {
+    if (user?.emailVerified) {
+      showToast({
+        message: "Du har nu verifierad ditt emejl!",
+        status: ToastStatus.Success,
+      });
+
+      router.push(Routes.AppRoot, "root", "replace", {
+        unmount: true,
+      });
+    }
+  });
 
   const onClickResend = useCallback(async () => {
     await fbAuthService.sendVerificationEmail(user!);

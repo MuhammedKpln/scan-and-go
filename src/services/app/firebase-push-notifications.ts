@@ -36,24 +36,30 @@ class FirebasePushNotificationService {
 
   async registerNotifications() {
     try {
-      await this.checkAndAskForPermission();
+      const permission = await this.checkAndAskForPermission();
 
-      await PushNotifications.register();
+      if (permission) {
+        await PushNotifications.register();
+      }
     } catch (error) {
       throw new Error("Error while asking for notifications service");
     }
   }
 
-  private async checkAndAskForPermission() {
-    let permStatus = await PushNotifications.checkPermissions();
+  private async checkAndAskForPermission(): Promise<boolean> {
+    const permStatus = await PushNotifications.checkPermissions();
 
     if (permStatus.receive === "prompt") {
-      permStatus = await PushNotifications.requestPermissions();
+      const permission = await PushNotifications.requestPermissions();
+
+      if (permission.receive !== "granted") {
+        return false;
+      }
+
+      return true;
     }
 
-    if (permStatus.receive !== "granted") {
-      throw new Error("User denied permissions!");
-    }
+    return false;
   }
 }
 

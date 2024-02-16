@@ -1,13 +1,25 @@
+import AppHeader from "@/components/App/AppHeader";
 import AppLoading from "@/components/App/AppLoading";
 import ProfileView from "@/components/ProfileView/ProfileView";
 import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
 import { TagDetailPageProps } from "@/pages/Tag/Tag";
+import { Routes } from "@/routes/routes";
 import { noteService } from "@/services/note.service";
 import { profileService } from "@/services/profile.service";
 import { tagService } from "@/services/tag.service";
-import { useIonAlert, useIonModal, useIonRouter } from "@ionic/react";
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonIcon,
+  IonTitle,
+  useIonAlert,
+  useIonModal,
+  useIonRouter,
+} from "@ionic/react";
 import { useQueries, useQuery } from "@tanstack/react-query";
+import { chevronBackSharp } from "ionicons/icons";
 import { useCallback, useMemo } from "react";
 import SendMessageModule from "./send_message.module";
 
@@ -133,19 +145,38 @@ export default function TagModule(props: TagDetailPageProps) {
     return;
   }
 
+  const goBack = useCallback(() => {
+    router.push(Routes.AppRoot, "root", "replace");
+  }, []);
+
   return (
-    <ProfileView
-      bioContent={userLatestNote!}
-      bioText="Anteckning"
-      profileData={profileData!}
-      bioIsLoading={notesQuery.isLoading}
-      onSendMessage={sendMessage}
-      phoneData={phoneData}
-      socialData={socialData}
-      isSignedIn={isSignedIn}
-      showPhone
-      showSendMessageBtn
-      showSocial
-    />
+    <>
+      <AppHeader>
+        <IonButtons slot="start">
+          <IonButton onClick={goBack}>
+            <IonIcon icon={chevronBackSharp} />
+          </IonButton>
+        </IonButtons>
+
+        <IonTitle>
+          {profileData?.firstName} {profileData?.lastName}
+        </IonTitle>
+      </AppHeader>
+      <IonContent className="ion-padding">
+        <ProfileView
+          bioContent={userLatestNote!}
+          bioText="Anteckning"
+          profileData={profileData!}
+          bioIsLoading={notesQuery.isLoading}
+          onSendMessage={sendMessage}
+          phoneData={phoneData}
+          socialData={socialData}
+          isSignedIn={isSignedIn}
+          showPhone
+          showSendMessageBtn
+          showSocial
+        />
+      </IonContent>
+    </>
   );
 }
