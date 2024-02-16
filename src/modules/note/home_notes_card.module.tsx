@@ -35,29 +35,26 @@ export default function HomeNotesCard() {
   const deleteMutation = useMutation<void, void, DeleteMutationVariables>({
     mutationFn: ({ noteUid }) => noteService.deleteNote(noteUid),
     onSuccess(data, variables) {
-      queryClient.setQueryData<INoteWithId[]>(
-        [QueryKeys.Tag, user?.uid],
-        () => {
-          const notes = queryClient.getQueryData<INoteWithId[]>([
-            QueryKeys.Notes,
-            user?.uid,
-          ]);
+      queryClient.setQueryData<INoteWithId[]>([QueryKeys.Tag, user?.id], () => {
+        const notes = queryClient.getQueryData<INoteWithId[]>([
+          QueryKeys.Notes,
+          user?.id,
+        ]);
 
-          if (notes) {
-            return deleteIdWithDataValue<INote>(notes, variables.noteUid);
-          }
+        if (notes) {
+          return deleteIdWithDataValue<INote>(notes, variables.noteUid);
         }
-      );
+      });
     },
   });
 
   const notes = useQuery({
-    queryKey: [QueryKeys.Notes, user?.uid],
+    queryKey: [QueryKeys.Notes, user?.id],
     queryFn: async () => {
-      const notes = await noteService.fetchLatestNotes(user!.uid);
+      const notes = await noteService.fetchLatestNotes(user!.id);
 
-      return notes.docs.map<INoteWithId>((e) => ({
-        [e.id]: e.data(),
+      return notes.map<INoteWithId>((e) => ({
+        [e.id]: e,
       }));
     },
   });
@@ -109,7 +106,7 @@ export default function HomeNotesCard() {
               <AppInfoCard message="Inga temporär notering" />
             ) : (
               renderIdWithData<INote>(notes.data, (note, id) => {
-                const date = formatDistanceToNow(note.expire_at.toDate(), {
+                const date = formatDistanceToNow(note.expire_at, {
                   addSuffix: true,
                   locale: sv,
                 });

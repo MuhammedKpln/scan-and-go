@@ -48,6 +48,11 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
       switch (state) {
         case "INITIAL_SESSION":
           setIsInitialized(true);
+
+          if (session) {
+            setIsSignedIn(true);
+            setUser(session.user);
+          }
           break;
 
         case "SIGNED_IN":
