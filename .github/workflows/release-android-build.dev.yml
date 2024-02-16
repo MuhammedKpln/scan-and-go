@@ -67,7 +67,7 @@ jobs:
         run: cd android && bundle install && cd ..
 
       - name: Execute Fastlane command
-        run: cd android && fastlane debug
+        run: cd android && fastlane debugProd
         env:
           KEYSTORE_PATH: ${{ steps.android_keystore.outputs.filePath }}
           KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
