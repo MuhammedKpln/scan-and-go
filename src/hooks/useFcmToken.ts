@@ -14,7 +14,9 @@ export function useFcmToken() {
     try {
       await fcmRegisteringService.registerNotifications();
     } catch (error) {
-      await appErrorHandler.logError((error as Error).message);
+      if (error instanceof Error) {
+        await appErrorHandler.logError(error);
+      }
     }
   }
 
