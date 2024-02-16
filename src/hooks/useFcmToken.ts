@@ -1,4 +1,5 @@
 import { useAuthContext } from "@/context/AuthContext";
+import { appErrorHandler } from "@/services/app/error_handler.service";
 import { fcmRegisteringService } from "@/services/app/firebase-push-notifications";
 import { Capacitor } from "@capacitor/core";
 
@@ -13,7 +14,7 @@ export function useFcmToken() {
     try {
       await fcmRegisteringService.registerNotifications();
     } catch (error) {
-      console.error(error);
+      await appErrorHandler.logError((error as Error).message);
     }
   }
 
