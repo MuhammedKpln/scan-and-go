@@ -17,7 +17,7 @@ import {
   IonToolbar,
   useIonModal,
 } from "@ionic/react";
-import { useQueries } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { pencilOutline, settingsOutline } from "ionicons/icons";
 import { useCallback, useMemo } from "react";
 
@@ -38,37 +38,24 @@ export default function ProfilePage() {
     });
   }, []);
 
-  const [profileQuery, socialMediaAccountsQuery] = useQueries({
-    queries: [
-      {
-        queryKey: [QueryKeys.Profile, authContext.user?.uid],
-        queryFn: async () => {
-          const profile = await profileService.fetchProfile(
-            authContext.user!.uid
-          );
+  const profileQuery = useQuery({
+    queryKey: [QueryKeys.Profile, authContext.user?.id],
+    queryFn: async () => {
+      const profile = await profileService.fetchProfile(authContext.user!.id);
 
-          return profile.data();
-        },
-      },
-      {
-        queryKey: [QueryKeys.UserSocialMediaAccounts, authContext.user?.uid],
-        queryFn: async () => {
-          const socialMedia = await profileService.fetchSocialMediaAccounts(
-            authContext.user!.uid
-          );
-
-          return socialMedia.data();
-        },
-      },
-    ],
+      return profile;
+    },
   });
 
-  const profile = useMemo(() => profileQuery?.data, [profileQuery]);
+  const socialMediaAccounts = useMemo(() => {
+    if (profileQuery.isSuccess) {
+      return profileQuery.data.social_media_accounts.length > 0
+        ? profileQuery.data.social_media_accounts[0]
+        : undefined;
+    }
 
-  const socialMediaAccounts = useMemo(
-    () => socialMediaAccountsQuery?.data,
-    [socialMediaAccountsQuery]
-  );
+    return undefined;
+  }, [profileQuery]);
 
   if (profileQuery.isError) {
     return (
@@ -89,7 +76,8 @@ export default function ProfilePage() {
       <IonHeader>
         <IonToolbar>
           <IonTitle>
-            {`${profile?.firstName} ${profile?.lastName}` ?? "No name"}
+            {`${profileQuery.data?.firstName} ${profileQuery.data?.lastName}` ??
+              "No name"}
           </IonTitle>
           <IonButtons slot="end">
             <IonButton routerLink={Routes.Settings}>
@@ -102,15 +90,13 @@ export default function ProfilePage() {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {profile && (
-          <ProfileView
-            bioContent={profile.bio!}
-            bioText="Biografi"
-            profileData={profile!}
-            showSocial
-            socialData={socialMediaAccounts}
-          />
-        )}
+        <ProfileView
+          bioContent={profileQuery.data!.bio!}
+          bioText="Biografi"
+          profileData={profileQuery.data!}
+          showSocial
+          socialData={socialMediaAccounts}
+        />
       </IonContent>
     </IonPage>
   );
