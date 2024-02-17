@@ -16,32 +16,38 @@ export type IUserWithPhoneAndSocial = QueryData<typeof profileQuery>;
 
 class ProfileService extends BaseService {
   async updateProfile(userUid: string, _data: Partial<IUser>) {
-    const { data, error } = await this.client
+    const { error } = await this.client
       .from("profiles")
-      .update(_data)
+      .update({
+        bio: _data?.bio,
+        firstName: _data?.firstName,
+        lastName: _data?.lastName,
+        created_at: _data?.created_at,
+        profileImageUrl: _data?.profileImageUrl,
+        sendMessageAllowed: _data?.sendMessageAllowed,
+        showPhoneNumber: _data?.showPhoneNumber,
+      })
       .eq("id", userUid);
 
     if (error) {
       throw error;
     }
-
-    return data;
   }
 
   async updateSocialMediaAccounts(
     userUid: string,
     _data: Partial<IUserPrivateSocialMediaAccounts>
-  ): Promise<boolean> {
+  ) {
     const { error } = await this.client
       .from("social_media_accounts")
       .update(_data)
       .eq("userId", userUid);
 
+    console.log(error);
+
     if (error) {
       throw error;
     }
-
-    return true;
   }
 
   async fetchPhoneNumber(

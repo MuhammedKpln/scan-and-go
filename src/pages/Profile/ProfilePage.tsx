@@ -115,7 +115,6 @@ export default function ProfilePage() {
           bioContent={profileQuery.data!.bio!}
           bioText="Biografi"
           profileData={profileQuery.data!}
-          showSocial
           socialData={socialMediaAccounts}
         />
       </IonContent>
