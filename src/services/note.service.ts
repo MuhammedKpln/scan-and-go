@@ -30,8 +30,13 @@ class NoteService extends BaseService {
     return data;
   }
 
-  async addNewNote(_data: INote) {
-    const { data, error } = await this.client.from("notes").insert(_data);
+  async addNewNote(_data: Omit<INote, "id">) {
+    const { data, error } = await this.client
+      .from("notes")
+      .insert(_data)
+      .select()
+      .limit(1)
+      .single();
 
     if (error) {
       throw error;
@@ -40,7 +45,7 @@ class NoteService extends BaseService {
     return data;
   }
 
-  async deleteNote(noteUid: string) {
+  async deleteNote(noteUid: number) {
     const { error } = await this.client
       .from("notes")
       .delete()
@@ -51,8 +56,8 @@ class NoteService extends BaseService {
     }
   }
 
-  async updateNote(noteUid: string, _data: INote) {
-    const { data, error } = await this.client
+  async updateNote(noteUid: number, _data: Partial<INote>) {
+    const { error } = await this.client
       .from("notes")
       .update(_data)
       .eq("id", noteUid);
@@ -60,8 +65,6 @@ class NoteService extends BaseService {
     if (error) {
       throw error;
     }
-
-    return data;
   }
 }
 

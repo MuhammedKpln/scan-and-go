@@ -1,7 +1,7 @@
 import AppInfoCard from "@/components/App/AppInfoCard";
 import { useAuthContext } from "@/context/AuthContext";
-import { deleteIdWithDataValue, renderIdWithData } from "@/helpers";
-import { INote, INoteWithId } from "@/models/note.model";
+import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
+import { INote } from "@/models/note.model";
 import { QueryKeys } from "@/models/query_keys.model";
 import { Routes } from "@/routes/routes";
 import { noteService } from "@/services/note.service";
@@ -18,32 +18,56 @@ import {
   IonSpinner,
   useIonRouter,
 } from "@ionic/react";
+import { PostgrestError } from "@supabase/supabase-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { sv } from "date-fns/locale/sv";
+import { produce } from "immer";
 import { useCallback } from "react";
 
 interface DeleteMutationVariables {
-  noteUid: string;
+  noteUid: number;
 }
 
 export default function HomeNotesCard() {
   const { user } = useAuthContext();
   const queryClient = useQueryClient();
   const router = useIonRouter();
+  const { showToast } = useAppToast();
 
-  const deleteMutation = useMutation<void, void, DeleteMutationVariables>({
+  const deleteMutation = useMutation<
+    void,
+    PostgrestError,
+    DeleteMutationVariables
+  >({
     mutationFn: ({ noteUid }) => noteService.deleteNote(noteUid),
     onSuccess(data, variables) {
-      queryClient.setQueryData<INoteWithId[]>([QueryKeys.Tag, user?.id], () => {
-        const notes = queryClient.getQueryData<INoteWithId[]>([
+      showToast({
+        message: "Deleted note",
+        status: ToastStatus.Success,
+      });
+
+      queryClient.setQueryData<INote[]>([QueryKeys.Notes, user?.id], () => {
+        const notes = queryClient.getQueryData<INote[]>([
           QueryKeys.Notes,
           user?.id,
         ]);
 
         if (notes) {
-          return deleteIdWithDataValue<INote>(notes, variables.noteUid);
+          const updatedNotes = produce(notes, (draftData) => {
+            const index = draftData.findIndex(
+              (v) => v.id === variables.noteUid
+            );
+
+            if (index !== -1) {
+              draftData.splice(index, 1);
+            }
+          });
+
+          return updatedNotes;
         }
+
+        return notes;
       });
     },
   });
@@ -53,13 +77,11 @@ export default function HomeNotesCard() {
     queryFn: async () => {
       const notes = await noteService.fetchLatestNotes(user!.id);
 
-      return notes.map<INoteWithId>((e) => ({
-        [e.id]: e,
-      }));
+      return notes;
     },
   });
 
-  const onClickItem = useCallback(async (item: INote, noteUid: string) => {
+  const onClickItem = useCallback(async (item: INote, noteUid: number) => {
     const actionResult = await ActionSheet.showActions({
       title: item.content,
       options: [
@@ -80,7 +102,7 @@ export default function HomeNotesCard() {
 
     switch (actionResult.index) {
       case 0:
-        router.push(Routes.EditNote.replace(":noteUid", noteUid));
+        router.push(Routes.EditNote.replace(":noteUid", noteUid.toString()));
         break;
       case 1:
         await deleteMutation.mutateAsync({
@@ -89,7 +111,6 @@ export default function HomeNotesCard() {
         break;
     }
   }, []);
-
   return (
     <IonCard>
       <IonCardHeader>
@@ -105,7 +126,7 @@ export default function HomeNotesCard() {
             {!notes.data ? (
               <AppInfoCard message="Inga temporär notering" />
             ) : (
-              renderIdWithData<INote>(notes.data, (note, id) => {
+              notes.data.map((note) => {
                 const date = formatDistanceToNow(note.expire_at, {
                   addSuffix: true,
                   locale: sv,
@@ -114,13 +135,18 @@ export default function HomeNotesCard() {
                   <IonItem
                     lines="none"
                     button
-                    key={id}
-                    onClick={() => onClickItem(note, id)}
+                    key={note.id}
+                    onClick={() => onClickItem(note, note.id)}
                   >
-                    <IonLabel>
-                      <h3>{note.content}</h3>
-                      <p>{date}</p>
-                    </IonLabel>
+                    {deleteMutation.isPending &&
+                    deleteMutation.variables.noteUid === note.id ? (
+                      <IonSpinner />
+                    ) : (
+                      <IonLabel>
+                        <h3>{note.content}</h3>
+                        <p>{date}</p>
+                      </IonLabel>
+                    )}
                   </IonItem>
                 );
               })

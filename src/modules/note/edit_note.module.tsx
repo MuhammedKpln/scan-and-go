@@ -1,10 +1,8 @@
 import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
-import { renderIdWithData, updateIdWithDataValue } from "@/helpers";
-import { INote, INoteWithId } from "@/models/note.model";
+import { INote } from "@/models/note.model";
 import { QueryKeys } from "@/models/query_keys.model";
-import { ITag } from "@/models/tag.model";
 import { noteService } from "@/services/note.service";
 import { tagService } from "@/services/tag.service";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,23 +21,23 @@ import {
   useIonToast,
 } from "@ionic/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Timestamp } from "firebase/firestore";
+import { produce } from "immer";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
 interface IProps {
-  noteUid: string;
+  noteUid: number;
   note: INote;
 }
 
 interface UpdateNoteMutationVariables {
-  noteUid: string;
+  noteUid: number;
   note: Partial<INote>;
 }
 
 const newNoteFormSchema = z.object({
-  tag: z.string(),
+  tag: z.number(),
   content: z.string(),
   expireAt: z.date(),
 });
@@ -52,8 +50,8 @@ export default function EditNoteModule(props: IProps) {
     reValidateMode: "onSubmit",
     defaultValues: {
       content: props.note.content,
-      expireAt: props.note.expire_at.toDate(),
-      tag: props.note.tagUid,
+      expireAt: new Date(props.note.expire_at),
+      tag: props.note.tagId,
     },
   });
 
@@ -61,28 +59,28 @@ export default function EditNoteModule(props: IProps) {
   const [showToast] = useIonToast();
 
   const tags = useQuery({
-    queryKey: [QueryKeys.Tags, user?.uid],
-    queryFn: () => tagService.fetchTags(user!.uid),
+    queryKey: [QueryKeys.Tags, user?.id],
+    queryFn: () => tagService.fetchTags(user!.id),
+    networkMode: "offlineFirst",
   });
 
   const updateNote = useMutation<void, void, UpdateNoteMutationVariables>({
-    mutationKey: [QueryKeys.Notes, user?.uid],
+    mutationKey: [QueryKeys.Notes, user?.id],
     mutationFn: ({ note, noteUid }) => noteService.updateNote(noteUid, note),
-    onSuccess(data, variables) {
-      queryClient.setQueryData<INoteWithId[]>(
-        [QueryKeys.Notes, user?.uid],
-        (v) => {
-          if (v) {
-            return updateIdWithDataValue<INote>(
-              v,
-              variables.noteUid,
-              variables.note
-            );
-          }
+    onSuccess(_, variables) {
+      queryClient.setQueryData<INote[]>([QueryKeys.Notes, user?.id], (v) => {
+        if (v) {
+          const updatedState = produce(v, (draft) => {
+            const index = draft.findIndex((e) => e.id === variables.noteUid);
 
-          return v;
+            if (index !== -1) {
+              draft[index] = { ...draft[index], ...variables.note };
+            }
+          });
+
+          return updatedState;
         }
-      );
+      });
     },
   });
 
@@ -91,10 +89,10 @@ export default function EditNoteModule(props: IProps) {
       await updateNote.mutateAsync({
         note: {
           content: data.content,
-          expire_at: Timestamp.fromDate(data.expireAt),
-          userUid: user!.uid,
-          created_at: Timestamp.fromDate(new Date()),
-          tagUid: data.tag,
+          expire_at: data.expireAt.toISOString(),
+          userId: user!.id,
+          created_at: new Date().toISOString(),
+          tagId: data.tag,
         },
         noteUid: props.noteUid,
       });
@@ -133,9 +131,9 @@ export default function EditNoteModule(props: IProps) {
                   onIonChange={onChange}
                   onIonBlur={onBlur}
                 >
-                  {renderIdWithData<ITag>(tags.data!, (data, id) => (
-                    <IonSelectOption value={id} key={id}>
-                      {data.tagName}
+                  {tags.data?.map((tag) => (
+                    <IonSelectOption value={tag.id} key={tag.id}>
+                      {tag.name}
                     </IonSelectOption>
                   ))}
                 </IonSelect>

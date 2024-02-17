@@ -1,7 +1,7 @@
 import AppHeader from "@/components/App/AppHeader";
 import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
-import { INote, INoteWithId } from "@/models/note.model";
+import { INote } from "@/models/note.model";
 import { QueryKeys } from "@/models/query_keys.model";
 import EditNoteModule from "@/modules/note/edit_note.module";
 import { Routes } from "@/routes/routes";
@@ -20,10 +20,7 @@ export default function EditNotePage(props: EditNotePageProps) {
   const { user } = useAuthContext();
 
   const notes = useMemo(() => {
-    return queryClient.getQueryData<INoteWithId[]>([
-      QueryKeys.Notes,
-      user?.uid,
-    ]);
+    return queryClient.getQueryData<INote[]>([QueryKeys.Notes, user?.id]);
   }, [queryClient]);
 
   const note = useMemo(() => {
@@ -31,11 +28,9 @@ export default function EditNotePage(props: EditNotePageProps) {
 
     if (!notes) return;
 
-    for (const key of notes!) {
-      for (const k of Object.keys(key)) {
-        if (props.match.params.noteUid === k) {
-          return key[k];
-        }
+    for (const key of notes) {
+      if (key.id === parseInt(props.match.params.noteUid)) {
+        return key;
       }
     }
 
@@ -56,7 +51,10 @@ export default function EditNotePage(props: EditNotePageProps) {
         <IonTitle>Edit note</IonTitle>
       </AppHeader>
       <IonContent>
-        <EditNoteModule note={note} noteUid={props.match.params.noteUid} />
+        <EditNoteModule
+          note={note}
+          noteUid={parseInt(props.match.params.noteUid)}
+        />
       </IonContent>
     </IonPage>
   );

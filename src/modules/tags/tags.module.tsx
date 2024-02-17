@@ -1,9 +1,8 @@
 import AppInfoCard from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
-import { renderIdWithData } from "@/helpers";
 import { QueryKeys } from "@/models/query_keys.model";
-import { ITag, ITagWithId } from "@/models/tag.model";
+import { ITagWithId } from "@/models/tag.model";
 import { tagService } from "@/services/tag.service";
 import {
   IonCard,
@@ -17,8 +16,8 @@ export default function TagsModule() {
   const { user } = useAuthContext();
 
   const queryTags = useQuery<ITagWithId[], void>({
-    queryKey: [QueryKeys.Tags, user?.uid],
-    queryFn: () => tagService.fetchTags(user!.uid),
+    queryKey: [QueryKeys.Tags, user?.id],
+    queryFn: () => tagService.fetchTags(user!.id),
   });
 
   if (queryTags.isLoading) {
@@ -30,11 +29,11 @@ export default function TagsModule() {
       {queryTags.data!.length < 1 ? (
         <AppInfoCard message="Inga registererade etiketter kunde hittas." />
       ) : (
-        renderIdWithData<ITag>(queryTags.data!, (data, id) => (
-          <IonCard routerLink={`/tags/${id}`} key={id}>
+        queryTags.data?.map((tag) => (
+          <IonCard routerLink={`/tags/${tag.id}`} key={tag.id}>
             <IonCardHeader>
-              <IonCardTitle>{data.tagName}</IonCardTitle>
-              <IonCardSubtitle>{data.tagNote}</IonCardSubtitle>
+              <IonCardTitle>{tag.name}</IonCardTitle>
+              <IonCardSubtitle>{tag.note}</IonCardSubtitle>
             </IonCardHeader>
           </IonCard>
         ))
