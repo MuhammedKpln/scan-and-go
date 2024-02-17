@@ -1,11 +1,23 @@
 import { ITag } from "@/models/tag.model";
+import { QueryData } from "@supabase/supabase-js";
 import { BaseService } from "./base.service";
+import { supabaseClient } from "./supabase.service";
+
+const fetchTagQuery = supabaseClient
+  .from("tags")
+  .select("*, profiles(*, phone_numbers(*),social_media_accounts(*)), notes(*)")
+  .limit(1)
+  .single();
+
+export type ITagWithRelations = QueryData<typeof fetchTagQuery>;
 
 class TagService extends BaseService {
-  async fetchTag(tagUid: number) {
+  async fetchTag(tagUid: string): Promise<ITagWithRelations> {
     const { data, error } = await this.client
       .from("tags")
-      .select()
+      .select(
+        "*, profiles(*, phone_numbers(*),social_media_accounts(*)), notes(*)"
+      )
       .eq("id", tagUid)
       .limit(1)
       .single();
@@ -40,7 +52,7 @@ class TagService extends BaseService {
     return true;
   }
 
-  async updateTag(tagUid: number, data: Partial<ITag>) {
+  async updateTag(tagUid: string, data: Partial<ITag>) {
     const { error } = await this.client
       .from("tags")
       .update(data)

@@ -3,9 +3,13 @@ import AppLoading from "@/components/App/AppLoading";
 import ProfileView from "@/components/ProfileView/ProfileView";
 import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
+import { IUser } from "@/models/user.model";
 import UpdateProfileModule from "@/modules/profile/UpdateProfile.module";
 import { Routes } from "@/routes/routes";
-import { profileService } from "@/services/profile.service";
+import {
+  IUserWithPhoneAndSocial,
+  profileService,
+} from "@/services/profile.service";
 import {
   IonButton,
   IonButtons,
@@ -17,12 +21,14 @@ import {
   IonToolbar,
   useIonModal,
 } from "@ionic/react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { produce } from "immer";
 import { pencilOutline, settingsOutline } from "ionicons/icons";
 import { useCallback, useMemo } from "react";
 
 export default function ProfilePage() {
   const authContext = useAuthContext();
+  const queryClient = useQueryClient();
   const [showProfilePictureModal, hideProfilePictureModal] = useIonModal(
     UpdateProfileModule,
     {
@@ -38,10 +44,25 @@ export default function ProfilePage() {
     });
   }, []);
 
-  const profileQuery = useQuery({
-    queryKey: [QueryKeys.Profile, authContext.user?.id],
+  const profileQuery = useQuery<IUserWithPhoneAndSocial>({
+    queryKey: [QueryKeys.ProfileWithRelations, authContext.user?.id],
     queryFn: async () => {
       const profile = await profileService.fetchProfile(authContext.user!.id);
+
+      queryClient.setQueryData<IUser>(
+        [QueryKeys.Profile, authContext.user?.id],
+        () => {
+          const data = produce<Partial<IUserWithPhoneAndSocial>>(
+            profile,
+            (draft) => {
+              delete draft.social_media_accounts;
+              delete draft.phone_numbers;
+            }
+          );
+
+          return data as IUser;
+        }
+      );
 
       return profile;
     },

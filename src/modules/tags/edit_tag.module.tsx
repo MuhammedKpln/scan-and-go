@@ -20,7 +20,7 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
 interface IProps {
-  tagUid: number;
+  tagUid: string;
   tag: ITag;
 }
 

@@ -25,8 +25,7 @@ import {
   IonTitle,
 } from "@ionic/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { User, updateProfile } from "firebase/auth";
-import { getDownloadURL } from "firebase/storage";
+import mime from "mime";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -42,10 +41,6 @@ const profileFormValidator = z.object({
   bio: z.string(),
 });
 
-type MutableUser = {
-  -readonly [Value in keyof User]: User[Value];
-};
-
 export default function UpdateProfileModule(props: IProps) {
   const queryClient = useQueryClient();
   const { showToast } = useAppToast();
@@ -54,12 +49,21 @@ export default function UpdateProfileModule(props: IProps) {
   const [selectedImage, setSelectedImage] = useState<Photo | undefined>();
 
   const userProfile = useMemo(() => {
-    return queryClient.getQueryData<IUser>([QueryKeys.Profile, user?.uid]);
+    return queryClient.getQueryData<IUser>([QueryKeys.Profile, user?.id]);
   }, [user]);
+
+  const selectedImageAsBlob = useMemo(
+    () =>
+      selectedImage &&
+      `data:${mime.getType(selectedImage.format)};base64,${
+        selectedImage.base64String
+      }`,
+    [selectedImage]
+  );
 
   const form = useForm<typeof profileFormValidator._type>({
     defaultValues: {
-      bio: userProfile?.bio,
+      bio: userProfile?.bio ?? undefined,
       firstName: userProfile?.firstName,
       lastName: userProfile?.lastName,
     },
@@ -87,33 +91,23 @@ export default function UpdateProfileModule(props: IProps) {
         bio: items.bio,
       };
 
-      const updateProfileFields: Partial<
-        Pick<MutableUser, "displayName" | "photoURL">
-      > = {
-        displayName: `${items.firstName} ${items.lastName}`,
-      };
-
       if (selectedImage) {
-        const ref = await storageService.uploadAvatar(
-          user!.uid,
-          selectedImage.dataUrl!
-        );
+        const ref = await storageService.uploadAvatar(user!.id, selectedImage);
 
-        const photoURL = await getDownloadURL(ref.ref);
+        if (ref) {
+          const photoURL = storageService.getAavatarURL(ref.path);
 
-        updatedFields.profileImageRef = photoURL;
-        updateProfileFields.photoURL = photoURL;
+          updatedFields.profileImageUrl = photoURL;
+        }
       }
 
-      updateProfile(user!, updateProfileFields);
+      await profileService.updateProfile(user!.id, updatedFields);
 
-      await profileService.updateProfile(user!.uid, updatedFields);
-
-      queryClient.setQueryData<IUser>([QueryKeys.Profile, user?.uid], (v) => {
+      queryClient.setQueryData<IUser>([QueryKeys.Profile, user?.id], (v) => {
         return {
           ...v,
           ...updatedFields,
-        } as IUser;
+        };
       });
 
       showToast({
@@ -144,7 +138,7 @@ export default function UpdateProfileModule(props: IProps) {
               <div className="flex justify-center flex-col items-center">
                 <IonAvatar className="cursor-pointer" onClick={onClickAvatar}>
                   <IonImg
-                    src={selectedImage?.dataUrl ?? userProfile?.profileImageRef}
+                    src={selectedImageAsBlob ?? userProfile!.profileImageUrl!}
                   />
                 </IonAvatar>
 
@@ -197,10 +191,11 @@ export default function UpdateProfileModule(props: IProps) {
                     name={field.name}
                     onIonChange={field.onChange}
                     onIonBlur={field.onBlur}
-                    value={field.value}
                     label="Biografi"
                     labelPlacement="floating"
-                  />
+                  >
+                    {field.value}
+                  </IonTextarea>
                 )}
               />
             </IonItem>

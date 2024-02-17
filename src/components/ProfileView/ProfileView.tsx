@@ -11,7 +11,6 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonSpinner,
   IonText,
 } from "@ionic/react";
 import { logoTwitter, phonePortraitOutline } from "ionicons/icons";
@@ -21,12 +20,9 @@ interface IProps {
   profileData: IUser;
   bioText: string;
   bioContent: string;
-  showPhone?: boolean;
-  showSocial?: boolean;
   phoneData?: IUserPrivatePhone;
   socialData?: IUserPrivateSocialMediaAccounts;
   showSendMessageBtn?: boolean;
-  bioIsLoading?: boolean;
   isSignedIn?: boolean;
   onSendMessage?: () => void;
 }
@@ -36,22 +32,19 @@ export default function ProfileView({
   showSendMessageBtn,
   onSendMessage,
   bioContent,
-  bioIsLoading,
   bioText,
   isSignedIn,
-  showPhone,
-  showSocial,
   phoneData,
   socialData,
 }: IProps) {
-  console.log(profileData.profileImageRef);
+  console.log(profileData.profileImageUrl);
   return (
     <div className={styles.container}>
       <div id="userDetails" className="">
         <img
           src={
-            profileData?.profileImageRef !== ""
-              ? profileData.profileImageRef
+            profileData?.profileImageUrl
+              ? profileData.profileImageUrl
               : NO_AVATAR_IMAGE
           }
           className="w-32 h-32 rounded-full"
@@ -71,7 +64,7 @@ export default function ProfileView({
       <IonItem className={styles.noteContainer} lines="none">
         <IonLabel>
           <p>{bioText}</p>
-          <h6>{bioIsLoading ? <IonSpinner /> : <>{bioContent}</>}</h6>
+          <h6>{bioContent}</h6>
         </IonLabel>
       </IonItem>
 
@@ -82,11 +75,11 @@ export default function ProfileView({
         />
       </div>
 
-      {(showPhone || (showSocial && socialData)) && (
+      {(socialData || phoneData) && (
         <IonList>
-          {showPhone && phoneData && (
+          {phoneData && (
             <IonItem
-              href={`tel:${phoneData.value}`}
+              href={`tel:${phoneData.number}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -94,13 +87,13 @@ export default function ProfileView({
               <IonLabel>
                 <p>Phone</p>
                 <h6>
-                  <a>{phoneData.value}</a>
+                  <a>{phoneData.number}</a>
                 </h6>
               </IonLabel>
             </IonItem>
           )}
 
-          {showSocial && socialData?.twitter && (
+          {socialData?.twitter && (
             <IonItem
               href={`https://twitter.com/${socialData.twitter}`}
               target="_blank"

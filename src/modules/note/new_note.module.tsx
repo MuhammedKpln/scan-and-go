@@ -37,7 +37,7 @@ interface IProps {
 }
 
 const newNoteFormSchema = z.object({
-  tag: z.number(),
+  tag: z.string(),
   content: z.string(),
   expireAt: z.date(),
 });

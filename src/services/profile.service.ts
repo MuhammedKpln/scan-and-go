@@ -5,6 +5,14 @@ import {
 } from "@/models/user.model";
 import { QueryData } from "@supabase/supabase-js";
 import { BaseService } from "./base.service";
+import { supabaseClient } from "./supabase.service";
+
+const profileQuery = supabaseClient
+  .from("profiles")
+  .select("*, phone_numbers(*), social_media_accounts(*)")
+  .single();
+
+export type IUserWithPhoneAndSocial = QueryData<typeof profileQuery>;
 
 class ProfileService extends BaseService {
   async updateProfile(userUid: string, _data: Partial<IUser>) {

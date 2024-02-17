@@ -17,6 +17,7 @@ export interface EditTagPageProps
 export default function EditTagPage(props: EditTagPageProps) {
   const { user } = useAuthContext();
 
+  const tagUid = props.match.params.tagUid;
   const tags = useQuery<ITag[]>({
     queryKey: [QueryKeys.Tags, user?.id],
   });
@@ -25,7 +26,7 @@ export default function EditTagPage(props: EditTagPageProps) {
     if (!tags.data) return;
 
     const filteredTags = tags.data.filter(
-      (v) => v.id === parseInt(props.match.params.tagUid)
+      (v) => v.id === props.match.params.tagUid
     );
 
     return filteredTags.length > 0 && filteredTags[0];
@@ -38,8 +39,6 @@ export default function EditTagPage(props: EditTagPageProps) {
   if (!tag) {
     return <AppLoading />;
   }
-
-  const tagUid = parseInt(props.match.params.tagUid);
 
   if (tags.isLoading) {
     return <AppLoading />;
