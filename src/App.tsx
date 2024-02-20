@@ -67,12 +67,12 @@ export default function App() {
             />
             <Route path={Routes.Settings} component={SettingsPage} exact />
             <Route path={Routes.Tag} component={TagPage} exact />
+            <Route path={Routes.Chat} component={ChatPage} />
             <Route
               path={`${Routes.Notes}/:id`}
               exact
               component={NoteDetailsPage}
             />
-            <Route path={Routes.Chat} component={ChatPage} exact />
             <Route path={Routes.EditTag} component={EditTagPage} exact />
             <Route path={Routes.EditNote} component={EditNotePage} exact />
             <Route path="/" exact component={AppOrLogin} />

@@ -2,9 +2,8 @@ import AppInfoCard from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import Chat from "@/components/Chat/Chat";
 import { useAuthContext } from "@/context/AuthContext";
-import { renderIdWithData } from "@/helpers";
 import { QueryKeys } from "@/models/query_keys.model";
-import { IRoom, IRoomWithId } from "@/models/room.model";
+import { IRoom } from "@/models/room.model";
 import { Routes } from "@/routes/routes";
 import { messagesService } from "@/services/messages.service";
 import {
@@ -22,9 +21,9 @@ export default function ChatsPage() {
   const router = useIonRouter();
   const { user } = useAuthContext();
 
-  const data = useQuery<IRoomWithId[] | undefined>({
-    queryKey: [QueryKeys.Chats, user?.uid],
-    queryFn: () => messagesService.fetchRooms(user!.uid),
+  const data = useQuery<IRoom[]>({
+    queryKey: [QueryKeys.Chats, user?.id],
+    queryFn: () => messagesService.fetchRooms(user!.id),
   });
 
   if (data.isLoading) {
@@ -45,27 +44,24 @@ export default function ChatsPage() {
           </IonToolbar>
         </IonHeader>
 
-        {data.data!.length < 1 ? (
+        {!data.data ? (
           <AppInfoCard message="No messages found" />
         ) : (
           <IonList inset>
-            {renderIdWithData<IRoom>(data.data!, (data, id) => {
+            {data.data.map((room) => {
+              const roomUser = room.profiles
+                .filter((v) => v.id !== user!.id)
+                .at(0);
+
               return (
                 <Chat
-                  key={id}
+                  key={room.id}
                   onClick={() =>
-                    router.push(Routes.Chat.replace(":roomUid", id))
+                    router.push(Routes.Chat.replace(":roomUid", room.id))
                   }
-                  subtitle={data.recentMessage.message}
-                  user={{
-                    firstName: data.recentMessage.user!.firstName,
-                    lastName: data.recentMessage.user!.lastName,
-                    profileImageRef: data.recentMessage.user!.profileImageRef,
-                    sendMessageAllowed:
-                      data.recentMessage.user!.sendMessageAllowed,
-                    showPhoneNumber: false,
-                  }}
                   onClickDelete={() => null}
+                  subtitle=""
+                  user={roomUser!}
                 />
               );
             })}

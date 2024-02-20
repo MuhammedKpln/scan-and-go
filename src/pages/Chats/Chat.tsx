@@ -1,18 +1,21 @@
 import AppHeader from "@/components/App/AppHeader";
 import AppLoading from "@/components/App/AppLoading";
 import { useAuthContext } from "@/context/AuthContext";
-import { getIdSingleWithData } from "@/helpers";
-import { IRoom, IRoomWithId } from "@/models/room.model";
+import { QueryKeys } from "@/models/query_keys.model";
+import { IMessageWithProfiles, INewMessagePayload } from "@/models/room.model";
+import { IUser } from "@/models/user.model";
 import ChatModule from "@/modules/chat/Chat.module";
-import { messagesService } from "@/services/messages.service";
+import { messagesQuery, messagesService } from "@/services/messages.service";
 import {
   IonPage,
   IonTitle,
-  useIonViewDidEnter,
-  useIonViewDidLeave,
+  useIonViewWillEnter,
+  useIonViewWillLeave,
 } from "@ionic/react";
-import { Timestamp, Unsubscribe } from "firebase/firestore";
-import { useCallback, useRef, useState } from "react";
+import { QueryData, RealtimeChannel } from "@supabase/supabase-js";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { produce } from "immer";
+import { useCallback, useMemo, useRef } from "react";
 import { RouteComponentProps } from "react-router";
 
 export interface ChatPageProps
@@ -21,86 +24,61 @@ export interface ChatPageProps
   }> {}
 
 export default function ChatPage(props: ChatPageProps) {
-  const [title, setTitle] = useState<string>("");
-  const [data, setData] = useState<IRoomWithId | undefined>();
   const { user } = useAuthContext();
-  const unsub = useRef<Unsubscribe>();
+  const roomNewMessageEvent = useRef<RealtimeChannel>();
+  const queryClient = useQueryClient();
 
-  const sendMessage = useCallback(
-    (message: string) => {
-      console.log("qwe");
-      getIdSingleWithData<IRoom>(data!, async (item) => {
-        item.messages.push({
-          message: message,
-          sendBy: user!.uid,
-          created_at: Timestamp.fromDate(new Date()),
+  useIonViewWillEnter(() => {
+    messagesService.setRoomUid(props.match.params.roomUid);
+    roomNewMessageEvent.current = messagesService
+      .listenRoom(props.match.params.roomUid, (m) => onNewMessage(m))
+      .subscribe();
+  });
+
+  useIonViewWillLeave(() => {
+    roomNewMessageEvent.current?.unsubscribe();
+  });
+
+  const onNewMessage = useCallback((m: INewMessagePayload) => {
+    queryClient.setQueryData<IMessageWithProfiles[]>(
+      [QueryKeys.Chat, props.match.params.roomUid],
+      (v) => {
+        const updatedState = produce(v, (draft) => {
+          draft?.push(m.payload);
         });
 
-        item.recentMessage = {
-          message: message,
-          sendBy: user!.uid,
-          created_at: Timestamp.fromDate(new Date()),
-        };
-
-        await messagesService.sendMessage(
-          item,
-          item,
-          props.match.params.roomUid
-        );
-      });
-    },
-    [data]
-  );
-
-  const listenRoom = useCallback(() => {
-    return messagesService.listenRoom(
-      props.match.params.roomUid,
-      async (item) => {
-        if (item?.data()) {
-          const newItem = await messagesService.mapUserDetails(
-            item.data()!,
-            item.id
-          );
-
-          getIdSingleWithData(newItem, async (data) => {
-            for (const message of data.messages) {
-              if (message.sendBy === user!.uid) {
-                setTitle(
-                  message.user!.firstName + " " + message.user!.lastName
-                );
-                break;
-              }
-            }
-          });
-
-          setData(newItem);
-        }
+        return updatedState;
       }
     );
-  }, [user]);
+  }, []);
 
-  useIonViewDidEnter(() => {
-    unsub.current = listenRoom();
+  const query = useQuery<QueryData<typeof messagesQuery>>({
+    queryKey: [QueryKeys.Chat, props.match.params.roomUid],
+    queryFn: () => messagesService.fetchRoom(props.match.params.roomUid),
   });
 
-  useIonViewDidLeave(() => {
-    unsub.current?.call(undefined);
-  });
+  const pageTitle = useMemo(() => {
+    if (query.isLoading) return;
 
-  if (!data) {
+    for (const message of query.data!) {
+      if (message.toId !== user?.id) {
+        const user = message.to as unknown as IUser;
+        return `${user.firstName} ${user.lastName}`;
+      }
+    }
+  }, [query.isLoading]);
+
+  if (query.isLoading) {
     return <AppLoading />;
   }
 
   return (
     <IonPage>
       <AppHeader withBackButton>
-        <IonTitle>{title}</IonTitle>
+        <IonTitle>{pageTitle}</IonTitle>
       </AppHeader>
 
-      <ChatModule
-        sendMessage={(input) => sendMessage(input.message)}
-        data={data}
-      />
+      <ChatModule roomUid={props.match.params.roomUid} data={query!.data!} />
     </IonPage>
   );
 }
