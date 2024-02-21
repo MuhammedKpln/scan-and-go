@@ -1,9 +1,9 @@
-import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
 import {
   IUserWithPhoneAndSocial,
   profileService,
 } from "@/services/profile.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { IonToggleCustomEvent } from "@ionic/core";
 import { IonItem, IonToggle, ToggleChangeEventDetail } from "@ionic/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -15,7 +15,7 @@ interface IMutationVariables {
 }
 
 export default function PhoneVisibility() {
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
 
   const query = useQuery({

@@ -1,7 +1,6 @@
 import AppInfoCard from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import AppModalHeader from "@/components/App/AppModalHeader";
-import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { useGallery } from "@/hooks/useGallery";
 import { QueryKeys } from "@/models/query_keys.model";
@@ -10,6 +9,7 @@ import {
   profileService,
 } from "@/services/profile.service";
 import { storageService } from "@/services/storage.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { Photo } from "@capacitor/camera";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -47,7 +47,7 @@ const profileFormValidator = z.object({
 export default function UpdateProfileModule(props: IProps) {
   const queryClient = useQueryClient();
   const { showToast } = useAppToast();
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const { getPhoto, initialize } = useGallery();
   const [selectedImage, setSelectedImage] = useState<Photo | undefined>();
 

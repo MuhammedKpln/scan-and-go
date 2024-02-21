@@ -1,10 +1,10 @@
 import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
-import { useAuthContext } from "@/context/AuthContext";
 import { INote } from "@/models/note.model";
 import { QueryKeys } from "@/models/query_keys.model";
 import { noteService } from "@/services/note.service";
 import { tagService } from "@/services/tag.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IonButton,
@@ -37,7 +37,7 @@ interface UpdateNoteMutationVariables {
 }
 
 const newNoteFormSchema = z.object({
-  tag: z.number(),
+  tag: z.string(),
   content: z.string(),
   expireAt: z.date(),
 });
@@ -48,6 +48,7 @@ export default function EditNoteModule(props: IProps) {
   const { handleSubmit, control } = useForm<typeof newNoteFormSchema._type>({
     resolver: zodResolver(newNoteFormSchema),
     reValidateMode: "onSubmit",
+    //TODO: fix me
     defaultValues: {
       content: props.note.content,
       expireAt: new Date(props.note.expire_at),
@@ -55,7 +56,7 @@ export default function EditNoteModule(props: IProps) {
     },
   });
 
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const [showToast] = useIonToast();
 
   const tags = useQuery({

@@ -1,6 +1,5 @@
 import AppLoading from "@/components/App/AppLoading";
 import AppModalHeader from "@/components/App/AppModalHeader";
-import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { QueryKeys } from "@/models/query_keys.model";
 import { IUserPrivateSocialMediaAccounts } from "@/models/user.model";
@@ -8,6 +7,7 @@ import {
   IUserWithPhoneAndSocial,
   profileService,
 } from "@/services/profile.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IonButton,
@@ -39,7 +39,7 @@ type IUpdateTwitterMutationVars = Pick<
 >;
 
 export default function TwitterSettingModal(props: IProps) {
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
 
   const userSocialAccounts = useQuery<IUserPrivateSocialMediaAccounts>({

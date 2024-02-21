@@ -56,6 +56,7 @@ const messages: IPredefinedMessages[] = [
 ];
 
 export default function SendMessageModule(props: IProps) {
+  //TODO: refactor
   const [selectedMessage, setSelectedMessage] = useState<IPredefinedMessages>();
   const queryClient = useQueryClient();
   const { user } = useAuthContext();

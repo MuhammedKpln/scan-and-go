@@ -1,8 +1,8 @@
-import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { QueryKeys } from "@/models/query_keys.model";
 import { ITag } from "@/models/tag.model";
 import { tagService } from "@/services/tag.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IonButton,
@@ -32,7 +32,7 @@ const editTagFormSchema = z.object({
 
 export default function EditTagModule({ tagUid, tag }: IProps) {
   const queryClient = useQueryClient();
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const { showToast } = useAppToast();
 
   const tagsMutation = useMutation<void, PostgrestError, Partial<ITag>>({

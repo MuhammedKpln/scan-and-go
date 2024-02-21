@@ -1,10 +1,10 @@
 import AppInfoCard from "@/components/App/AppInfoCard";
-import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { INote } from "@/models/note.model";
 import { QueryKeys } from "@/models/query_keys.model";
 import { Routes } from "@/routes/routes";
 import { noteService } from "@/services/note.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { ActionSheet, ActionSheetButtonStyle } from "@capacitor/action-sheet";
 import {
   IonCard,
@@ -30,7 +30,7 @@ interface DeleteMutationVariables {
 }
 
 export default function HomeNotesCard() {
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
   const router = useIonRouter();
   const { showToast } = useAppToast();

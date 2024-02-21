@@ -1,9 +1,9 @@
 import AppInfoCard from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
-import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
 import { ITagWithId } from "@/models/tag.model";
 import { tagService } from "@/services/tag.service";
+import { useAuthStore } from "@/stores/auth.store";
 import {
   IonCard,
   IonCardHeader,
@@ -13,7 +13,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 
 export default function TagsModule() {
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
 
   const queryTags = useQuery<ITagWithId[], void>({
     queryKey: [QueryKeys.Tags, user?.id],

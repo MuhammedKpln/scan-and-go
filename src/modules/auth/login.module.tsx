@@ -1,6 +1,6 @@
-import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { Routes } from "@/routes/routes";
+import { useAuthStore } from "@/stores/auth.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IonButton, IonInput, useIonAlert, useIonRouter } from "@ionic/react";
 import { useCallback } from "react";
@@ -22,7 +22,11 @@ export default function LoginModule() {
   const router = useIonRouter();
   const { showToast } = useAppToast();
   const [presentAlert] = useIonAlert();
-  const { signIn, sendVerificationEmail } = useAuthContext();
+  const sendVerificationEmail = useAuthStore(
+    (state) => state.sendVerificationEmail
+  );
+  const signIn = useAuthStore((state) => state.signIn);
+
   const {
     handleSubmit,
     control,

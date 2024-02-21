@@ -1,10 +1,10 @@
 import AppHeader from "@/components/App/AppHeader";
 import AppLoading from "@/components/App/AppLoading";
-import { useAuthContext } from "@/context/AuthContext";
 import { INote } from "@/models/note.model";
 import { QueryKeys } from "@/models/query_keys.model";
 import EditNoteModule from "@/modules/note/edit_note.module";
 import { Routes } from "@/routes/routes";
+import { useAuthStore } from "@/stores/auth.store";
 import { IonContent, IonPage, IonTitle } from "@ionic/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -17,7 +17,7 @@ export interface EditNotePageProps
 
 export default function EditNotePage(props: EditNotePageProps) {
   const queryClient = useQueryClient();
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
 
   const notes = useMemo(() => {
     return queryClient.getQueryData<INote[]>([QueryKeys.Notes, user?.id]);

@@ -1,6 +1,6 @@
-import { useAuthContext } from "@/context/AuthContext";
 import { IRegisterUserForm } from "@/models/user.model";
 import { Routes } from "@/routes/routes";
+import { useAuthStore } from "@/stores/auth.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IonButton,
@@ -25,7 +25,7 @@ export default function RegisterModule() {
   const [showToast] = useIonToast();
   const router = useIonRouter();
   const [showLoading, dismissLoading] = useIonLoading();
-  const { signUp } = useAuthContext();
+  const signUp = useAuthStore((state) => state.signUp);
   const {
     handleSubmit,
     control,

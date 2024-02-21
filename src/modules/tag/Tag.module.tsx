@@ -1,11 +1,11 @@
 import AppHeader from "@/components/App/AppHeader";
 import AppLoading from "@/components/App/AppLoading";
 import ProfileView from "@/components/ProfileView/ProfileView";
-import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
 import { TagDetailPageProps } from "@/pages/Tag/Tag";
 import { Routes } from "@/routes/routes";
 import { ITagWithRelations, tagService } from "@/services/tag.service";
+import { useAuthStore } from "@/stores/auth.store";
 import {
   IonButton,
   IonButtons,
@@ -22,7 +22,7 @@ import { useCallback, useMemo } from "react";
 export default function TagModule(props: TagDetailPageProps) {
   const [showAlert] = useIonAlert();
   const router = useIonRouter();
-  const { isSignedIn } = useAuthContext();
+  const isSignedIn = useAuthStore((state) => state.isSignedIn);
 
   const fetchTag = useCallback(() => {
     return tagService.fetchTag(props.match.params.tagUid);

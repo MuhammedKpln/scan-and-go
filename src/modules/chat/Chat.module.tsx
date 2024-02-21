@@ -1,6 +1,6 @@
-import { useAuthContext } from "@/context/AuthContext";
 import { IUser } from "@/models/user.model";
 import { messagesQuery, messagesService } from "@/services/messages.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -39,8 +39,8 @@ interface SendMessageMutation {
 }
 
 export default function ChatModule({ data, roomUid }: IProps) {
-  const { user } = useAuthContext();
-  const [parent, enableAnimations] = useAutoAnimate();
+  const user = useAuthStore((state) => state.user);
+  const [parent] = useAutoAnimate();
 
   const form = useForm<typeof newMessageForm._type>({
     resolver: zodResolver(newMessageForm),

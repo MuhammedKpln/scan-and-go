@@ -1,11 +1,11 @@
 import AppInfoCard from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import Chat from "@/components/Chat/Chat";
-import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
 import { IRoom } from "@/models/room.model";
 import { Routes } from "@/routes/routes";
 import { messagesService } from "@/services/messages.service";
+import { useAuthStore } from "@/stores/auth.store";
 import {
   IonContent,
   IonHeader,
@@ -19,7 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function ChatsPage() {
   const router = useIonRouter();
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
 
   const data = useQuery<IRoom[]>({
     queryKey: [QueryKeys.Chats, user?.id],

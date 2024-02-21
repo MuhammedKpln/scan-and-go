@@ -21,16 +21,16 @@ import { IonReactRouter } from "@ionic/react-router";
 import { Suspense } from "react";
 import AppLoading from "./components/App/AppLoading";
 import AppUrlListener from "./components/App/AppUrlListener";
-import { useAuthContext } from "./context/AuthContext";
 import { useAppTheme } from "./hooks/app/useAppTheme";
 import { useSplashScreen } from "./hooks/app/useSplashScreen";
 import AppRoutes from "./routes/routes";
+import { useAuthStore } from "./stores/auth.store";
 import "./theme/variables.scss";
 
 setupIonicReact();
 
 export default function App() {
-  const { isInitialized } = useAuthContext();
+  const isInitialized = useAuthStore((state) => state.isInitialized);
   useAppTheme();
   useSplashScreen();
 

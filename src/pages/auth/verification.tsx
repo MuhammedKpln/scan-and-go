@@ -1,8 +1,8 @@
 import Verification from "@/assets/verification.svg";
 import AppHeader from "@/components/App/AppHeader";
-import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { Routes } from "@/routes/routes";
+import { useAuthStore } from "@/stores/auth.store";
 import {
   IonButton,
   IonContent,
@@ -18,7 +18,10 @@ import { useCallback } from "react";
 import styles from "./verification.module.scss";
 
 export default function VerificationPage() {
-  const { user, sendVerificationEmail } = useAuthContext();
+  const sendVerificationEmail = useAuthStore(
+    (state) => state.sendVerificationEmail
+  );
+  const user = useAuthStore((state) => state.user);
   const { showToast } = useAppToast();
   const router = useIonRouter();
 

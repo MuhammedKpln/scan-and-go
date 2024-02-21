@@ -1,10 +1,10 @@
 import AppHeader from "@/components/App/AppHeader";
 import AppLoading from "@/components/App/AppLoading";
-import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
 import { ITag } from "@/models/tag.model";
 import EditTagModule from "@/modules/tags/edit_tag.module";
 import { Routes } from "@/routes/routes";
+import { useAuthStore } from "@/stores/auth.store";
 import { IonContent, IonPage, IonTitle } from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -15,7 +15,7 @@ export interface EditTagPageProps
   }> {}
 
 export default function EditTagPage(props: EditTagPageProps) {
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
 
   const tagUid = props.match.params.tagUid;
   const tags = useQuery<ITag[]>({

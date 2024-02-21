@@ -1,4 +1,4 @@
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthStore } from "@/stores/auth.store";
 import { Redirect, Route, RouteProps } from "react-router";
 import { Routes } from "./routes";
 
@@ -6,7 +6,7 @@ export default function PrivateRoute({
   component: Component,
   ...rest
 }: RouteProps) {
-  const { isSignedIn } = useAuthContext();
+  const isSignedIn = useAuthStore((state) => state.isSignedIn);
 
   return (
     <Route

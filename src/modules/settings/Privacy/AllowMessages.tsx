@@ -1,10 +1,10 @@
-import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
 import { IUser } from "@/models/user.model";
 import {
   IUserWithPhoneAndSocial,
   profileService,
 } from "@/services/profile.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { IonToggleCustomEvent } from "@ionic/core";
 import {
   IonItem,
@@ -21,7 +21,7 @@ interface IMutationVariables {
 }
 
 export default function AllowMessages() {
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
 
   const query = useQuery<IUser>({
