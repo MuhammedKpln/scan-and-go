@@ -18,7 +18,7 @@ import "@ionic/react/css/text-transformation.css";
 
 /* Theme variables */
 import { IonReactRouter } from "@ionic/react-router";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import AppLoading from "./components/App/AppLoading";
 import AppUrlListener from "./components/App/AppUrlListener";
 import { useAppTheme } from "./hooks/app/useAppTheme";
@@ -31,8 +31,17 @@ setupIonicReact();
 
 export default function App() {
   const isInitialized = useAuthStore((state) => state.isInitialized);
+  const listenToAuthClient = useAuthStore((state) => state.listenToAuthClient);
+
   useAppTheme();
   useSplashScreen();
+  useEffect(() => {
+    const listener = listenToAuthClient();
+
+    return () => {
+      listener.data.subscription.unsubscribe();
+    };
+  }, []);
 
   if (!isInitialized) {
     return <AppLoading message="Starting App..." />;

@@ -54,7 +54,8 @@ export default function ChatPage(props: ChatPageProps) {
 
   const query = useQuery<QueryData<typeof messagesQuery>>({
     queryKey: [QueryKeys.Chat, props.match.params.roomUid],
-    queryFn: () => messagesService.fetchRoom(props.match.params.roomUid),
+    queryFn: () =>
+      messagesService.fetchRoomMessages(props.match.params.roomUid),
   });
 
   const pageTitle = useMemo(() => {

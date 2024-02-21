@@ -1,5 +1,8 @@
-import { IMessage, INewMessagePayload, IRoom } from "@/models/room.model";
-import { QueryData } from "@supabase/supabase-js";
+import {
+  IMessageWithProfiles,
+  INewMessagePayload,
+  IRoom,
+} from "@/models/room.model";
 import { BaseService } from "./base.service";
 import { supabaseClient } from "./supabase.service";
 
@@ -25,6 +28,19 @@ class MessagesService extends BaseService {
   }
 
   async fetchRoom(roomUid: string) {
+    const { data, error } = await this.client
+      .rpc("get_rooms_with_users_profile")
+      .eq("id", roomUid)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data as unknown as IRoom;
+  }
+
+  async fetchRoomMessages(roomUid: string) {
     const { data, error } = await messagesQuery.eq("roomId", roomUid);
 
     if (error) {
@@ -38,33 +54,36 @@ class MessagesService extends BaseService {
     roomUid: string,
     fromId: string,
     toId: string,
-    message: Pick<IMessage, "message">
+    message: string
   ) {
-    const { error, data } = await this.client.from("messages").insert({
-      roomId: roomUid,
-      toId,
-      fromId,
-      ...message,
-    }).select(`*,
+    const { error, data } = await this.client
+      .from("messages")
+      .insert({
+        roomId: roomUid,
+        toId,
+        fromId,
+        message,
+      })
+      .select(
+        `*,
     from:fromId(*),
-    to:toId(*)`);
+    to:toId(*)`
+      )
+      .single();
 
     if (error) {
       throw error;
     }
 
-    await this.sendMessageViaBroadcast(data);
+    await this.sendMessageViaBroadcast(data as unknown as IMessageWithProfiles);
 
-    return data;
+    return data as unknown as IMessageWithProfiles;
   }
 
-  private async sendMessageViaBroadcast(
-    message: QueryData<typeof messagesQuery>
-  ) {
-    console.log(message);
+  private async sendMessageViaBroadcast(message: IMessageWithProfiles) {
     await this.client.realtime.channel(this.roomUid!).send({
       event: "new_message",
-      payload: message[0],
+      payload: message,
       type: "broadcast",
     });
   }
@@ -81,6 +100,24 @@ class MessagesService extends BaseService {
       },
       (event) => callback(event as INewMessagePayload)
     );
+  }
+
+  async createNewRoom(users: string[]) {
+    const { data, error } = await this.client
+      .from("rooms")
+      .insert({
+        users,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    const dataWProfiles = await this.fetchRoom(data.id);
+
+    return dataWProfiles;
   }
 }
 

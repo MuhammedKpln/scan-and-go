@@ -1,3 +1,4 @@
+import { IMessageWithProfiles } from "@/models/room.model";
 import { IUser } from "@/models/user.model";
 import { messagesQuery, messagesService } from "@/services/messages.service";
 import { useAuthStore } from "@/stores/auth.store";
@@ -47,13 +48,13 @@ export default function ChatModule({ data, roomUid }: IProps) {
   });
 
   const sendMessageMutation = useMutation<
-    QueryData<typeof messagesQuery>,
+    IMessageWithProfiles,
     PostgrestError,
     SendMessageMutation
   >({
     mutationKey: [],
     mutationFn: ({ fromId, message, roomUid, toId }) =>
-      messagesService.sendMessage(roomUid, fromId, toId, { message }),
+      messagesService.sendMessage(roomUid, fromId, toId, message),
   });
 
   useEffect(() => {

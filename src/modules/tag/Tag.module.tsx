@@ -13,11 +13,13 @@ import {
   IonIcon,
   IonTitle,
   useIonAlert,
+  useIonModal,
   useIonRouter,
 } from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
 import { chevronBackSharp } from "ionicons/icons";
 import { useCallback, useMemo } from "react";
+import SendMessageModule from "./send_message.module";
 
 export default function TagModule(props: TagDetailPageProps) {
   const [showAlert] = useIonAlert();
@@ -35,8 +37,21 @@ export default function TagModule(props: TagDetailPageProps) {
   });
   const profileData = useMemo(() => tagQuery.data?.profiles, [tagQuery]);
 
-  const sendMessage = useCallback(() => {}, []);
+  const sendMessage = useCallback(() => {
+    showSendMessageModal({
+      initialBreakpoint: 0.5,
+    });
+  }, []);
 
+  const [showSendMessageModal, hideSendMessageModal] = useIonModal(
+    SendMessageModule,
+    {
+      onCancel: () => hideSendMessageModal(undefined, "cancel"),
+      onConfirm: () => hideSendMessageModal(undefined, "confirm"),
+      toUserUid: profileData?.id,
+      toUser: profileData,
+    }
+  );
   const goBack = useCallback(() => {
     router.push(Routes.AppRoot, "root", "replace");
   }, []);

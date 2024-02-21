@@ -1,7 +1,7 @@
 import { queryClient } from "@/Providers";
 import { IRegisterUserForm } from "@/models/user.model";
 import { supabaseClient } from "@/services/supabase.service";
-import { AuthTokenResponse, User } from "@supabase/supabase-js";
+import { AuthTokenResponse, Subscription, User } from "@supabase/supabase-js";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
@@ -12,7 +12,7 @@ type State = {
 };
 
 type Actions = {
-  listenToAuthClient: () => void;
+  listenToAuthClient: () => { data: { subscription: Subscription } };
   logout: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<AuthTokenResponse>;
   signUp: (data: IRegisterUserForm) => Promise<void>;
@@ -73,7 +73,7 @@ export const useAuthStore = create<State & Actions>()(
     },
 
     listenToAuthClient() {
-      supabaseClient.auth.onAuthStateChange((state, session) => {
+      return supabaseClient.auth.onAuthStateChange((state, session) => {
         const updateState: Partial<State> = {};
 
         switch (state) {
