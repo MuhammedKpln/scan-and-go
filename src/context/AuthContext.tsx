@@ -61,8 +61,9 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
           break;
 
         case "SIGNED_OUT":
+          console.log("signed out");
           setUser(undefined);
-          setIsSignedIn(true);
+          setIsSignedIn(false);
           client.clear();
           break;
 

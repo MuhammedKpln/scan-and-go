@@ -26,6 +26,7 @@ export default function LoginPage() {
             </IonText>
             <IonText color="medium">Welcome back to the app</IonText>
           </div>
+
           <LoginModule />
 
           <DividerWithText text="eller forsätt med" />

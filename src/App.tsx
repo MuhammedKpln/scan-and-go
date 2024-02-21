@@ -20,7 +20,7 @@ import "@ionic/react/css/text-transformation.css";
 import TagPage from "@/pages/Tag/Tag";
 import { IonReactRouter } from "@ionic/react-router";
 import { Suspense } from "react";
-import { Route } from "react-router";
+import { Redirect, Route } from "react-router";
 import AppLoading from "./components/App/AppLoading";
 import AppUrlListener from "./components/App/AppUrlListener";
 import AppOrLogin from "./components/AppOrLogin";
@@ -42,11 +42,11 @@ import "./theme/variables.scss";
 setupIonicReact();
 
 export default function App() {
-  const authContext = useAuthContext();
+  const { isSignedIn, isInitialized } = useAuthContext();
   useAppTheme();
   useSplashScreen();
 
-  if (!authContext.isInitialized) {
+  if (!isInitialized) {
     return <AppLoading message="Starting App..." />;
   }
 
@@ -57,7 +57,12 @@ export default function App() {
           <AppUrlListener />
 
           <IonRouterOutlet>
-            <Route path={Routes.AppRoot} render={() => <TabRoutes />} />
+            <Route
+              path={Routes.AppRoot}
+              render={() =>
+                isSignedIn ? <TabRoutes /> : <Redirect to={Routes.Login} />
+              }
+            />
             <Route path={Routes.Login} component={LoginPage} exact />
             <Route path={Routes.Register} component={RegisterPage} exact />
             <Route
