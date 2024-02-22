@@ -78,6 +78,11 @@ export default function ChatModule({ data, roomUid }: IProps) {
           toId = message.toId;
           break;
         }
+
+        if (message.fromId !== user?.id) {
+          toId = message.fromId;
+          break;
+        }
       }
 
       await sendMessageMutation.mutateAsync({
