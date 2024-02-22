@@ -55,13 +55,6 @@ const messages: IPredefinedMessages[] = [
 ];
 
 export default function SendMessageModule(props: IProps) {
-  //TODO: refactor
-  //TODO: Fetch all rooms, if there is a room with same users, merge into it. if not create it
-  // 1- Send message
-  // 2- Checks for rooms locally/remote
-  // 3- If there is a room, grab room id merge message into that room, if not create new room.
-  // Maybe even better sticking with cloud function?
-
   const [selectedMessage, setSelectedMessage] = useState<IPredefinedMessages>();
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);

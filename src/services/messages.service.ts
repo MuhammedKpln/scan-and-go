@@ -68,14 +68,6 @@ class MessagesService extends BaseService {
       }
     );
 
-    // await this.client
-    //   .channel(`${RealtimeChannels.RoomWithUid}${roomUid}`)
-    //   .send({
-    //     event: RealtimEvents.OnNewMessage,
-    //     type: "broadcast",
-    //     payload: data,
-    //   });
-
     if (error) {
       throw error;
     }
