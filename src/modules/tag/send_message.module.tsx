@@ -1,7 +1,7 @@
 import AppModalHeader from "@/components/App/AppModalHeader";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { QueryKeys } from "@/models/query_keys.model";
-import { IMessage, IMessageWithProfiles, IRoom } from "@/models/room.model";
+import { IMessage, IMessageWithProfiles } from "@/models/room.model";
 import { IUser } from "@/models/user.model";
 import { messagesService } from "@/services/messages.service";
 import { useAuthStore } from "@/stores/auth.store";
@@ -29,14 +29,9 @@ interface IProps {
 }
 
 interface SendMessageMutationVariables {
-  roomUid: string;
   fromId: string;
   toId: string;
   message: string;
-}
-
-interface CreateRoomMutationVariables {
-  users: string[];
 }
 
 interface IPredefinedMessages {
@@ -78,35 +73,18 @@ export default function SendMessageModule(props: IProps) {
     []
   );
 
-  const createRoomMutation = useMutation<
-    IRoom,
-    void,
-    CreateRoomMutationVariables
-  >({
-    mutationFn: ({ users }) => messagesService.createNewRoom(users),
-    onSuccess(data) {
-      queryClient.setQueryData<IRoom[]>([QueryKeys.Chats, user?.id], (v) => {
-        const updatedState = produce(v, (draft) => {
-          draft?.push(data);
-        });
-
-        return updatedState;
-      });
-    },
-  });
-
   const sendMessageMutation = useMutation<
     IMessageWithProfiles,
     PostgrestError,
     SendMessageMutationVariables
   >({
-    mutationFn: ({ fromId, message, roomUid, toId }) => {
-      return messagesService.sendMessage(roomUid, fromId, toId, message);
+    mutationFn: ({ fromId, message, toId }) => {
+      return messagesService.sendMessage(fromId, toId, message);
     },
 
-    onSuccess(data, variables) {
+    onSuccess(data) {
       queryClient.setQueryData<IMessage[]>(
-        [QueryKeys.Chat, variables.roomUid],
+        [QueryKeys.Chat, data.roomId],
         (v) => {
           const updatedState = produce(v, (draft) => {
             draft?.push(data);
@@ -119,20 +97,13 @@ export default function SendMessageModule(props: IProps) {
   });
 
   const sendMessage = useCallback(async () => {
-    createRoomMutation
+    sendMessageMutation
       .mutateAsync({
-        users: [props.toUserUid, user!.id],
+        fromId: user!.id,
+        message: selectedMessage?.name ?? "Hej!",
+        toId: props.toUserUid,
       })
-      .then((r) => {
-        sendMessageMutation
-          .mutateAsync({
-            fromId: user!.id,
-            message: selectedMessage?.name ?? "Hej!",
-            roomUid: r.id,
-            toId: props.toUserUid,
-          })
-          .then(onSuccess);
-      })
+      .then(onSuccess)
       .catch(onFailure);
 
     function onSuccess() {

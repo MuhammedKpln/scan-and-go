@@ -27,11 +27,11 @@ export default function ChatPage(props: ChatPageProps) {
   const user = useAuthStore((state) => state.user);
   const roomNewMessageEvent = useRef<RealtimeChannel>();
   const queryClient = useQueryClient();
+  const roomId = useMemo(() => props.match.params.roomUid, []);
 
   useIonViewWillEnter(() => {
-    messagesService.setRoomUid(props.match.params.roomUid);
     roomNewMessageEvent.current = messagesService
-      .listenRoom(props.match.params.roomUid, (m) => onNewMessage(m))
+      .listenRoom(roomId, (m) => onNewMessage(m))
       .subscribe();
   });
 
@@ -40,8 +40,9 @@ export default function ChatPage(props: ChatPageProps) {
   });
 
   const onNewMessage = useCallback((m: INewMessagePayload) => {
+    console.log("se");
     queryClient.setQueryData<IMessageWithProfiles[]>(
-      [QueryKeys.Chat, props.match.params.roomUid],
+      [QueryKeys.Chat, roomId],
       (v) => {
         const updatedState = produce(v, (draft) => {
           draft?.push(m.payload);
@@ -53,9 +54,8 @@ export default function ChatPage(props: ChatPageProps) {
   }, []);
 
   const query = useQuery<QueryData<typeof messagesQuery>>({
-    queryKey: [QueryKeys.Chat, props.match.params.roomUid],
-    queryFn: () =>
-      messagesService.fetchRoomMessages(props.match.params.roomUid),
+    queryKey: [QueryKeys.Chat, roomId],
+    queryFn: () => messagesService.fetchRoomMessages(roomId),
   });
 
   const pageTitle = useMemo(() => {
@@ -79,7 +79,7 @@ export default function ChatPage(props: ChatPageProps) {
         <IonTitle>{pageTitle}</IonTitle>
       </AppHeader>
 
-      <ChatModule roomUid={props.match.params.roomUid} data={query!.data!} />
+      <ChatModule roomUid={roomId} data={query!.data!} />
     </IonPage>
   );
 }

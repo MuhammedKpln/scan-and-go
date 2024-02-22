@@ -1,29 +1,127 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
-console.log("Hello from Functions!")
+import { corsHeaders } from "../_shared/http/cors.ts";
+import error_response from "../_shared/http/error_response.ts";
+import success_response from "../_shared/http/success_response.ts";
+import { SUPABASE_ADMIN } from "../_shared/supabaseAdmin.ts";
+import { Tables } from "../_shared/types.ts";
+import handle_new_message_request_data from "./handle_new_message_request_data.ts";
+import { IInsertNewMessageData } from "./types.ts";
 
 Deno.serve(async (req) => {
-  const { name } = await req.json()
-  const data = {
-    message: `Hello ${name}!`,
+  // This is needed if you're planning to invoke your function from a browser.
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
 
-  return new Response(
-    JSON.stringify(data),
-    { headers: { "Content-Type": "application/json" } },
-  )
-})
+  const requestData = await req.json();
+  const data = await requestIsValid(requestData);
 
-/* To invoke locally:
+  if (!data) {
+    return error_response("Not valid");
+  }
 
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
+  const users = [data.fromId, data.toId];
 
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/handle_new_message' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
+  if (data.roomId) {
+    // If roomId provided, just insert new message.
+    return applyChanges(data.roomId, data);
+  } else {
+    const room = await fetchRoomByUsers(users);
+    // Else check for rooms with given user uuids, if exists insert new message.
 
-*/
+    if (room) {
+      return applyChanges(room.id, data);
+    } else {
+      // Else create new room and insert
+      const room = await createNewRoom(users);
+
+      if (!room) {
+        return error_response("Biseyler oldu ama hadi hayirlisi");
+      }
+
+      return applyChanges(room.id, data);
+    }
+  }
+});
+
+async function broadcastToChannel(roomId: string, message: Tables<"messages">) {
+  const channel = SUPABASE_ADMIN.realtime.channel(`room#${roomId}`);
+
+  await channel.send({
+    event: "new_message",
+    type: "broadcast",
+    payload: message,
+  });
+}
+
+const applyChanges = async (
+  roomId: string,
+  data: typeof handle_new_message_request_data._type
+) => {
+  const message = await insertNewMessage({
+    ...data,
+    roomId,
+  });
+
+  if (message) {
+    await broadcastToChannel(roomId, message);
+    return success_response(message);
+  }
+
+  return error_response("Opps");
+};
+
+async function insertNewMessage(data: IInsertNewMessageData) {
+  const { data: response, error } = await SUPABASE_ADMIN.from("messages")
+    .insert({
+      message: data.message,
+      roomId: data.roomId,
+      fromId: data.fromId,
+      toId: data.toId,
+    })
+    .select("*, from:fromId(*), to:toId(*)")
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return response;
+}
+
+async function createNewRoom(users: string[]) {
+  const { data, error } = await SUPABASE_ADMIN.from("rooms")
+    .insert({
+      users,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    return false;
+  }
+
+  return data;
+}
+
+async function fetchRoomByUsers(users: string[]) {
+  const { data, error } = await SUPABASE_ADMIN.from("rooms")
+    .select()
+    .containedBy("users", users)
+    .single();
+
+  if (error) {
+    return false;
+  }
+
+  return data;
+}
+
+async function requestIsValid(request: unknown) {
+  const validator = handle_new_message_request_data;
+
+  try {
+    return await validator.parseAsync(request);
+  } catch (error) {
+    return false;
+  }
+}

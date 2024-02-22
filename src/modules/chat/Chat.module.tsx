@@ -54,7 +54,7 @@ export default function ChatModule({ data, roomUid }: IProps) {
   >({
     mutationKey: [],
     mutationFn: ({ fromId, message, roomUid, toId }) =>
-      messagesService.sendMessage(roomUid, fromId, toId, message),
+      messagesService.sendMessage(fromId, toId, message, roomUid),
   });
 
   useEffect(() => {
