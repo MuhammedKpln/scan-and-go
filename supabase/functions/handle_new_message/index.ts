@@ -3,6 +3,7 @@ import error_response from "../_shared/http/error_response.ts";
 import success_response from "../_shared/http/success_response.ts";
 import { SUPABASE_ADMIN } from "../_shared/supabaseAdmin.ts";
 import { Tables } from "../_shared/types.ts";
+import { INotificationType } from "../_shared/types/notification.ts";
 import handle_new_message_request_data from "./handle_new_message_request_data.ts";
 import { IInsertNewMessageData } from "./types.ts";
 
@@ -64,6 +65,7 @@ const applyChanges = async (
 
   if (message) {
     await broadcastToChannel(roomId, message);
+    await addNewNotification(data.fromId, data.toId, data.message);
     return success_response(message);
   }
 
@@ -124,4 +126,19 @@ async function requestIsValid(request: unknown) {
   } catch (error) {
     return false;
   }
+}
+
+async function addNewNotification(
+  fromId: string,
+  toId: string,
+  message: string
+) {
+  const { error } = await SUPABASE_ADMIN.from("notifications").insert({
+    fromUserId: fromId,
+    toUserId: toId,
+    type: INotificationType.Message,
+    body: message,
+  });
+
+  if (error) throw error;
 }

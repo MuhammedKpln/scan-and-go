@@ -132,6 +132,48 @@ export type Database = {
           }
         ]
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          fromUserId: string
+          id: string
+          toUserId: string
+          type: number
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          fromUserId: string
+          id?: string
+          toUserId: string
+          type?: number
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          fromUserId?: string
+          id?: string
+          toUserId?: string
+          type?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_fromUserId_fkey"
+            columns: ["fromUserId"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_toUserId_fkey"
+            columns: ["toUserId"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       phone_numbers: {
         Row: {
           created_at: string
