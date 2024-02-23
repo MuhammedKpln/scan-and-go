@@ -1,16 +1,17 @@
-import { useAuthContext } from "@/context/AuthContext";
+import { Routes } from "@/routes/routes";
+import { useAuthStore } from "@/stores/auth.store";
 import { IonIcon, IonItem, IonLabel, useIonRouter } from "@ionic/react";
 import { logOutOutline } from "ionicons/icons";
 import { useCallback } from "react";
 
 export default function LogoutSetting() {
   const router = useIonRouter();
-  const { logout } = useAuthContext();
+  const logout = useAuthStore((state) => state.logout);
 
   const onClickItem = useCallback(async () => {
     await logout();
 
-    router.push("/", "root", "replace");
+    router.push(Routes.Login, "root", "replace");
   }, []);
 
   return (

@@ -1,9 +1,13 @@
+import AppLoading from "@/components/App/AppLoading";
 import AppModalHeader from "@/components/App/AppModalHeader";
-import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { QueryKeys } from "@/models/query_keys.model";
 import { IUserPrivateSocialMediaAccounts } from "@/models/user.model";
-import { profileService } from "@/services/profile.service";
+import {
+  IUserWithPhoneAndSocial,
+  profileService,
+} from "@/services/profile.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IonButton,
@@ -14,8 +18,9 @@ import {
   IonPage,
   IonTitle,
 } from "@ionic/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { produce } from "immer";
+import { useCallback, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -25,52 +30,75 @@ interface IProps {
 }
 
 const formValidator = z.object({
-  twitterUsername: z.string().startsWith("@"),
+  twitterUsername: z.string(),
 });
 
-interface IUpdateTwitterMutationVars {
-  twitter: string;
-}
+type IUpdateTwitterMutationVars = Pick<
+  IUserPrivateSocialMediaAccounts,
+  "twitter"
+>;
 
 export default function TwitterSettingModal(props: IProps) {
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
 
-  const userSocialAccounts = useMemo(() => {
-    return queryClient.getQueryData<IUserPrivateSocialMediaAccounts>([
-      QueryKeys.UserSocialMediaAccounts,
-      user?.uid,
-    ]);
-  }, []);
+  const userSocialAccounts = useQuery<IUserPrivateSocialMediaAccounts>({
+    queryKey: [QueryKeys.UserSocialMediaAccounts, user?.id],
+    networkMode: "offlineFirst",
+    queryFn: () => profileService.fetchSocialMediaAccounts(user!.id),
+  });
 
   const mutation = useMutation<void, void, IUpdateTwitterMutationVars>({
-    mutationKey: [QueryKeys.UserSocialMediaAccounts, user?.uid],
+    mutationKey: [QueryKeys.UserSocialMediaAccounts, user?.id],
     mutationFn: ({ twitter }) => {
-      return profileService.updateSocialMediaAccounts(user!.uid, {
+      return profileService.updateSocialMediaAccounts(user!.id, {
         twitter,
       });
     },
-    onMutate(variables) {
-      queryClient.setQueryData<IUserPrivateSocialMediaAccounts>(
-        [QueryKeys.UserSocialMediaAccounts, user?.uid],
+    onSuccess(_, variables) {
+      queryClient.setQueryData<IUserWithPhoneAndSocial>(
+        [QueryKeys.ProfileWithRelations, user?.id],
         (v) => {
-          return {
-            ...v,
-            ...variables,
-          };
+          if (v) {
+            const updatedState = produce(v, (draft) => {
+              if (draft.social_media_accounts.length > 0) {
+                draft.social_media_accounts[0].twitter = variables.twitter;
+              }
+            });
+
+            return updatedState;
+          }
+        }
+      );
+
+      queryClient.setQueryData<IUserPrivateSocialMediaAccounts>(
+        [QueryKeys.UserSocialMediaAccounts, user?.id],
+        (v) => {
+          if (v) {
+            const updatedState = produce(v, (draft) => {
+              draft.twitter = variables.twitter;
+            });
+
+            return updatedState;
+          }
         }
       );
     },
   });
 
   const { showToast } = useAppToast();
-  const { control, handleSubmit } = useForm<typeof formValidator._type>({
+  const { control, handleSubmit, setValue } = useForm<
+    typeof formValidator._type
+  >({
     resolver: zodResolver(formValidator),
     reValidateMode: "onSubmit",
-    defaultValues: {
-      twitterUsername: userSocialAccounts?.twitter,
-    },
   });
+
+  useEffect(() => {
+    if (!userSocialAccounts.isSuccess) return;
+
+    setValue("twitterUsername", userSocialAccounts.data.twitter!);
+  }, [userSocialAccounts]);
 
   const onSubmit = useCallback(async (inputs: typeof formValidator._type) => {
     try {
@@ -91,6 +119,10 @@ export default function TwitterSettingModal(props: IProps) {
       });
     }
   }, []);
+
+  if (userSocialAccounts.isLoading) {
+    return <AppLoading />;
+  }
 
   return (
     <IonPage>
@@ -117,7 +149,7 @@ export default function TwitterSettingModal(props: IProps) {
                 className={`${!error ? "ion-valid" : "ion-invalid"} ${
                   isTouched ? "ion-touched" : null
                 }`}
-                placeholder="@username"
+                placeholder="Your Twitter username"
                 helperText="Your Twitter username"
                 onIonChange={onChange}
                 value={value}

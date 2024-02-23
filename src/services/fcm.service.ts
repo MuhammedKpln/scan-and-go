@@ -1,24 +1,15 @@
-import { IFcmToken } from "@/models/fcm-token.model";
-import { FirebaseCollections } from "@/models/firebase_collections.model";
-import { Timestamp, doc, setDoc } from "firebase/firestore";
 import { BaseService } from "./base.service";
 
 class FcmService extends BaseService {
-  constructor() {
-    super(FirebaseCollections.FcmTokens);
-  }
+  async registerNewToken(userUid: string, token: string) {
+    const { error } = await this.client.from("fcm_tokens").insert({
+      created_at: new Date().toISOString(),
+      token,
+      userId: userUid,
+    });
 
-  registerNewToken(userUid: string, token: string) {
-    const docRef = doc(
-      this.db,
-      FirebaseCollections.FcmTokens,
-      userUid
-    ).withConverter<IFcmToken>(this.converter());
-
-    try {
-      setDoc(docRef, { timestamp: Timestamp.fromDate(new Date()), token });
-    } catch (error) {
-      throw new Error(error as string);
+    if (error) {
+      throw error;
     }
   }
 }

@@ -1,20 +1,22 @@
-import { Timestamp } from "firebase/firestore";
+import { Tables } from "./supabase";
 import { IUser } from "./user.model";
 
 export interface IRoom {
+  id: string;
   users: string[];
-  created_at: Timestamp;
-  recentMessage: IMessage;
-  messages: IMessage[];
+  profiles: IUser[];
+  created_at: string;
 }
 
-export interface IRoomWithId {
-  [id: string]: IRoom;
+export type IMessage = Tables<"messages">;
+
+export interface IMessageWithProfiles extends IMessage {
+  from: IUser;
+  to: IUser;
 }
 
-export interface IMessage {
-  sendBy: string;
-  message: string;
-  created_at: Timestamp;
-  user?: IUser;
+export interface INewMessagePayload {
+  payload: IMessageWithProfiles;
+  event: string;
+  type: "broadcast";
 }

@@ -1,12 +1,3 @@
-import { Timestamp } from "firebase/firestore";
+import { Tables } from "./supabase";
 
-export type INote = {
-  content: string;
-  userUid: string;
-  tagUid: string;
-  expire_at: Timestamp;
-  created_at: Timestamp;
-};
-export type INoteWithId = {
-  [id: string]: INote;
-};
+export type INote = Tables<"notes">;

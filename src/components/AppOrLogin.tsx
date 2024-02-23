@@ -1,11 +1,11 @@
-import { useAuthContext } from "@/context/AuthContext";
 import { Routes } from "@/routes/routes";
+import { useAuthStore } from "@/stores/auth.store";
 import { Redirect } from "react-router";
 
 export default function AppOrLogin() {
-  const auth = useAuthContext();
+  const isSignedIn = useAuthStore((state) => state.isSignedIn);
 
-  if (auth.isSignedIn) {
+  if (isSignedIn) {
     return <Redirect to={Routes.AppRoot} />;
   }
 

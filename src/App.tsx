@@ -17,36 +17,33 @@ import "@ionic/react/css/text-alignment.css";
 import "@ionic/react/css/text-transformation.css";
 
 /* Theme variables */
-import TagPage from "@/pages/Tag/Tag";
 import { IonReactRouter } from "@ionic/react-router";
-import { Suspense } from "react";
-import { Route } from "react-router";
+import { Suspense, useEffect } from "react";
 import AppLoading from "./components/App/AppLoading";
 import AppUrlListener from "./components/App/AppUrlListener";
-import AppOrLogin from "./components/AppOrLogin";
-import { useAuthContext } from "./context/AuthContext";
 import { useAppTheme } from "./hooks/app/useAppTheme";
 import { useSplashScreen } from "./hooks/app/useSplashScreen";
-import ChatPage from "./pages/Chats/Chat";
-import EditNotePage from "./pages/EditNote/EditNote";
-import NoteDetailsPage from "./pages/NoteDetails/NoteDetails";
-import SettingsPage from "./pages/Settings/Settings";
-import EditTagPage from "./pages/Tags/EditTag";
-import RegisterPage from "./pages/auth/Register/Register";
-import LoginPage from "./pages/auth/login";
-import VerificationPage from "./pages/auth/verification";
-import { Routes } from "./routes/routes";
-import TabRoutes from "./routes/tab.route";
+import AppRoutes from "./routes/routes";
+import { useAuthStore } from "./stores/auth.store";
 import "./theme/variables.scss";
 
 setupIonicReact();
 
 export default function App() {
-  const authContext = useAuthContext();
+  const isInitialized = useAuthStore((state) => state.isInitialized);
+  const listenToAuthClient = useAuthStore((state) => state.listenToAuthClient);
+
   useAppTheme();
   useSplashScreen();
+  useEffect(() => {
+    const listener = listenToAuthClient();
 
-  if (!authContext.isInitialized) {
+    return () => {
+      listener.data.subscription.unsubscribe();
+    };
+  }, []);
+
+  if (!isInitialized) {
     return <AppLoading message="Starting App..." />;
   }
 
@@ -57,25 +54,7 @@ export default function App() {
           <AppUrlListener />
 
           <IonRouterOutlet>
-            <Route path={Routes.AppRoot} render={() => <TabRoutes />} />
-            <Route path={Routes.Login} component={LoginPage} exact />
-            <Route path={Routes.Register} component={RegisterPage} exact />
-            <Route
-              path={Routes.Verification}
-              component={VerificationPage}
-              exact
-            />
-            <Route path={Routes.Settings} component={SettingsPage} exact />
-            <Route path={Routes.Tag} component={TagPage} exact />
-            <Route
-              path={`${Routes.Notes}/:id`}
-              exact
-              component={NoteDetailsPage}
-            />
-            <Route path={Routes.Chat} component={ChatPage} exact />
-            <Route path={Routes.EditTag} component={EditTagPage} exact />
-            <Route path={Routes.EditNote} component={EditNotePage} exact />
-            <Route path="/" exact component={AppOrLogin} />
+            <AppRoutes />
           </IonRouterOutlet>
         </IonReactRouter>
       </Suspense>

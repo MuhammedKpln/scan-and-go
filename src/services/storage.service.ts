@@ -1,16 +1,33 @@
-import { StorageFolders } from "@/models/storage.model";
-import { ref, uploadString } from "firebase/storage";
-import { storage } from "./firebase.service";
+import { Photo } from "@capacitor/camera";
+import { decode } from "base64-arraybuffer";
+import mime from "mime";
+import { BaseService } from "./base.service";
 
-class StorageService {
-  private storage = storage;
-  uploadAvatar(userUid: string, data_url: string) {
-    const storageRef = ref(
-      this.storage,
-      `${StorageFolders.Avatars}/${userUid}`
-    );
+class StorageService extends BaseService {
+  async uploadAvatar(userUid: string, photo: Photo) {
+    const path = `${userUid}/avatar.${photo.format}`;
+    const mimeType = mime.getType(photo.format);
 
-    return uploadString(storageRef, data_url, "data_url");
+    if (!mimeType) return;
+
+    const { data, error } = await this.client.storage
+      .from("avatars")
+      .upload(path, decode(photo.base64String!), {
+        upsert: true,
+        contentType: mimeType,
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
+  getAavatarURL(userUid: string): string {
+    const { data } = this.client.storage.from("avatars").getPublicUrl(userUid);
+
+    return data.publicUrl;
   }
 }
 
