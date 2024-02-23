@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "predev": "yarn gen-supabase-types",
-    "prebuild": "gen-supabase-types",
+    "prebuild": "yarn gen-supabase-types",
     "build": "ionic build --prod",
     "preview": "vite preview",
     "seed-emulator": "tsx ./scripts/seed_emulator.ts",
