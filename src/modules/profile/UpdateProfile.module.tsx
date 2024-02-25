@@ -1,12 +1,15 @@
 import AppInfoCard from "@/components/App/AppInfoCard";
+import AppLoading from "@/components/App/AppLoading";
 import AppModalHeader from "@/components/App/AppModalHeader";
-import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { useGallery } from "@/hooks/useGallery";
 import { QueryKeys } from "@/models/query_keys.model";
-import { IUser } from "@/models/user.model";
-import { profileService } from "@/services/profile.service";
+import {
+  IUserWithPhoneAndSocial,
+  profileService,
+} from "@/services/profile.service";
 import { storageService } from "@/services/storage.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { Photo } from "@capacitor/camera";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -24,9 +27,8 @@ import {
   IonTextarea,
   IonTitle,
 } from "@ionic/react";
-import { useQueryClient } from "@tanstack/react-query";
-import { User, updateProfile } from "firebase/auth";
-import { getDownloadURL } from "firebase/storage";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import mime from "mime";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -42,26 +44,33 @@ const profileFormValidator = z.object({
   bio: z.string(),
 });
 
-type MutableUser = {
-  -readonly [Value in keyof User]: User[Value];
-};
-
 export default function UpdateProfileModule(props: IProps) {
   const queryClient = useQueryClient();
   const { showToast } = useAppToast();
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const { getPhoto, initialize } = useGallery();
   const [selectedImage, setSelectedImage] = useState<Photo | undefined>();
 
-  const userProfile = useMemo(() => {
-    return queryClient.getQueryData<IUser>([QueryKeys.Profile, user?.uid]);
-  }, [user]);
+  const userProfile = useQuery<IUserWithPhoneAndSocial>({
+    queryKey: [QueryKeys.ProfileWithRelations, user?.id],
+    queryFn: () => profileService.fetchProfile(user!.id),
+    networkMode: "offlineFirst",
+  });
+
+  const selectedImageAsBlob = useMemo(
+    () =>
+      selectedImage &&
+      `data:${mime.getType(selectedImage.format)};base64,${
+        selectedImage.base64String
+      }`,
+    [selectedImage]
+  );
 
   const form = useForm<typeof profileFormValidator._type>({
     defaultValues: {
-      bio: userProfile?.bio,
-      firstName: userProfile?.firstName,
-      lastName: userProfile?.lastName,
+      bio: userProfile?.data?.bio ?? undefined,
+      firstName: userProfile?.data?.firstName,
+      lastName: userProfile?.data?.lastName,
     },
     resolver: zodResolver(profileFormValidator),
   });
@@ -80,41 +89,34 @@ export default function UpdateProfileModule(props: IProps) {
 
   const onSave = useCallback(
     async (items: typeof profileFormValidator._type) => {
-      const updatedFields: IUser = {
-        ...userProfile!,
+      const updatedFields: IUserWithPhoneAndSocial = {
+        ...userProfile.data!,
         firstName: items.firstName,
         lastName: items.lastName,
         bio: items.bio,
       };
 
-      const updateProfileFields: Partial<
-        Pick<MutableUser, "displayName" | "photoURL">
-      > = {
-        displayName: `${items.firstName} ${items.lastName}`,
-      };
-
       if (selectedImage) {
-        const ref = await storageService.uploadAvatar(
-          user!.uid,
-          selectedImage.dataUrl!
-        );
+        const ref = await storageService.uploadAvatar(user!.id, selectedImage);
 
-        const photoURL = await getDownloadURL(ref.ref);
+        if (ref) {
+          const photoURL = storageService.getAavatarURL(ref.path);
 
-        updatedFields.profileImageRef = photoURL;
-        updateProfileFields.photoURL = photoURL;
+          updatedFields.profileImageUrl = photoURL;
+        }
       }
 
-      updateProfile(user!, updateProfileFields);
+      await profileService.updateProfile(user!.id, updatedFields);
 
-      await profileService.updateProfile(user!.uid, updatedFields);
-
-      queryClient.setQueryData<IUser>([QueryKeys.Profile, user?.uid], (v) => {
-        return {
-          ...v,
-          ...updatedFields,
-        } as IUser;
-      });
+      queryClient.setQueryData<IUserWithPhoneAndSocial>(
+        [QueryKeys.ProfileWithRelations, user?.id],
+        (v) => {
+          return {
+            ...v,
+            ...updatedFields,
+          };
+        }
+      );
 
       showToast({
         message: "Profilsidan har uppdaterats",
@@ -124,6 +126,10 @@ export default function UpdateProfileModule(props: IProps) {
     },
     [selectedImage, user, userProfile]
   );
+
+  if (userProfile.isLoading) {
+    return <AppLoading />;
+  }
 
   return (
     <IonPage>
@@ -144,7 +150,9 @@ export default function UpdateProfileModule(props: IProps) {
               <div className="flex justify-center flex-col items-center">
                 <IonAvatar className="cursor-pointer" onClick={onClickAvatar}>
                   <IonImg
-                    src={selectedImage?.dataUrl ?? userProfile?.profileImageRef}
+                    src={
+                      selectedImageAsBlob ?? userProfile!.data!.profileImageUrl!
+                    }
                   />
                 </IonAvatar>
 
@@ -197,9 +205,9 @@ export default function UpdateProfileModule(props: IProps) {
                     name={field.name}
                     onIonChange={field.onChange}
                     onIonBlur={field.onBlur}
-                    value={field.value}
                     label="Biografi"
                     labelPlacement="floating"
+                    value={field.value}
                   />
                 )}
               />

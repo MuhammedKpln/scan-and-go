@@ -5,7 +5,7 @@ export function useGallery() {
   const getPhoto = useCallback(() => {
     return Camera.getPhoto({
       source: CameraSource.Photos,
-      resultType: CameraResultType.DataUrl,
+      resultType: CameraResultType.Base64,
     });
   }, []);
 

@@ -1,10 +1,3 @@
-export type ITag = {
-  userUid: string;
-  tagName: string;
-  tagNote: string;
-  isAvailable: boolean;
-};
+import { Tables } from "./supabase";
 
-export type ITagWithId = {
-  [key: string]: ITag;
-};
+export type ITag = Tables<"tags">;

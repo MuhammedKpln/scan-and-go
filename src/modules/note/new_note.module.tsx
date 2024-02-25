@@ -1,11 +1,10 @@
 import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
-import { useAuthContext } from "@/context/AuthContext";
-import { renderIdWithData } from "@/helpers";
 import { INote } from "@/models/note.model";
 import { QueryKeys } from "@/models/query_keys.model";
 import { noteService } from "@/services/note.service";
 import { tagService } from "@/services/tag.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IonButton,
@@ -27,8 +26,8 @@ import {
   useIonAlert,
   useIonToast,
 } from "@ionic/react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Timestamp } from "firebase/firestore";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { produce } from "immer";
 import { useCallback, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -44,37 +43,43 @@ const newNoteFormSchema = z.object({
 });
 
 export default function NewNoteModule(props: IProps) {
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<typeof newNoteFormSchema._type>({
+  const queryClient = useQueryClient();
+  const { handleSubmit, control } = useForm<typeof newNoteFormSchema._type>({
     resolver: zodResolver(newNoteFormSchema),
     reValidateMode: "onSubmit",
   });
   const [showAlert, dismissAlert] = useIonAlert();
 
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const [showToast] = useIonToast();
 
   const tags = useQuery({
-    queryKey: [QueryKeys.Tags, user?.uid],
-    queryFn: () => tagService.fetchTags(user!.uid),
+    queryKey: [QueryKeys.Tags, user?.id],
+    queryFn: () => tagService.fetchTags(user!.id),
   });
 
-  const addNewDoc = useMutation<any, any, INote>({
-    mutationKey: [QueryKeys.Notes, user?.uid],
+  const addNewDoc = useMutation<INote, void, Omit<INote, "id">>({
+    mutationKey: [QueryKeys.Notes, user?.id],
     mutationFn: (note) => noteService.addNewNote(note),
+    onSuccess(data) {
+      queryClient.setQueryData<INote[]>([QueryKeys.Notes, user?.id], (v) => {
+        const updatedState = produce(v, (draft) => {
+          draft?.push(data);
+        });
+
+        return updatedState;
+      });
+    },
   });
 
   const onSubmitForm = useCallback(
     async (data: typeof newNoteFormSchema._type) => {
       await addNewDoc.mutateAsync({
         content: data.content,
-        expire_at: Timestamp.fromDate(data.expireAt),
-        userUid: user!.uid,
-        created_at: Timestamp.fromDate(new Date()),
-        tagUid: data.tag,
+        expire_at: data.expireAt.toISOString(),
+        userId: user!.id,
+        created_at: new Date().toISOString(),
+        tagId: data.tag,
       });
 
       props.onDismiss(undefined, "confirm");
@@ -142,13 +147,11 @@ export default function NewNoteModule(props: IProps) {
                     onIonChange={onChange}
                     onIonBlur={onBlur}
                   >
-                    {renderIdWithData(tags.data!, (item, id) => {
-                      return (
-                        <IonSelectOption value={id} key={id}>
-                          {item.tagName}
-                        </IonSelectOption>
-                      );
-                    })}
+                    {tags.data?.map((tag) => (
+                      <IonSelectOption value={tag.id} key={tag.id}>
+                        {tag.name}
+                      </IonSelectOption>
+                    ))}
                   </IonSelect>
                 )}
               />
@@ -180,7 +183,7 @@ export default function NewNoteModule(props: IProps) {
               <Controller
                 control={control}
                 name="expireAt"
-                render={({ field: { onBlur, onChange, value } }) => (
+                render={({ field: { onBlur, onChange } }) => (
                   <IonDatetime
                     id="datetime"
                     presentation="time"

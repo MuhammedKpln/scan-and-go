@@ -1,11 +1,8 @@
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { Routes } from "@/routes/routes";
-import { FirebaseAuthService } from "@/services/firebase-auth.service";
-import { auth } from "@/services/firebase.service";
-import { signInWithEmailAndPassword } from "@firebase/auth";
+import { useAuthStore } from "@/stores/auth.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IonButton, IonInput, useIonAlert, useIonRouter } from "@ionic/react";
-import { User } from "firebase/auth";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -25,6 +22,11 @@ export default function LoginModule() {
   const router = useIonRouter();
   const { showToast } = useAppToast();
   const [presentAlert] = useIonAlert();
+  const sendVerificationEmail = useAuthStore(
+    (state) => state.sendVerificationEmail
+  );
+  const signIn = useAuthStore((state) => state.signIn);
+
   const {
     handleSubmit,
     control,
@@ -34,9 +36,8 @@ export default function LoginModule() {
     reValidateMode: "onChange",
   });
 
-  const sendVerificationMail = useCallback(async (user: User) => {
-    const authService = new FirebaseAuthService(auth);
-    await authService.sendVerificationEmail(user);
+  const _sendVerificationMail = useCallback(async (email: string) => {
+    await sendVerificationEmail(email);
 
     showToast({
       message: "Email verification succesfully send!",
@@ -46,18 +47,18 @@ export default function LoginModule() {
 
   const onSubmit = useCallback(async (data: Inputs) => {
     try {
-      const user = await signInWithEmailAndPassword(
-        auth,
-        data.email,
-        data.password
-      );
+      const user = await signIn(data.email, data.password);
 
-      if (user.user.emailVerified) {
+      if (user.error) {
+        return;
+      }
+
+      if (user.data.user.email_confirmed_at) {
         showToast({
           message: "Logged in successfully.",
           status: ToastStatus.Success,
         });
-        router.push("/");
+        router.push(Routes.AppRoot, "forward", "replace");
       } else {
         await presentAlert({
           message: "You need to activate you're account before proceeding.",
@@ -65,7 +66,7 @@ export default function LoginModule() {
           buttons: [
             {
               text: "Send verification mail",
-              handler: () => sendVerificationMail(user.user),
+              handler: () => _sendVerificationMail(user.data.user.email!),
             },
             {
               text: "Cancel",

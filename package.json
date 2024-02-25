@@ -5,11 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "predev": "yarn gen-supabase-types",
+    "prebuild": "yarn gen-supabase-types",
     "build": "ionic build --prod",
     "preview": "vite preview",
     "seed-emulator": "tsx ./scripts/seed_emulator.ts",
     "test.unit": "vitest",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "gen-supabase-types": "npx supabase gen types typescript --project-id \"$PROJECT_REF\" > src/models/supabase.ts"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.10.0"
@@ -28,17 +31,21 @@
     "@capacitor/push-notifications": "^5.1.1",
     "@capacitor/splash-screen": "^5.0.6",
     "@capacitor/status-bar": "5.0.6",
+    "@formkit/auto-animate": "^0.8.1",
     "@hookform/resolvers": "^3.3.4",
     "@ionic/pwa-elements": "^3.2.2",
     "@ionic/react": "^7.7.0",
     "@ionic/react-router": "^7.7.0",
+    "@supabase/supabase-js": "^2.39.6",
     "@tanstack/react-query": "^5.18.0",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
+    "base64-arraybuffer": "^1.0.2",
     "date-fns": "^3.3.1",
-    "firebase": "^10.7.2",
     "framer-motion": "^11.0.3",
+    "immer": "^10.0.3",
     "ionicons": "^7.0.0",
+    "mime": "^4.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.49.3",

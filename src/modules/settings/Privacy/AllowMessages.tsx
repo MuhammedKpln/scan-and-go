@@ -1,9 +1,17 @@
-import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
 import { IUser } from "@/models/user.model";
-import { profileService } from "@/services/profile.service";
+import {
+  IUserWithPhoneAndSocial,
+  profileService,
+} from "@/services/profile.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { IonToggleCustomEvent } from "@ionic/core";
-import { IonItem, IonToggle, ToggleChangeEventDetail } from "@ionic/react";
+import {
+  IonItem,
+  IonSkeletonText,
+  IonToggle,
+  ToggleChangeEventDetail,
+} from "@ionic/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 
@@ -13,17 +21,13 @@ interface IMutationVariables {
 }
 
 export default function AllowMessages() {
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
 
-  const query = useQuery({
-    queryKey: [QueryKeys.Profile, user?.uid],
+  const query = useQuery<IUser>({
+    queryKey: [QueryKeys.ProfileWithRelations, user?.id],
     networkMode: "offlineFirst",
-    queryFn: async () => {
-      const profile = await profileService.fetchProfile(user!.uid);
-
-      return profile.data();
-    },
+    queryFn: () => profileService.fetchProfile(user!.id),
   });
 
   const updateShowMessages = useMutation<void, void, IMutationVariables>({
@@ -33,14 +37,17 @@ export default function AllowMessages() {
       });
     },
     onSuccess(_data, variables) {
-      const qKey = [QueryKeys.Profile, user?.uid];
+      const qKeyWithRelations = [QueryKeys.ProfileWithRelations, user?.id];
 
-      queryClient.setQueryData<IUser>(qKey, (v) => {
-        return {
-          ...v,
-          sendMessageAllowed: variables.checked,
-        } as IUser;
-      });
+      queryClient.setQueryData<IUserWithPhoneAndSocial>(
+        qKeyWithRelations,
+        (v) => {
+          return {
+            ...v,
+            sendMessageAllowed: variables.checked,
+          } as IUserWithPhoneAndSocial;
+        }
+      );
     },
   });
 
@@ -48,11 +55,15 @@ export default function AllowMessages() {
     async (e: IonToggleCustomEvent<ToggleChangeEventDetail<boolean>>) => {
       await updateShowMessages.mutateAsync({
         checked: e.target.checked,
-        userUid: user!.uid,
+        userUid: user!.id,
       });
     },
     []
   );
+
+  if (query.isLoading) {
+    return <IonSkeletonText animated={true} className="h-5" />;
+  }
 
   return (
     <IonItem>

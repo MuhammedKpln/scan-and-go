@@ -1,4 +1,3 @@
-import { useAuthContext } from "@/context/AuthContext";
 import ChatsPage from "@/pages/Chats/Chats";
 import HomePage from "@/pages/Home/Home";
 import ProfilePage from "@/pages/Profile/ProfilePage";
@@ -18,28 +17,13 @@ import {
   personCircleOutline,
   qrCodeOutline,
 } from "ionicons/icons";
-import { lazy, useEffect } from "react";
-import { Redirect, Route, useHistory } from "react-router";
+import { lazy } from "react";
+import { Redirect, Route } from "react-router";
 import { Routes } from "./routes";
 
 const ScanPage = lazy(() => import("@/pages/Scan"));
 
 export default function TabRoutes() {
-  const router = useHistory();
-  const auth = useAuthContext();
-
-  useEffect(() => {
-    const unregister = router.listen(() => {
-      if (router.location.pathname.startsWith("/app")) {
-        if (!auth.isSignedIn) {
-          router.replace("/");
-        }
-      }
-    });
-
-    return unregister;
-  }, [auth]);
-
   return (
     <IonTabs>
       <IonRouterOutlet>
