@@ -36,11 +36,7 @@ export default function AppRoutes() {
   return (
     <>
       <Route path={Routes.AppRoot} render={() => <TabRoutes />} />
-      <PrivateRoute
-        path={Routes.Verification}
-        component={VerificationPage}
-        exact
-      />
+      <Route path={Routes.Verification} component={VerificationPage} exact />
       <PrivateRoute path={Routes.Settings} component={SettingsPage} exact />
       <PrivateRoute path={Routes.Chat} component={ChatPage} />
       <PrivateRoute
