@@ -11,10 +11,10 @@ import {
   IonText,
   IonTitle,
   useIonRouter,
-  useIonViewDidEnter,
 } from "@ionic/react";
 import { motion } from "framer-motion";
 import { useCallback } from "react";
+import { Redirect } from "react-router";
 import styles from "./verification.module.scss";
 
 export default function VerificationPage() {
@@ -25,19 +25,6 @@ export default function VerificationPage() {
   const { showToast } = useAppToast();
   const router = useIonRouter();
 
-  useIonViewDidEnter(() => {
-    if (user?.email_confirmed_at) {
-      showToast({
-        message: "Du har nu verifierad ditt emejl!",
-        status: ToastStatus.Success,
-      });
-
-      router.push(Routes.AppRoot, "root", "replace", {
-        unmount: true,
-      });
-    }
-  });
-
   const onClickResend = useCallback(async () => {
     await sendVerificationEmail(user!.email!);
 
@@ -46,6 +33,17 @@ export default function VerificationPage() {
       status: ToastStatus.Success,
     });
   }, [user]);
+
+  if (
+    router.routeInfo.search === `?verified=true` &&
+    user?.email_confirmed_at
+  ) {
+    showToast({
+      message: "Du har nu verifierad ditt emejl!",
+      status: ToastStatus.Success,
+    });
+    return <Redirect to={Routes.AppRoot} />;
+  }
 
   return (
     <IonPage>
