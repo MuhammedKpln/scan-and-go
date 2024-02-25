@@ -43,3 +43,7 @@ google-services.json
 
 # Android
 android/key.properties
+
+# Supabase
+supabase/.temp
+supabase/.branches
