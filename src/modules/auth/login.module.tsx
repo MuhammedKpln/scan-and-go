@@ -58,7 +58,7 @@ export default function LoginModule() {
           message: "Logged in successfully.",
           status: ToastStatus.Success,
         });
-        router.push(Routes.AppRoot, "forward", "replace");
+        router.push(Routes.Home, "forward", "replace");
       } else {
         await presentAlert({
           message: "You need to activate you're account before proceeding.",
