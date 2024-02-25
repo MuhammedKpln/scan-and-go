@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 
 export default function IsAllowedNotification() {
   const { isNative } = useIsNative();
-  const [showAlert, setShowAlert] = useState<boolean>(true);
+  const [showAlert, setShowAlert] = useState<boolean>(false);
 
   useEffect(() => {
     async function check() {
