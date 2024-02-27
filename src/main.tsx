@@ -7,14 +7,15 @@ import Providers from "./Providers";
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
-SplashScreen.show();
 
-defineCustomElements(window);
+SplashScreen.show().then(() => {
+  defineCustomElements(window);
 
-root.render(
-  <React.StrictMode>
-    <Providers>
-      <App />
-    </Providers>
-  </React.StrictMode>
-);
+  root.render(
+    <React.StrictMode>
+      <Providers>
+        <App />
+      </Providers>
+    </React.StrictMode>
+  );
+});

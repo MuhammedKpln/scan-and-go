@@ -22,6 +22,7 @@ import { Suspense, useEffect } from "react";
 import AppLoading from "./components/App/AppLoading";
 import AppUrlListener from "./components/App/AppUrlListener";
 import { useAppTheme } from "./hooks/app/useAppTheme";
+import { useIsNative } from "./hooks/app/useIsNative";
 import { useSplashScreen } from "./hooks/app/useSplashScreen";
 import AppRoutes from "./routes/routes";
 import { useAuthStore } from "./stores/auth.store";
@@ -30,22 +31,23 @@ import "./theme/variables.scss";
 setupIonicReact();
 
 export default function App() {
-  const isInitialized = useAuthStore((state) => state.isInitialized);
   const listenToAuthClient = useAuthStore((state) => state.listenToAuthClient);
-
+  const { isNative } = useIsNative(false);
   useAppTheme();
-  useSplashScreen();
+  const { showLoading, hideLoading } = useSplashScreen();
+
   useEffect(() => {
     const listener = listenToAuthClient();
 
+    if (!isNative) {
+      showLoading("Värmer upp...");
+    }
+
     return () => {
+      hideLoading();
       listener.data.subscription.unsubscribe();
     };
   }, []);
-
-  if (!isInitialized) {
-    return <AppLoading message="Starting App..." />;
-  }
 
   return (
     <IonApp>
