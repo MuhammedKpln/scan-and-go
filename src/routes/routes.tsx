@@ -1,6 +1,7 @@
 import AppOrLogin from "@/components/AppOrLogin";
 import ChatPage from "@/pages/Chats/Chat";
 import EditNotePage from "@/pages/EditNote/EditNote";
+import NewTagPage from "@/pages/NewTag/NewTag";
 import NoteDetailsPage from "@/pages/NoteDetails/NoteDetails";
 import SettingsPage from "@/pages/Settings/Settings";
 import TagPage from "@/pages/Tag/Tag";
@@ -30,6 +31,7 @@ export enum Routes {
   Tag = "/tag/:tagUid",
   EditNote = "/edit-note/:noteUid",
   Verification = "/auth/verification",
+  NewTag = "/new-tag/:tagUid",
 }
 
 export default function AppRoutes() {
@@ -50,6 +52,7 @@ export default function AppRoutes() {
       <PublicRoute path={Routes.Login} component={LoginPage} exact />
       <PublicRoute path={Routes.Register} component={RegisterPage} exact />
       <Route path="/" exact component={AppOrLogin} />
+      <PrivateRoute path={Routes.NewTag} exact component={NewTagPage} />
     </>
   );
 }

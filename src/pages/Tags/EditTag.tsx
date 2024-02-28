@@ -44,6 +44,8 @@ export default function EditTagPage(props: EditTagPageProps) {
     return <AppLoading />;
   }
 
+  console.log(tag);
+
   return (
     <IonPage>
       <AppHeader withBackButton>

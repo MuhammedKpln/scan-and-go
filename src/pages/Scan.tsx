@@ -1,40 +1,41 @@
-import { useIsNative } from "@/hooks/app/useIsNative";
+import AppHeader from "@/components/App/AppHeader";
 import ScanModule from "@/modules/scan/Scan.module";
+import { Routes } from "@/routes/routes";
 import {
+  IonButton,
+  IonContent,
   IonPage,
-  useIonModal,
+  IonTitle,
   useIonRouter,
-  useIonViewDidEnter,
-  useIonViewWillLeave,
 } from "@ionic/react";
-import { useCallback } from "react";
 
 export default function ScanPage() {
   const router = useIonRouter();
-  const { isNative } = useIsNative(true);
-  const [showModal, hideModal] = useIonModal(ScanModule, {
-    onCancel: () => hideModal(undefined, "cancel"),
-  });
+  // useEffect(() => {
+  //   if (isNative.current) {
+  //     showModal();
+  //   }
 
-  const onExit = useCallback(() => {
-    if (router.canGoBack()) {
-      router.goBack();
-    } else {
-      router.push("/app");
-    }
-  }, []);
+  //   return () => {
+  //     hideModal(undefined, "cancel");
+  //   };
+  // }, [isNative]);
 
-  useIonViewWillLeave(() => {
-    hideModal(undefined, "cancel");
-  });
+  function selam() {
+    router.push(Routes.Settings);
+  }
 
-  useIonViewDidEnter(() => {
-    if (isNative.current) {
-      showModal({
-        onWillDismiss: onExit,
-      });
-    }
-  });
+  return (
+    <IonPage>
+      <AppHeader>
+        <IonTitle>selam</IonTitle>
+      </AppHeader>
 
-  return <IonPage></IonPage>;
+      <IonContent>
+        <IonButton id="ss">selam</IonButton>
+
+        <ScanModule onCancel={selam} />
+      </IonContent>
+    </IonPage>
+  );
 }

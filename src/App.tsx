@@ -39,7 +39,7 @@ export default function App() {
   useEffect(() => {
     const listener = listenToAuthClient();
 
-    if (!isNative) {
+    if (!isNative.current) {
       showLoading("Värmer upp...");
     }
 

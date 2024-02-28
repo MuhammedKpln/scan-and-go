@@ -1,4 +1,5 @@
 import {
+  Barcode,
   BarcodeFormat,
   BarcodeScannedEvent,
   BarcodeScanner,
@@ -7,15 +8,17 @@ import {
 import { Capacitor } from "@capacitor/core";
 import { useIonAlert } from "@ionic/react";
 import { useCallback, useRef } from "react";
+import { ToastStatus, useAppToast } from "./useAppToast";
 
 interface IProps {
-  onBarcodeScanned: (e: BarcodeScannedEvent) => void;
+  onBarcodeScanned?: (e: BarcodeScannedEvent) => void;
   onBarcodeError: () => void;
 }
 
 export function useBarcodeScanner(props: IProps) {
   const [showAlert] = useIonAlert();
   const googleModulesInstalled = useRef<boolean>(false);
+  const { showToast } = useAppToast();
 
   const initialize = useCallback(async () => {
     const supported = await isSupported();
@@ -61,8 +64,31 @@ export function useBarcodeScanner(props: IProps) {
     return supported;
   }, []);
 
+  const scanSingleBarcode = useCallback((): Promise<Barcode> => {
+    return new Promise(async (resolve) => {
+      document.querySelector("body")?.classList.add("barcode-scanner-active");
+
+      const listener = await BarcodeScanner.addListener(
+        "barcodeScanned",
+        async (result) => {
+          await listener.remove();
+          document
+            .querySelector("body")
+            ?.classList.remove("barcode-scanner-active");
+          await BarcodeScanner.stopScan();
+          resolve(result.barcode);
+        }
+      );
+
+      await BarcodeScanner.startScan();
+    });
+  }, []);
+
   const initializeListeners = useCallback(() => {
-    BarcodeScanner.addListener("barcodeScanned", props.onBarcodeScanned);
+    if (props.onBarcodeScanned) {
+      BarcodeScanner.addListener("barcodeScanned", props.onBarcodeScanned);
+    }
+
     BarcodeScanner.addListener("scanError", props.onBarcodeError);
 
     BarcodeScanner.addListener(
@@ -116,7 +142,12 @@ export function useBarcodeScanner(props: IProps) {
       await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable();
 
     if (!hasModule) {
+      showToast({
+        message: "Installing required modules..",
+        status: ToastStatus.Info,
+      });
       await BarcodeScanner.installGoogleBarcodeScannerModule();
+      googleModulesInstalled.current = true;
     }
   }, []);
 
@@ -124,5 +155,6 @@ export function useBarcodeScanner(props: IProps) {
     initialize,
     startScan,
     stopScan,
+    scanSingleBarcode,
   };
 }

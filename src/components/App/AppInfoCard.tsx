@@ -19,8 +19,7 @@ export default function AppInfoCard(props: IProps) {
       case InfoCardStatus.Error:
         return "danger";
       case InfoCardStatus.Information:
-        return "warning";
-
+        return "secondary";
       default:
         return "warning";
     }
