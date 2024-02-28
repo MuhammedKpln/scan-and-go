@@ -26,6 +26,7 @@ import { useIsNative } from "./hooks/app/useIsNative";
 import { useSplashScreen } from "./hooks/app/useSplashScreen";
 import AppRoutes from "./routes/routes";
 import { useAuthStore } from "./stores/auth.store";
+import { loadIcons } from "./theme/icon";
 import "./theme/variables.scss";
 
 setupIonicReact();
@@ -33,11 +34,12 @@ setupIonicReact();
 export default function App() {
   const listenToAuthClient = useAuthStore((state) => state.listenToAuthClient);
   const { isNative } = useIsNative(false);
-  useAppTheme();
   const { showLoading, hideLoading } = useSplashScreen();
+  useAppTheme();
 
   useEffect(() => {
     const listener = listenToAuthClient();
+    loadIcons();
 
     if (!isNative.current) {
       showLoading("Värmer upp...");
