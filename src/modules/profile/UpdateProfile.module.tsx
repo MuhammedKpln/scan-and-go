@@ -1,6 +1,7 @@
 import AppInfoCard from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import AppModalHeader from "@/components/App/AppModalHeader";
+import AppAvatar from "@/components/Avatar";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { useGallery } from "@/hooks/useGallery";
 import { QueryKeys } from "@/models/query_keys.model";
@@ -13,13 +14,11 @@ import { useAuthStore } from "@/stores/auth.store";
 import { Photo } from "@capacitor/camera";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  IonAvatar,
   IonButton,
   IonButtons,
   IonCard,
   IonCardContent,
   IonContent,
-  IonImg,
   IonInput,
   IonItem,
   IonList,
@@ -148,13 +147,13 @@ export default function UpdateProfileModule(props: IProps) {
           <IonCard>
             <IonCardContent>
               <div className="flex justify-center flex-col items-center">
-                <IonAvatar className="cursor-pointer" onClick={onClickAvatar}>
-                  <IonImg
-                    src={
-                      selectedImageAsBlob ?? userProfile!.data!.profileImageUrl!
-                    }
-                  />
-                </IonAvatar>
+                <AppAvatar
+                  slot="middle"
+                  url={
+                    selectedImageAsBlob ?? userProfile!.data!.profileImageUrl!
+                  }
+                  onClick={onClickAvatar}
+                />
 
                 <IonButton fill="clear" onClick={onClickAvatar}>
                   Välj en bild

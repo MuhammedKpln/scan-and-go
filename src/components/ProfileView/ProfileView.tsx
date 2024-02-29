@@ -1,4 +1,3 @@
-import NO_AVATAR_IMAGE from "@/assets/noavatar.svg";
 import {
   IUser,
   IUserPrivatePhone,
@@ -14,6 +13,7 @@ import {
   IonText,
 } from "@ionic/react";
 import { logoTwitter, phonePortraitOutline } from "ionicons/icons";
+import AppAvatar from "../Avatar";
 import styles from "./ProfileView.module.scss";
 
 interface IProps {
@@ -40,15 +40,8 @@ export default function ProfileView({
   console.log(profileData.profileImageUrl);
   return (
     <div className={styles.container}>
-      <div id="userDetails" className="">
-        <img
-          src={
-            profileData?.profileImageUrl
-              ? profileData.profileImageUrl
-              : NO_AVATAR_IMAGE
-          }
-          className="w-32 h-32 rounded-full"
-        />
+      <div id="userDetails" className="flex flex-col items-center">
+        <AppAvatar url={profileData.profileImageUrl} className="w-32 h-32 " />
 
         <h1>
           {profileData?.firstName} {profileData?.lastName}

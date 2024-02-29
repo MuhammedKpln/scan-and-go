@@ -1,7 +1,5 @@
 import { IUser } from "@/models/user.model";
 import {
-  IonAvatar,
-  IonImg,
   IonItem,
   IonItemOption,
   IonItemOptions,
@@ -10,6 +8,7 @@ import {
   IonText,
 } from "@ionic/react";
 
+import AppAvatar from "../Avatar";
 import styles from "./Chat.module.scss";
 
 interface IProps {
@@ -28,12 +27,7 @@ export default function Chat({
   return (
     <IonItemSliding>
       <IonItem button onClick={onClick} className={styles.selam}>
-        <IonAvatar slot="start">
-          <IonImg
-            alt="Silhouette of a person's head"
-            src="https://ionicframework.com/docs/img/demos/avatar.svg"
-          />
-        </IonAvatar>
+        <AppAvatar url={user.profileImageUrl} />
         <IonText>
           {user.firstName} {user.lastName}
           <IonLabel color="medium">
