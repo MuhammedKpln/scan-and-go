@@ -29,12 +29,11 @@ import { useAuthStore } from "./stores/auth.store";
 import { loadIcons } from "./theme/icon";
 import "./theme/variables.scss";
 
-setupIonicReact({
-  mode: "ios",
-});
+setupIonicReact();
 
 export default function App() {
   const listenToAuthClient = useAuthStore((state) => state.listenToAuthClient);
+  const isInitialized = useAuthStore((state) => state.isInitialized);
   const { isNative } = useIsNative(false);
   const { showLoading, hideLoading } = useSplashScreen();
   useAppTheme();
@@ -44,14 +43,16 @@ export default function App() {
     loadIcons();
 
     if (!isNative.current) {
-      showLoading("Värmer upp...");
+      if (!isInitialized) {
+        showLoading("Värmer upp...");
+      }
     }
 
     return () => {
       hideLoading();
       listener.data.subscription.unsubscribe();
     };
-  }, []);
+  }, [isInitialized]);
 
   return (
     <IonApp>
