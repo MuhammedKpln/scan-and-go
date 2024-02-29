@@ -1,7 +1,29 @@
-.cardStatus {
-    &:before {
-        content: "\A";
-        
-        @apply  w-2 h-2 rounded-full bg-green-600 inline-block mx-2 drop-shadow;
+.container {
+  background: url("../../assets/tags/card_bg.svg") no-repeat,
+    linear-gradient(#064a7d, #642401);
+  border-radius: 1.6rem;
+  min-height: 12.7rem;
+  max-width: 21.9rem;
+
+  @apply flex flex-col text-white p-5 justify-between;
+
+  .cardStatus {
+    @apply text-sm;
+
+    &.active:before {
+      content: "\A";
+
+      @apply w-2 h-2 rounded-full bg-green-600 inline-block mx-2 shadow-sm shadow-green-400;
     }
+
+    &.deactive:before {
+      content: "\A";
+
+      @apply w-2 h-2 rounded-full bg-red-600 inline-block mx-2 shadow-sm shadow-red-400;
+    }
+  }
+
+  .header {
+    @apply flex justify-between;
+  }
 }

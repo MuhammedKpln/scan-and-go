@@ -15,13 +15,15 @@ export default function TagsPage() {
           <IonTitle>Etiketter</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-padding">
+      <IonContent>
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Etiketter</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <TagsModule />
+        <div className="ion-padding">
+          <TagsModule />
+        </div>
       </IonContent>
     </IonPage>
   );
