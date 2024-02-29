@@ -3,9 +3,8 @@
     linear-gradient(#064a7d, #642401);
   border-radius: 1.6rem;
   min-height: 12.7rem;
-  max-width: 21.9rem;
 
-  @apply flex flex-col text-white p-5 justify-between;
+  @apply flex flex-col text-white p-5 justify-between w-full;
 
   .cardStatus {
     @apply text-sm;

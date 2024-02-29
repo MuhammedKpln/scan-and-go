@@ -1,28 +1,62 @@
-import { IonIcon } from "@ionic/react";
+import { Routes } from "@/routes/routes";
+import { IonIcon, useIonRouter } from "@ionic/react";
 import classNames from "classnames";
-import { carOutline } from "ionicons/icons";
+import { format } from "date-fns";
+import { sv } from "date-fns/locale/sv";
+import { motion } from "framer-motion";
 import styles from "./tag_card.module.scss";
 
-export default function TagCard() {
+type IProps = {
+  name: string;
+  note: string;
+  isActive: boolean;
+  icon: string;
+  created_at: string;
+  tagUid: string;
+};
+
+export default function TagCard({
+  icon,
+  isActive,
+  name,
+  note,
+  created_at,
+  tagUid,
+}: IProps) {
+  const history = useIonRouter();
+
   return (
-    <div className={styles.container}>
+    <motion.div
+      whileTap={{
+        scale: 1.05,
+      }}
+      className={styles.container}
+      onClick={() => history.push(Routes.EditTag.replace(":tagUid", tagUid))}
+    >
       <div id="header" className={styles.header}>
         <div
           id="status"
-          className={classNames(styles.cardStatus, styles.deactive)}
+          className={classNames(
+            styles.cardStatus,
+            isActive ? styles.active : styles.deactive
+          )}
         >
-          Active
+          {isActive ? "Aktiv" : "Inaktiv"}
         </div>
 
-        <IonIcon icon={carOutline} size="large" />
+        {icon && <IonIcon icon={icon} size="large" />}
       </div>
 
       <div id="content">
-        <div className="text-lg">Nissan Qashqai</div>
-        <div className="text-sm">Qashqaim</div>
+        <div className="text-lg">{name}</div>
+        <div className="text-sm">{note}</div>
       </div>
 
-      <div id="footer">23 Februari 2024</div>
-    </div>
+      <div id="footer">
+        {format(created_at, "d MMMM y", {
+          locale: sv,
+        })}
+      </div>
+    </motion.div>
   );
 }

@@ -53,7 +53,7 @@ export default function App() {
 
   return (
     <IonApp>
-      <Suspense fallback={<AppLoading message="Loading route..." />}>
+      <Suspense fallback={<AppLoading message="Laddar..." />}>
         <IonReactRouter>
           <AppUrlListener />
 

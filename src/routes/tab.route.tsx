@@ -1,6 +1,12 @@
+import ChatPage from "@/pages/Chats/Chat";
 import ChatsPage from "@/pages/Chats/Chats";
+import EditNotePage from "@/pages/EditNote/EditNote";
 import HomePage from "@/pages/Home/Home";
+import NewTagPage from "@/pages/NewTag/NewTag";
+import NoteDetailsPage from "@/pages/NoteDetails/NoteDetails";
 import ProfilePage from "@/pages/Profile/ProfilePage";
+import SettingsPage from "@/pages/Settings/Settings";
+import EditTagPage from "@/pages/Tags/EditTag";
 import TagsPage from "@/pages/Tags/Tags";
 import {
   IonFabButton,
@@ -19,6 +25,7 @@ import {
 } from "ionicons/icons";
 import { lazy } from "react";
 import { Redirect, Route } from "react-router";
+import PrivateRoute from "./PrivateRoute";
 import { Routes } from "./routes";
 
 const ScanPage = lazy(() => import("@/pages/Scan"));
@@ -43,6 +50,17 @@ export default function TabRoutes() {
         <Route path={Routes.AppRoot} exact>
           <Redirect to={Routes.Home} />
         </Route>
+
+        <PrivateRoute path={Routes.EditTag} component={EditTagPage} exact />
+        <PrivateRoute path={Routes.NewTag} exact component={NewTagPage} />
+        <PrivateRoute path={Routes.EditNote} component={EditNotePage} exact />
+        <PrivateRoute
+          path={`${Routes.Notes}/:id`}
+          exact
+          component={NoteDetailsPage}
+        />
+        <PrivateRoute path={Routes.Settings} component={SettingsPage} exact />
+        <PrivateRoute path={Routes.Chat} component={ChatPage} />
       </IonRouterOutlet>
 
       <IonTabBar slot="bottom">

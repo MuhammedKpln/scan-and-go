@@ -72,7 +72,7 @@ export default function HomeNotesCard() {
     },
   });
 
-  const notes = useQuery({
+  const notes = useQuery<INote[]>({
     queryKey: [QueryKeys.Notes, user?.id],
     queryFn: async () => {
       const notes = await noteService.fetchLatestNotes(user!.id);
@@ -123,10 +123,10 @@ export default function HomeNotesCard() {
           <IonSpinner />
         ) : (
           <IonList>
-            {notes.data && notes.data.length < 1 ? (
+            {notes?.data?.length < 1 ? (
               <AppInfoCard message="Inga temporär notering" />
             ) : (
-              notes!.data!.map((note) => {
+              notes?.data?.map((note) => {
                 const date = formatDistanceToNow(note.expire_at, {
                   addSuffix: true,
                   locale: sv,
