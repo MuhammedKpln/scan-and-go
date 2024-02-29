@@ -1,8 +1,9 @@
+import AppButton from "@/components/AppButton";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { Routes } from "@/routes/routes";
 import { useAuthStore } from "@/stores/auth.store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IonButton, IonInput, useIonAlert, useIonRouter } from "@ionic/react";
+import { IonInput, useIonAlert, useIonRouter } from "@ionic/react";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -26,6 +27,7 @@ export default function LoginModule() {
     (state) => state.sendVerificationEmail
   );
   const signIn = useAuthStore((state) => state.signIn);
+  const signingIn = useAuthStore((state) => state.signingIn);
 
   const {
     handleSubmit,
@@ -133,9 +135,14 @@ export default function LoginModule() {
           name="password"
         />
 
-        <IonButton type="submit" expand="full" shape="round">
+        <AppButton
+          isLoading={signingIn}
+          type="submit"
+          expand="full"
+          shape="round"
+        >
           Logga in
-        </IonButton>
+        </AppButton>
       </form>
     </>
   );

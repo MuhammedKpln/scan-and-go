@@ -10,6 +10,7 @@ type State = {
   isInitialized: boolean;
   user: User | undefined;
   isSignedIn: boolean;
+  signingIn: boolean;
 };
 
 type Actions = {
@@ -26,15 +27,18 @@ export const useAuthStore = create<State & Actions>()(
       isInitialized: false,
       isSignedIn: false,
       user: undefined,
+      signingIn: false,
       async logout() {
         await supabaseClient.auth.signOut();
       },
 
       async signIn(email, password) {
+        set((state) => !state.signingIn);
         const data = await supabaseClient.auth.signInWithPassword({
           email,
           password,
         });
+        set((state) => !state.signingIn);
 
         return data;
       },

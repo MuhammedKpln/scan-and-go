@@ -1,5 +1,6 @@
 import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
+import AppButton from "@/components/AppButton";
 import { INote } from "@/models/note.model";
 import { QueryKeys } from "@/models/query_keys.model";
 import { noteService } from "@/services/note.service";
@@ -13,6 +14,7 @@ import {
   IonDatetime,
   IonDatetimeButton,
   IonHeader,
+  IonImg,
   IonItem,
   IonLabel,
   IonList,
@@ -20,6 +22,7 @@ import {
   IonPopover,
   IonSelect,
   IonSelectOption,
+  IonText,
   IonTextarea,
   IonTitle,
   IonToolbar,
@@ -27,6 +30,7 @@ import {
   useIonToast,
 } from "@ionic/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { produce } from "immer";
 import { useCallback, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -140,19 +144,45 @@ export default function NewNoteModule(props: IProps) {
               <Controller
                 control={control}
                 name="tag"
-                render={({ field: { onBlur, onChange, value } }) => (
-                  <IonSelect
-                    label="Select a tag"
-                    value={value}
-                    onIonChange={onChange}
-                    onIonBlur={onBlur}
-                  >
-                    {tags.data?.map((tag) => (
-                      <IonSelectOption value={tag.id} key={tag.id}>
-                        {tag.name}
-                      </IonSelectOption>
-                    ))}
-                  </IonSelect>
+                render={({
+                  field: { onBlur, onChange, value },
+                  formState: { errors },
+                }) => (
+                  <div className="flex flex-col w-full">
+                    <IonSelect
+                      placeholder="Select a tag"
+                      value={value}
+                      onIonChange={onChange}
+                      onIonBlur={onBlur}
+                    >
+                      <div slot="label">
+                        Välj en etikett
+                        <IonText color="danger">(*)</IonText>
+                      </div>
+                      {tags.data?.map((tag) => (
+                        <IonSelectOption value={tag.id} key={tag.id}>
+                          <IonImg src={"w"} />
+                          {tag.name}
+                        </IonSelectOption>
+                      ))}
+                    </IonSelect>
+                    {errors.tag && (
+                      <motion.div
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 260,
+                          damping: 20,
+                        }}
+                      >
+                        <AppInfoCard
+                          message={errors!.tag!.message!}
+                          status={InfoCardStatus.Error}
+                        />
+                      </motion.div>
+                    )}
+                  </div>
                 )}
               />
             </IonItem>
@@ -160,15 +190,37 @@ export default function NewNoteModule(props: IProps) {
               <Controller
                 control={control}
                 name="content"
-                render={({ field: { onBlur, onChange, value } }) => (
-                  <IonTextarea
-                    placeholder="Not detaylari"
-                    labelPlacement="floating"
-                    label="Not detaylari"
-                    onIonChange={onChange}
-                    onIonBlur={onBlur}
-                    value={value}
-                  ></IonTextarea>
+                render={({
+                  field: { onBlur, onChange, value },
+                  formState: { errors },
+                }) => (
+                  <div className="flex flex-col w-full">
+                    <IonTextarea
+                      placeholder="Not detaylari"
+                      labelPlacement="floating"
+                      label="Not detaylari"
+                      onIonChange={onChange}
+                      onIonBlur={onBlur}
+                      value={value}
+                    ></IonTextarea>
+
+                    {errors.content && (
+                      <motion.div
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 260,
+                          damping: 20,
+                        }}
+                      >
+                        <AppInfoCard
+                          message={errors!.content!.message!}
+                          status={InfoCardStatus.Error}
+                        />
+                      </motion.div>
+                    )}
+                  </div>
                 )}
               />
             </IonItem>
@@ -183,29 +235,52 @@ export default function NewNoteModule(props: IProps) {
               <Controller
                 control={control}
                 name="expireAt"
-                render={({ field: { onBlur, onChange } }) => (
-                  <IonDatetime
-                    id="datetime"
-                    presentation="time"
-                    onIonBlur={onBlur}
-                    onIonChange={(e) =>
-                      onChange(new Date(e.target.value as string))
-                    }
-                    locale="sv-SE"
-                  />
+                render={({
+                  field: { onBlur, onChange },
+                  formState: { errors },
+                }) => (
+                  <div className="flex flex-col w-full">
+                    <IonDatetime
+                      id="datetime"
+                      presentation="time"
+                      onIonBlur={onBlur}
+                      onIonChange={(e) =>
+                        onChange(new Date(e.target.value as string))
+                      }
+                      locale="sv-SE"
+                    />
+
+                    {errors.expireAt && (
+                      <motion.div
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 260,
+                          damping: 20,
+                        }}
+                      >
+                        <AppInfoCard
+                          message={errors!.expireAt!.message!}
+                          status={InfoCardStatus.Error}
+                        />
+                      </motion.div>
+                    )}
+                  </div>
                 )}
               />
             </IonContent>
           </IonPopover>
 
-          <IonButton
+          <AppButton
+            isLoading={addNewDoc.isPending}
             type="submit"
             expand="full"
             shape="round"
             className="ion-padding"
           >
             Publish temporary note
-          </IonButton>
+          </AppButton>
         </form>
       </IonContent>
     </IonPage>

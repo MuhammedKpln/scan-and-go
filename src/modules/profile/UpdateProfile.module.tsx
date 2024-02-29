@@ -1,10 +1,12 @@
 import AppInfoCard from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import AppModalHeader from "@/components/App/AppModalHeader";
+import AppButton from "@/components/AppButton";
 import AppAvatar from "@/components/Avatar";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { useGallery } from "@/hooks/useGallery";
 import { QueryKeys } from "@/models/query_keys.model";
+import { IUser } from "@/models/user.model";
 import {
   IUserWithPhoneAndSocial,
   profileService,
@@ -26,7 +28,7 @@ import {
   IonTextarea,
   IonTitle,
 } from "@ionic/react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import mime from "mime";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -54,6 +56,11 @@ export default function UpdateProfileModule(props: IProps) {
     queryKey: [QueryKeys.ProfileWithRelations, user?.id],
     queryFn: () => profileService.fetchProfile(user!.id),
     networkMode: "offlineFirst",
+  });
+  const updateProfileMutation = useMutation<void, void, Partial<IUser>>({
+    mutationFn: (variables) => {
+      return profileService.updateProfile(user!.id, variables);
+    },
   });
 
   const selectedImageAsBlob = useMemo(
@@ -105,7 +112,7 @@ export default function UpdateProfileModule(props: IProps) {
         }
       }
 
-      await profileService.updateProfile(user!.id, updatedFields);
+      await updateProfileMutation.mutateAsync(updatedFields);
 
       queryClient.setQueryData<IUserWithPhoneAndSocial>(
         [QueryKeys.ProfileWithRelations, user?.id],
@@ -136,7 +143,12 @@ export default function UpdateProfileModule(props: IProps) {
         <IonTitle>Uppdatera profil</IonTitle>
         {form.formState.isValid && (
           <IonButtons slot="end">
-            <IonButton onClick={form.handleSubmit(onSave)}>Spara</IonButton>
+            <AppButton
+              onClick={form.handleSubmit(onSave)}
+              isLoading={updateProfileMutation.isPending}
+            >
+              Spara
+            </AppButton>
           </IonButtons>
         )}
       </AppModalHeader>
