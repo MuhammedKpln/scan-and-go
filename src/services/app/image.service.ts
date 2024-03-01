@@ -33,12 +33,12 @@ class ImageService {
     const path = this.getPath(src);
 
     try {
-      await Filesystem.writeFile({
+      return await Filesystem.writeFile({
         path,
         data,
       });
     } catch (error) {
-      console.error(error);
+      return false;
     }
   }
 
@@ -46,11 +46,17 @@ class ImageService {
     const path = this.getPath(src);
 
     try {
-      const { data } = await Filesystem.readFile({
+      const fileExists = await Filesystem.stat({
         path,
       });
+      if (fileExists) {
+        const { data } = await Filesystem.readFile({
+          path,
+        });
+        return this.base64ToBlob(src, data as string);
+      }
 
-      return this.base64ToBlob(src, data as string);
+      return false;
     } catch (error) {
       return false;
     }
