@@ -1,3 +1,4 @@
+import ScanModule from "@/modules/scan/Scan.module";
 import ChatPage from "@/pages/Chats/Chat";
 import ChatsPage from "@/pages/Chats/Chats";
 import EditNotePage from "@/pages/EditNote/EditNote";
@@ -15,6 +16,7 @@ import {
   IonTabBar,
   IonTabButton,
   IonTabs,
+  useIonModal,
 } from "@ionic/react";
 import {
   albumsOutline,
@@ -23,14 +25,22 @@ import {
   personCircleOutline,
   qrCodeOutline,
 } from "ionicons/icons";
-import { lazy } from "react";
+import { useCallback } from "react";
 import { Redirect, Route } from "react-router";
 import PrivateRoute from "./PrivateRoute";
 import { Routes } from "./routes";
 
-const ScanPage = lazy(() => import("@/pages/Scan"));
-
 export default function TabRoutes() {
+  const [showModal, hideModal] = useIonModal(ScanModule, {
+    onCancel: () => {
+      hideModal(undefined, "cancel");
+    },
+  });
+
+  const onClickScanTab = useCallback(() => {
+    showModal();
+  }, []);
+
   return (
     <IonTabs>
       <IonRouterOutlet>
@@ -40,7 +50,6 @@ export default function TabRoutes() {
         <Route path={Routes.Tags} exact>
           <TagsPage />
         </Route>
-        <Route path={Routes.Scan} component={ScanPage} exact />
         <Route path={Routes.Chats} exact>
           <ChatsPage />
         </Route>
@@ -70,7 +79,7 @@ export default function TabRoutes() {
         <IonTabButton tab="tags" href={Routes.Tags}>
           <IonIcon aria-hidden="true" icon={albumsOutline} />
         </IonTabButton>
-        <IonTabButton tab="scan" href={Routes.Scan}>
+        <IonTabButton tab="scan" onClick={onClickScanTab}>
           <IonFabButton>
             <IonIcon aria-hidden="true" icon={qrCodeOutline} />
           </IonFabButton>
