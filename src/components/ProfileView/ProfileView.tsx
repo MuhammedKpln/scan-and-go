@@ -6,13 +6,13 @@ import {
 import {
   IonButton,
   IonIcon,
-  IonImg,
   IonItem,
   IonLabel,
   IonList,
   IonText,
 } from "@ionic/react";
 import { logoTwitter, phonePortraitOutline } from "ionicons/icons";
+import AppImage from "../App/AppImage";
 import AppAvatar from "../Avatar";
 import styles from "./ProfileView.module.scss";
 
@@ -62,7 +62,7 @@ export default function ProfileView({
       </IonItem>
 
       <div id="userQr" className={styles.qrCodeContainer}>
-        <IonImg
+        <AppImage
           src="https://docs.lightburnsoftware.com/img/QRCode/ExampleCode.png"
           className="w-36 h-36"
         />
