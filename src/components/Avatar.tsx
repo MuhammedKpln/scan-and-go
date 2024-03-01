@@ -7,7 +7,7 @@ interface IProps extends React.ComponentProps<typeof IonAvatar> {
 export default function AppAvatar({ url, ...rest }: IProps) {
   return (
     <IonAvatar {...rest}>
-      <IonImg src={url ?? NO_AVATAR_IMAGE} />
+      {rest.children ? rest.children : <IonImg src={url ?? NO_AVATAR_IMAGE} />}
     </IonAvatar>
   );
 }

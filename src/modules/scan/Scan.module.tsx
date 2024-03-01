@@ -4,17 +4,33 @@ import { QueryKeys } from "@/models/query_keys.model";
 import { Routes } from "@/routes/routes";
 import { tagService } from "@/services/tag.service";
 import { Barcode, BarcodeScanner } from "@capacitor-mlkit/barcode-scanning";
-import { IonButton, useIonAlert } from "@ionic/react";
+import { IonButton, useIonAlert, useIonModal } from "@ionic/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import TagDialogModule from "../tag/tag_dialog/tag_dialog.module";
 
 interface IProps {
   onCancel: (route: string) => void;
 }
 export default function ScanModule(props: IProps) {
+  const [tagUid, setTagUid] = useState<string | undefined>();
+  const [showTagDialog, hideTagDialog] = useIonModal(TagDialogModule, {
+    tagUid,
+    onClose: () => {
+      hideTagDialog(undefined, "confirm");
+      scanBarcode();
+    },
+  });
   const [showAlert] = useIonAlert();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    return () => {
+      console.log("Selam");
+      hideTagDialog(undefined, "confirm");
+    };
+  }, []);
 
   const onBarcodeScanned = useCallback(async (e: Barcode) => {
     await stopScan();
@@ -49,7 +65,10 @@ export default function ScanModule(props: IProps) {
           ],
         });
       } else {
-        console.log("yok");
+        setTagUid(tag);
+        showTagDialog({
+          initialBreakpoint: 0.75,
+        });
       }
     }
   }, []);
@@ -61,13 +80,16 @@ export default function ScanModule(props: IProps) {
   });
 
   const stopScanAndNavigate = useCallback(async () => {
-    // await stopScan();
     props.onCancel(Routes.AppRoot);
+  }, []);
+
+  const scanBarcode = useCallback(() => {
+    scanSingleBarcode().then((value) => onBarcodeScanned(value));
   }, []);
 
   useEffect(() => {
     initialize().then(async () => {
-      scanSingleBarcode().then((value) => onBarcodeScanned(value));
+      scanBarcode();
     });
 
     return () => {
