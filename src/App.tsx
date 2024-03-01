@@ -29,7 +29,9 @@ import { useAuthStore } from "./stores/auth.store";
 import { loadIcons } from "./theme/icon";
 import "./theme/variables.scss";
 
-setupIonicReact();
+setupIonicReact({
+  mode: "ios",
+});
 
 export default function App() {
   const listenToAuthClient = useAuthStore((state) => state.listenToAuthClient);

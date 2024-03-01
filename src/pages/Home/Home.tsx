@@ -1,6 +1,7 @@
 import { useFcmToken } from "@/hooks/useFcmToken";
 import HomeNotesCard from "@/modules/note/home_notes_card.module";
 import NewNoteModule from "@/modules/note/new_note.module";
+import TagDialogModule from "@/modules/tag/tag_dialog/tag_dialog.module";
 import {
   IonButton,
   IonContent,
@@ -25,9 +26,12 @@ export default function HomePage() {
   const [showNewNoteModal, hideNewNoteModal] = useIonModal(NewNoteModule, {
     onDismiss: (data: string, role: string) => hideNewNoteModal(data, role),
   });
+  const [show, hide] = useIonModal(TagDialogModule, {
+    onDismiss: (data: string, role: string) => hide(data, role),
+  });
 
   const onClickAddNote = useCallback(() => {
-    showNewNoteModal({
+    show({
       breakpoints: [0.5, 0.75],
       initialBreakpoint: 0.5,
     });
@@ -38,6 +42,7 @@ export default function HomePage() {
 
     return () => {
       fcmDeInit();
+      hide(undefined, "cancel");
     };
   }, []);
 
