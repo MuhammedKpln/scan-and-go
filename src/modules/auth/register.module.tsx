@@ -1,6 +1,6 @@
 import { IRegisterUserForm } from "@/models/user.model";
 import { Routes } from "@/routes/routes";
-import { useAuthStore } from "@/stores/auth.store";
+import { authService } from "@/services/auth.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IonButton,
@@ -25,7 +25,6 @@ export default function RegisterModule() {
   const [showToast] = useIonToast();
   const router = useIonRouter();
   const [showLoading, dismissLoading] = useIonLoading();
-  const signUp = useAuthStore((state) => state.signUp);
   const {
     handleSubmit,
     control,
@@ -38,7 +37,7 @@ export default function RegisterModule() {
   const onSubmit = useCallback(async (data: IRegisterUserForm) => {
     try {
       await showLoading();
-      await signUp(data);
+      await authService.signUp(data);
 
       await dismissLoading();
       showToast({

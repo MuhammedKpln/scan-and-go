@@ -2,6 +2,7 @@ import Verification from "@/assets/verification.svg";
 import AppHeader from "@/components/App/AppHeader";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { Routes } from "@/routes/routes";
+import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/stores/auth.store";
 import {
   IonButton,
@@ -18,15 +19,12 @@ import { Redirect } from "react-router";
 import styles from "./verification.module.scss";
 
 export default function VerificationPage() {
-  const sendVerificationEmail = useAuthStore(
-    (state) => state.sendVerificationEmail
-  );
   const user = useAuthStore((state) => state.user);
   const { showToast } = useAppToast();
   const router = useIonRouter();
 
   const onClickResend = useCallback(async () => {
-    await sendVerificationEmail(user!.email!);
+    await authService.sendVerificationEmail(user!.email!);
 
     showToast({
       message: "Vi har skickat ett nytt verifierings mejl.",
