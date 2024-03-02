@@ -9,7 +9,6 @@ class ImageService {
     const cachedImage = await this.fetchImageFromCache(src);
 
     if (cachedImage) {
-      console.log(cachedImage);
       return cachedImage;
     }
 
