@@ -6,11 +6,8 @@ import AppAvatar from "@/components/Avatar";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { useGallery } from "@/hooks/useGallery";
 import { QueryKeys } from "@/models/query_keys.model";
-import { IUser } from "@/models/user.model";
-import {
-  IUserWithPhoneAndSocial,
-  profileService,
-} from "@/services/profile.service";
+import { IUser, IUserWithPhoneAndSocial } from "@/models/user.model";
+import { profileService } from "@/services/profile.service";
 import { storageService } from "@/services/storage.service";
 import { useAuthStore } from "@/stores/auth.store";
 import { Photo } from "@capacitor/camera";

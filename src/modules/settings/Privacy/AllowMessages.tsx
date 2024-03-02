@@ -1,9 +1,6 @@
 import { QueryKeys } from "@/models/query_keys.model";
-import { IUser } from "@/models/user.model";
-import {
-  IUserWithPhoneAndSocial,
-  profileService,
-} from "@/services/profile.service";
+import { IUser, IUserWithPhoneAndSocial } from "@/models/user.model";
+import { profileService } from "@/services/profile.service";
 import { useAuthStore } from "@/stores/auth.store";
 import { IonToggleCustomEvent } from "@ionic/core";
 import {

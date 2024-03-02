@@ -2,17 +2,9 @@ import {
   IUser,
   IUserPrivatePhone,
   IUserPrivateSocialMediaAccounts,
+  IUserWithPhoneAndSocial,
 } from "@/models/user.model";
-import { QueryData } from "@supabase/supabase-js";
 import { BaseService } from "./base.service";
-import { supabaseClient } from "./supabase.service";
-
-const profileQuery = supabaseClient
-  .from("profiles")
-  .select("*, phone_numbers(*), social_media_accounts(*)")
-  .single();
-
-export type IUserWithPhoneAndSocial = QueryData<typeof profileQuery>;
 
 class ProfileService extends BaseService {
   async updateProfile(userUid: string, _data: Partial<IUser>) {
@@ -36,7 +28,7 @@ class ProfileService extends BaseService {
 
   async updateSocialMediaAccounts(
     userUid: string,
-    _data: Partial<IUserPrivateSocialMediaAccounts>
+    _data: IUserPrivateSocialMediaAccounts
   ) {
     const { error } = await this.client
       .from("social_media_accounts")
@@ -90,17 +82,13 @@ class ProfileService extends BaseService {
       .limit(1)
       .single();
 
-    type IUserWithPhoneAndSocial = QueryData<typeof profileQuery>;
-
     const { data, error } = await profileQuery;
 
     if (error) {
       throw error;
     }
 
-    const profileWithRelations: IUserWithPhoneAndSocial = data;
-
-    return profileWithRelations;
+    return data as unknown as IUserWithPhoneAndSocial;
   }
 }
 

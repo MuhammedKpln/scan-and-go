@@ -14,3 +14,8 @@ export interface IRegisterUserForm
   email: string;
   password: string;
 }
+
+export interface IUserWithPhoneAndSocial extends IUser {
+  social_media_accounts: IUserPrivateSocialMediaAccounts[];
+  phone_numbers: IUserPrivatePhone[];
+}

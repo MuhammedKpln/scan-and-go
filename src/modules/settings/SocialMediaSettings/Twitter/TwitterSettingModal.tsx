@@ -1,12 +1,11 @@
-import AppLoading from "@/components/App/AppLoading";
 import AppModalHeader from "@/components/App/AppModalHeader";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { QueryKeys } from "@/models/query_keys.model";
-import { IUserPrivateSocialMediaAccounts } from "@/models/user.model";
 import {
+  IUserPrivateSocialMediaAccounts,
   IUserWithPhoneAndSocial,
-  profileService,
-} from "@/services/profile.service";
+} from "@/models/user.model";
+import { profileService } from "@/services/profile.service";
 import { useAuthStore } from "@/stores/auth.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -33,27 +32,27 @@ const formValidator = z.object({
   twitterUsername: z.string(),
 });
 
-type IUpdateTwitterMutationVars = Pick<
-  IUserPrivateSocialMediaAccounts,
-  "twitter"
->;
+type IUpdateTwitterMutationVars = IUserPrivateSocialMediaAccounts;
 
 export default function TwitterSettingModal(props: IProps) {
   const user = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
+  const { showToast } = useAppToast();
+  const { control, handleSubmit, setValue } = useForm<
+    typeof formValidator._type
+  >({
+    resolver: zodResolver(formValidator),
+    reValidateMode: "onSubmit",
+  });
 
-  const userSocialAccounts = useQuery<IUserPrivateSocialMediaAccounts | null>({
-    queryKey: [QueryKeys.UserSocialMediaAccounts, user?.id],
-    networkMode: "offlineFirst",
-    queryFn: () => profileService.fetchSocialMediaAccounts(user!.id),
+  const query = useQuery<IUserWithPhoneAndSocial>({
+    queryKey: [QueryKeys.ProfileWithRelations, user?.id],
   });
 
   const mutation = useMutation<void, void, IUpdateTwitterMutationVars>({
     mutationKey: [QueryKeys.UserSocialMediaAccounts, user?.id],
-    mutationFn: ({ twitter }) => {
-      return profileService.updateSocialMediaAccounts(user!.id, {
-        twitter,
-      });
+    mutationFn: (variables) => {
+      return profileService.updateSocialMediaAccounts(user!.id, variables);
     },
     onSuccess(_, variables) {
       queryClient.setQueryData<IUserWithPhoneAndSocial>(
@@ -70,41 +69,21 @@ export default function TwitterSettingModal(props: IProps) {
           }
         }
       );
-
-      queryClient.setQueryData<IUserPrivateSocialMediaAccounts>(
-        [QueryKeys.UserSocialMediaAccounts, user?.id],
-        (v) => {
-          if (v) {
-            const updatedState = produce(v, (draft) => {
-              draft.twitter = variables.twitter;
-            });
-
-            return updatedState;
-          }
-        }
-      );
     },
   });
 
-  const { showToast } = useAppToast();
-  const { control, handleSubmit, setValue } = useForm<
-    typeof formValidator._type
-  >({
-    resolver: zodResolver(formValidator),
-    reValidateMode: "onSubmit",
-  });
-
   useEffect(() => {
-    if (!userSocialAccounts.isSuccess) return;
+    if (!query.isSuccess) return;
 
-    if (userSocialAccounts.data?.twitter) {
-      setValue("twitterUsername", userSocialAccounts.data.twitter);
+    if (query.data?.social_media_accounts[0].twitter) {
+      setValue("twitterUsername", query.data?.social_media_accounts[0].twitter);
     }
-  }, [userSocialAccounts]);
+  }, [query]);
 
   const onSubmit = useCallback(async (inputs: typeof formValidator._type) => {
     try {
       await mutation.mutateAsync({
+        ...query.data!.social_media_accounts[0]!,
         twitter: inputs.twitterUsername,
       });
 
@@ -121,10 +100,6 @@ export default function TwitterSettingModal(props: IProps) {
       });
     }
   }, []);
-
-  if (userSocialAccounts.isLoading) {
-    return <AppLoading />;
-  }
 
   return (
     <IonPage>

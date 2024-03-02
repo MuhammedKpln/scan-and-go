@@ -2,12 +2,10 @@ import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import ProfileView from "@/components/ProfileView/ProfileView";
 import { QueryKeys } from "@/models/query_keys.model";
+import { IUserWithPhoneAndSocial } from "@/models/user.model";
 import UpdateProfileModule from "@/modules/profile/UpdateProfile.module";
 import { Routes } from "@/routes/routes";
-import {
-  IUserWithPhoneAndSocial,
-  profileService,
-} from "@/services/profile.service";
+import { profileService } from "@/services/profile.service";
 import { useAuthStore } from "@/stores/auth.store";
 import {
   IonButton,
