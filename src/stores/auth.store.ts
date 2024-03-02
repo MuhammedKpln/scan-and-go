@@ -1,119 +1,46 @@
-import { queryClient } from "@/Providers";
-import { IRegisterUserForm } from "@/models/user.model";
-import { supabaseClient } from "@/services/supabase.service";
-import { AuthTokenResponse, Subscription, User } from "@supabase/supabase-js";
+import { PreferencesStorage } from "@/helpers/storage_wrapper";
+import { IUser } from "@/models/user.model";
+import { User } from "@supabase/supabase-js";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
-type State = {
+export type AuthStoreState = {
   isInitialized: boolean;
   user: User | undefined;
   isSignedIn: boolean;
   signingIn: boolean;
+  profile: IUser | undefined;
 };
 
-type Actions = {
-  listenToAuthClient: () => { data: { subscription: Subscription } };
-  logout: () => Promise<void>;
-  signIn: (email: string, password: string) => Promise<AuthTokenResponse>;
-  signUp: (data: IRegisterUserForm) => Promise<void>;
-  sendVerificationEmail: (email: string) => Promise<void>;
+type Action = {
+  updateUser: (state: Pick<AuthStoreState, "isSignedIn" | "user">) => void;
+  updateProfile: (state: AuthStoreState["profile"]) => void;
 };
 
-export const useAuthStore = create<State & Actions>()(
+export const useAuthStore = create<AuthStoreState & Action>()(
   persist(
     immer((set) => ({
       isInitialized: false,
       isSignedIn: false,
       user: undefined,
       signingIn: false,
-      async logout() {
-        await supabaseClient.auth.signOut();
-      },
-
-      async signIn(email, password) {
-        set((state) => !state.signingIn);
-        const data = await supabaseClient.auth.signInWithPassword({
-          email,
-          password,
+      profile: undefined,
+      updateProfile(state) {
+        set((s) => {
+          s.profile = state;
         });
-        set((state) => !state.signingIn);
-
-        return data;
       },
-
-      async signUp(data) {
-        const { error } = await supabaseClient.auth.signUp({
-          email: data.email,
-          password: data.password,
-          options: {
-            data: {
-              firstName: data.firstName,
-              lastName: data.lastName,
-            },
-          },
-        });
-
-        if (error) {
-          throw error;
-        }
-      },
-
-      async sendVerificationEmail(email) {
-        const returnUrl = import.meta.env.PROD
-          ? import.meta.env.VITE_SUPABASE_VERIFY_RETURN_URL
-          : "http://localhost:8100";
-
-        const { error } = await supabaseClient.auth.resend({
-          email,
-          type: "signup",
-          options: {
-            emailRedirectTo: returnUrl,
-          },
-        });
-
-        if (error) {
-          throw error;
-        }
-      },
-
-      listenToAuthClient() {
-        return supabaseClient.auth.onAuthStateChange((state, session) => {
-          const updateState: Partial<State> = {};
-
-          switch (state) {
-            case "INITIAL_SESSION":
-              updateState.isInitialized = true;
-
-              if (session) {
-                updateState.isSignedIn = true;
-                updateState.user = session.user;
-              }
-              break;
-
-            case "SIGNED_IN":
-              updateState.isSignedIn = true;
-              updateState.user = session!.user;
-              break;
-
-            case "SIGNED_OUT":
-              updateState.isSignedIn = false;
-              updateState.user = undefined;
-              queryClient.clear();
-              break;
-
-            case "USER_UPDATED":
-              updateState.user = session!.user;
-              break;
-          }
-
-          set((s) => ({ ...s, ...updateState }));
+      updateUser(state) {
+        set((s) => {
+          s.user = state.user;
+          s.isSignedIn = state.isSignedIn;
         });
       },
     })),
     {
       name: "auth",
+      storage: createJSONStorage(() => PreferencesStorage),
     }
   )
 );

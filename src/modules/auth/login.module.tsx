@@ -1,6 +1,7 @@
 import AppButton from "@/components/AppButton";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { Routes } from "@/routes/routes";
+import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/stores/auth.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IonInput, useIonAlert, useIonRouter } from "@ionic/react";
@@ -23,10 +24,6 @@ export default function LoginModule() {
   const router = useIonRouter();
   const { showToast } = useAppToast();
   const [presentAlert] = useIonAlert();
-  const sendVerificationEmail = useAuthStore(
-    (state) => state.sendVerificationEmail
-  );
-  const signIn = useAuthStore((state) => state.signIn);
   const signingIn = useAuthStore((state) => state.signingIn);
 
   const {
@@ -39,7 +36,7 @@ export default function LoginModule() {
   });
 
   const _sendVerificationMail = useCallback(async (email: string) => {
-    await sendVerificationEmail(email);
+    await authService.sendVerificationEmail(email);
 
     showToast({
       message: "Email verification succesfully send!",
@@ -49,7 +46,7 @@ export default function LoginModule() {
 
   const onSubmit = useCallback(async (data: Inputs) => {
     try {
-      const user = await signIn(data.email, data.password);
+      const user = await authService.signIn(data.email, data.password);
 
       if (user.error) {
         return;

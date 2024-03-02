@@ -25,6 +25,7 @@ import { useAppTheme } from "./hooks/app/useAppTheme";
 import { useIsNative } from "./hooks/app/useIsNative";
 import { useSplashScreen } from "./hooks/app/useSplashScreen";
 import AppRoutes from "./routes/routes";
+import { authService } from "./services/auth.service";
 import { useAuthStore } from "./stores/auth.store";
 import { loadIcons } from "./theme/icon";
 import "./theme/variables.scss";
@@ -32,14 +33,13 @@ import "./theme/variables.scss";
 setupIonicReact();
 
 export default function App() {
-  const listenToAuthClient = useAuthStore((state) => state.listenToAuthClient);
   const isInitialized = useAuthStore((state) => state.isInitialized);
   const { isNative } = useIsNative(false);
   const { showLoading, hideLoading } = useSplashScreen();
   useAppTheme();
 
   useEffect(() => {
-    const listener = listenToAuthClient();
+    const listener = authService.listenToAuthClient();
     loadIcons();
 
     if (!isNative.current) {

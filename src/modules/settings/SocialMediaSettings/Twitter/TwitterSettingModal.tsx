@@ -42,7 +42,7 @@ export default function TwitterSettingModal(props: IProps) {
   const user = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
 
-  const userSocialAccounts = useQuery<IUserPrivateSocialMediaAccounts>({
+  const userSocialAccounts = useQuery<IUserPrivateSocialMediaAccounts | null>({
     queryKey: [QueryKeys.UserSocialMediaAccounts, user?.id],
     networkMode: "offlineFirst",
     queryFn: () => profileService.fetchSocialMediaAccounts(user!.id),
@@ -97,7 +97,9 @@ export default function TwitterSettingModal(props: IProps) {
   useEffect(() => {
     if (!userSocialAccounts.isSuccess) return;
 
-    setValue("twitterUsername", userSocialAccounts.data.twitter!);
+    if (userSocialAccounts.data?.twitter) {
+      setValue("twitterUsername", userSocialAccounts.data.twitter);
+    }
   }, [userSocialAccounts]);
 
   const onSubmit = useCallback(async (inputs: typeof formValidator._type) => {

@@ -40,10 +40,8 @@ class ProfileService extends BaseService {
   ) {
     const { error } = await this.client
       .from("social_media_accounts")
-      .update(_data)
+      .upsert(_data, { onConflict: "id" })
       .eq("userId", userUid);
-
-    console.log(error);
 
     if (error) {
       throw error;
@@ -69,13 +67,13 @@ class ProfileService extends BaseService {
 
   async fetchSocialMediaAccounts(
     userUid: string
-  ): Promise<IUserPrivateSocialMediaAccounts> {
+  ): Promise<IUserPrivateSocialMediaAccounts | null> {
     const { data, error } = await this.client
       .from("social_media_accounts")
       .select()
       .eq("userId", userUid)
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (error) {
       throw error;
