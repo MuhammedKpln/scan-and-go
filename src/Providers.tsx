@@ -6,6 +6,7 @@ import {
   persistQueryClient,
 } from "@tanstack/react-query-persist-client";
 import { PropsWithChildren } from "react";
+import { PreferencesStorage } from "./helpers/storage_wrapper";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,7 +19,7 @@ export const queryClient = new QueryClient({
 });
 
 const localStoragePersister = createAsyncStoragePersister({
-  storage: window.localStorage,
+  storage: PreferencesStorage,
 });
 
 persistQueryClient({
