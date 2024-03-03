@@ -1,4 +1,3 @@
-import AppInfoCard from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import AppModalHeader from "@/components/App/AppModalHeader";
 import AppButton from "@/components/AppButton";
@@ -39,7 +38,7 @@ interface IProps {
 const profileFormValidator = z.object({
   firstName: z.string(),
   lastName: z.string(),
-  bio: z.string(),
+  bio: z.string().optional(),
 });
 
 export default function UpdateProfileModule(props: IProps) {
@@ -51,8 +50,6 @@ export default function UpdateProfileModule(props: IProps) {
 
   const userProfile = useQuery<IUserWithPhoneAndSocial>({
     queryKey: [QueryKeys.ProfileWithRelations, user?.id],
-    queryFn: () => profileService.fetchProfile(user!.id),
-    networkMode: "offlineFirst",
   });
   const updateProfileMutation = useMutation<void, void, Partial<IUser>>({
     mutationFn: (variables) => {
@@ -70,16 +67,17 @@ export default function UpdateProfileModule(props: IProps) {
   );
 
   const form = useForm<typeof profileFormValidator._type>({
-    defaultValues: {
-      bio: userProfile?.data?.bio ?? undefined,
-      firstName: userProfile?.data?.firstName,
-      lastName: userProfile?.data?.lastName,
-    },
     resolver: zodResolver(profileFormValidator),
   });
 
   useEffect(() => {
     initialize();
+
+    if (userProfile.isSuccess) {
+      form.setValue("firstName", userProfile?.data.firstName);
+      form.setValue("lastName", userProfile?.data.lastName);
+      form.setValue("bio", userProfile?.data.bio ?? undefined);
+    }
   }, []);
 
   const onClickAvatar = useCallback(async () => {
@@ -96,7 +94,7 @@ export default function UpdateProfileModule(props: IProps) {
         ...userProfile.data!,
         firstName: items.firstName,
         lastName: items.lastName,
-        bio: items.bio,
+        bio: items.bio ?? null,
       };
 
       if (selectedImage) {
@@ -152,7 +150,6 @@ export default function UpdateProfileModule(props: IProps) {
 
       <IonContent>
         <form onSubmit={form.handleSubmit(onSave)}>
-          {form.formState.isDirty && <AppInfoCard message="olmaz " />}
           <IonCard>
             <IonCardContent>
               <div className="flex justify-center flex-col items-center">
