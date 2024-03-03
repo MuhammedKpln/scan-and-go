@@ -136,7 +136,7 @@ export default function UpdateProfileModule(props: IProps) {
     <IonPage>
       <AppModalHeader onClose={props.onClose}>
         <IonTitle>Uppdatera profil</IonTitle>
-        {form.formState.isValid && (
+        {(form.formState.isValid || selectedImage) && (
           <IonButtons slot="end">
             <AppButton
               onClick={form.handleSubmit(onSave)}
@@ -155,6 +155,7 @@ export default function UpdateProfileModule(props: IProps) {
               <div className="flex justify-center flex-col items-center">
                 <AppAvatar
                   slot="middle"
+                  cacheNetworkImage={false}
                   url={
                     selectedImageAsBlob ?? userProfile!.data!.profileImageUrl!
                   }

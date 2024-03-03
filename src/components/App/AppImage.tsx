@@ -1,8 +1,16 @@
 import { imageService } from "@/services/app/image.service";
-import { IonImg, IonSpinner } from "@ionic/react";
+import { IonImg } from "@ionic/react";
 import { useEffect, useState } from "react";
-type IProps = React.ComponentProps<typeof IonImg>;
-export default function AppImage({ src, ...rest }: IProps) {
+
+type IProps = {
+  cacheNetworkImage?: boolean;
+} & React.ComponentProps<typeof IonImg>;
+
+export default function AppImage({
+  src,
+  cacheNetworkImage = true,
+  ...rest
+}: IProps) {
   const [imageSrc, setImageSrc] = useState<string | undefined>();
 
   useEffect(() => {
@@ -20,10 +28,11 @@ export default function AppImage({ src, ...rest }: IProps) {
       }
     }
 
-    fetchImage();
+    if (cacheNetworkImage) {
+      fetchImage();
+    }
   }, []);
 
+  if (!cacheNetworkImage) return <IonImg src={src} {...rest} />;
   if (imageSrc) return <IonImg src={imageSrc} {...rest} />;
-
-  return <IonSpinner />;
 }

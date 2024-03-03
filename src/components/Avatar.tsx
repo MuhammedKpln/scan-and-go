@@ -4,14 +4,22 @@ import AppImage from "./App/AppImage";
 
 interface IProps extends React.ComponentProps<typeof IonAvatar> {
   url?: string | null;
+  cacheNetworkImage?: boolean;
 }
-export default function AppAvatar({ url, ...rest }: IProps) {
+export default function AppAvatar({
+  url,
+  cacheNetworkImage = true,
+  ...rest
+}: IProps) {
   return (
     <IonAvatar {...rest}>
       {rest.children ? (
         rest.children
       ) : (
-        <AppImage src={url ?? NO_AVATAR_IMAGE} />
+        <AppImage
+          cacheNetworkImage={cacheNetworkImage}
+          src={url ?? NO_AVATAR_IMAGE}
+        />
       )}
     </IonAvatar>
   );
