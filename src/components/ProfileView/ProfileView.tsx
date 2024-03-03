@@ -37,7 +37,6 @@ export default function ProfileView({
   phoneData,
   socialData,
 }: IProps) {
-  console.log(profileData.profileImageUrl);
   return (
     <div className={styles.container}>
       <div id="userDetails" className="flex flex-col items-center">
