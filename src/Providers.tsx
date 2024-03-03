@@ -1,8 +1,14 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import {
+  PersistQueryClientProvider,
+  persistQueryClient,
+} from "@tanstack/react-query-persist-client";
 import { PropsWithChildren } from "react";
-import { AuthContextProvider } from "./context/AuthContext";
+import { PreferencesStorage } from "./helpers/storage_wrapper";
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       gcTime: 1000 * 60 * 60 * 24, // 24 hours
@@ -12,10 +18,23 @@ const queryClient = new QueryClient({
   },
 });
 
+const localStoragePersister = createAsyncStoragePersister({
+  storage: PreferencesStorage,
+});
+
+persistQueryClient({
+  queryClient: queryClient,
+  persister: localStoragePersister,
+});
+
 export default function Providers(props: PropsWithChildren) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthContextProvider>{props.children}</AuthContextProvider>
-    </QueryClientProvider>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister: localStoragePersister }}
+    >
+      {props.children}
+      <ReactQueryDevtools initialIsOpen={false} />
+    </PersistQueryClientProvider>
   );
 }

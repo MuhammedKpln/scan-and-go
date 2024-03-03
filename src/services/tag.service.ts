@@ -1,72 +1,65 @@
-import { FirebaseCollections } from "@/models/firebase_collections.model";
-import { ITag, ITagWithId } from "@/models/tag.model";
-import {
-  PartialWithFieldValue,
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { ITag } from "@/models/tag.model";
+import { QueryData } from "@supabase/supabase-js";
 import { BaseService } from "./base.service";
+import { supabaseClient } from "./supabase.service";
+
+const fetchTagQuery = supabaseClient
+  .from("tags")
+  .select("*, profiles(*, phone_numbers(*),social_media_accounts(*)), notes(*)")
+  .limit(1)
+  .single();
+
+export type ITagWithRelations = QueryData<typeof fetchTagQuery>;
 
 class TagService extends BaseService {
-  constructor() {
-    super(FirebaseCollections.Tags);
-  }
+  async fetchTag(tagUid: string): Promise<ITagWithRelations> {
+    const { data, error } = await this.client
+      .from("tags")
+      .select(
+        "*, profiles(*, phone_numbers(*),social_media_accounts(*)), notes(*)"
+      )
+      .eq("id", tagUid)
+      .limit(1)
+      .single();
 
-  async fetchTag(tagUid: string) {
-    const docRef = doc(this.collectionRef, tagUid).withConverter<ITag>(
-      this.converter()
-    );
-
-    return getDoc(docRef);
-  }
-
-  async fetchTags(userUid: string): Promise<ITagWithId[]> {
-    try {
-      const queryRef = query(
-        this.collectionRef,
-        where("userUid", "==", userUid)
-      ).withConverter<ITag>(this.converter());
-
-      const docs = await getDocs(queryRef);
-
-      return docs.docs.map((e) => ({
-        [e.id]: e.data(),
-      }));
-    } catch (error) {
-      throw new Error(error as string);
+    if (error) {
+      throw error;
     }
+
+    return data;
   }
 
-  async addNewTag(userUid: string, data: PartialWithFieldValue<ITag>) {
-    try {
-      const collectionRef = collection(
-        this.db,
-        FirebaseCollections.Tags
-      ).withConverter<ITag>(this.converter());
+  async fetchTags(userUid: string): Promise<ITag[]> {
+    const { data, error } = await this.client
+      .from("tags")
+      .select()
+      .eq("userId", userUid);
 
-      return addDoc(collectionRef, data);
-    } catch (error) {
-      throw new Error(error as string);
+    if (error) {
+      throw error;
     }
+
+    return data;
   }
 
-  async updateTag(tagUid: string, data: PartialWithFieldValue<ITag>) {
-    try {
-      const docRef = doc(
-        this.db,
-        FirebaseCollections.Tags,
-        tagUid
-      ).withConverter<ITag>(this.converter());
+  async addNewTag(data: ITag) {
+    const { error } = await this.client.from("tags").insert(data);
 
-      return updateDoc(docRef, data);
-    } catch (error) {
-      throw new Error(error as string);
+    if (error) {
+      throw error;
+    }
+
+    return true;
+  }
+
+  async updateTag(tagUid: string, data: Partial<ITag>) {
+    const { error } = await this.client
+      .from("tags")
+      .update(data)
+      .eq("id", tagUid);
+
+    if (error) {
+      throw error;
     }
   }
 }

@@ -1,22 +1,21 @@
-export type IUser = {
-  firstName: string;
-  lastName: string;
-  showPhoneNumber: boolean;
-  sendMessageAllowed: boolean;
-  profileImageRef?: string;
-  bio?: string;
-};
+import { Tables } from "./supabase";
 
-export type IUserPrivatePhone = {
-  value: string;
-};
+export type IUser = Tables<"profiles">;
 
-export type IUserPrivateSocialMediaAccounts = {
-  twitter?: string;
-};
+export type IUserPrivatePhone = Tables<"phone_numbers">;
+
+export type IUserPrivateSocialMediaAccounts = Tables<"social_media_accounts">;
 
 export interface IRegisterUserForm
-  extends Omit<IUser, "profileImageRef" | "bio"> {
+  extends Omit<
+    IUser,
+    "profileImageRef" | "bio" | "sendMessageAllowed" | "showPhoneNumber"
+  > {
   email: string;
   password: string;
+}
+
+export interface IUserWithPhoneAndSocial extends IUser {
+  social_media_accounts: IUserPrivateSocialMediaAccounts[];
+  phone_numbers: IUserPrivatePhone[];
 }

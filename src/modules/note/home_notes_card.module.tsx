@@ -1,10 +1,10 @@
 import AppInfoCard from "@/components/App/AppInfoCard";
-import { useAuthContext } from "@/context/AuthContext";
-import { deleteIdWithDataValue, renderIdWithData } from "@/helpers";
-import { INote, INoteWithId } from "@/models/note.model";
+import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
+import { INote } from "@/models/note.model";
 import { QueryKeys } from "@/models/query_keys.model";
 import { Routes } from "@/routes/routes";
 import { noteService } from "@/services/note.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { ActionSheet, ActionSheetButtonStyle } from "@capacitor/action-sheet";
 import {
   IonCard,
@@ -18,51 +18,70 @@ import {
   IonSpinner,
   useIonRouter,
 } from "@ionic/react";
+import { PostgrestError } from "@supabase/supabase-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { sv } from "date-fns/locale/sv";
+import { produce } from "immer";
 import { useCallback } from "react";
 
 interface DeleteMutationVariables {
-  noteUid: string;
+  noteUid: number;
 }
 
 export default function HomeNotesCard() {
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
   const router = useIonRouter();
+  const { showToast } = useAppToast();
 
-  const deleteMutation = useMutation<void, void, DeleteMutationVariables>({
+  const deleteMutation = useMutation<
+    void,
+    PostgrestError,
+    DeleteMutationVariables
+  >({
     mutationFn: ({ noteUid }) => noteService.deleteNote(noteUid),
     onSuccess(data, variables) {
-      queryClient.setQueryData<INoteWithId[]>(
-        [QueryKeys.Tag, user?.uid],
-        () => {
-          const notes = queryClient.getQueryData<INoteWithId[]>([
-            QueryKeys.Notes,
-            user?.uid,
-          ]);
+      showToast({
+        message: "Deleted note",
+        status: ToastStatus.Success,
+      });
 
-          if (notes) {
-            return deleteIdWithDataValue<INote>(notes, variables.noteUid);
-          }
+      queryClient.setQueryData<INote[]>([QueryKeys.Notes, user?.id], () => {
+        const notes = queryClient.getQueryData<INote[]>([
+          QueryKeys.Notes,
+          user?.id,
+        ]);
+
+        if (notes) {
+          const updatedNotes = produce(notes, (draftData) => {
+            const index = draftData.findIndex(
+              (v) => v.id === variables.noteUid
+            );
+
+            if (index !== -1) {
+              draftData.splice(index, 1);
+            }
+          });
+
+          return updatedNotes;
         }
-      );
+
+        return notes;
+      });
     },
   });
 
-  const notes = useQuery({
-    queryKey: [QueryKeys.Notes, user?.uid],
+  const notes = useQuery<INote[]>({
+    queryKey: [QueryKeys.Notes, user?.id],
     queryFn: async () => {
-      const notes = await noteService.fetchLatestNotes(user!.uid);
+      const notes = await noteService.fetchLatestNotes(user!.id);
 
-      return notes.docs.map<INoteWithId>((e) => ({
-        [e.id]: e.data(),
-      }));
+      return notes;
     },
   });
 
-  const onClickItem = useCallback(async (item: INote, noteUid: string) => {
+  const onClickItem = useCallback(async (item: INote, noteUid: number) => {
     const actionResult = await ActionSheet.showActions({
       title: item.content,
       options: [
@@ -83,7 +102,7 @@ export default function HomeNotesCard() {
 
     switch (actionResult.index) {
       case 0:
-        router.push(Routes.EditNote.replace(":noteUid", noteUid));
+        router.push(Routes.EditNote.replace(":noteUid", noteUid.toString()));
         break;
       case 1:
         await deleteMutation.mutateAsync({
@@ -92,7 +111,6 @@ export default function HomeNotesCard() {
         break;
     }
   }, []);
-
   return (
     <IonCard>
       <IonCardHeader>
@@ -105,11 +123,11 @@ export default function HomeNotesCard() {
           <IonSpinner />
         ) : (
           <IonList>
-            {!notes.data ? (
+            {notes?.data?.length < 1 ? (
               <AppInfoCard message="Inga temporär notering" />
             ) : (
-              renderIdWithData<INote>(notes.data, (note, id) => {
-                const date = formatDistanceToNow(note.expire_at.toDate(), {
+              notes?.data?.map((note) => {
+                const date = formatDistanceToNow(note.expire_at, {
                   addSuffix: true,
                   locale: sv,
                 });
@@ -117,13 +135,18 @@ export default function HomeNotesCard() {
                   <IonItem
                     lines="none"
                     button
-                    key={id}
-                    onClick={() => onClickItem(note, id)}
+                    key={note.id}
+                    onClick={() => onClickItem(note, note.id)}
                   >
-                    <IonLabel>
-                      <h3>{note.content}</h3>
-                      <p>{date}</p>
-                    </IonLabel>
+                    {deleteMutation.isPending &&
+                    deleteMutation.variables.noteUid === note.id ? (
+                      <IonSpinner />
+                    ) : (
+                      <IonLabel>
+                        <h3>{note.content}</h3>
+                        <p>{date}</p>
+                      </IonLabel>
+                    )}
                   </IonItem>
                 );
               })

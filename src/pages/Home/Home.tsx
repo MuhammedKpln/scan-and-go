@@ -27,7 +27,10 @@ export default function HomePage() {
   });
 
   const onClickAddNote = useCallback(() => {
-    showNewNoteModal();
+    showNewNoteModal({
+      breakpoints: [0.5, 0.75],
+      initialBreakpoint: 0.5,
+    });
   }, []);
 
   useEffect(() => {
@@ -35,6 +38,7 @@ export default function HomePage() {
 
     return () => {
       fcmDeInit();
+      hideNewNoteModal(undefined, "cancel");
     };
   }, []);
 

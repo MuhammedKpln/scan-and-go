@@ -1,13 +1,21 @@
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthStore } from "@/stores/auth.store";
 import { SplashScreen } from "@capacitor/splash-screen";
+import { useIonLoading } from "@ionic/react";
 import { useEffect } from "react";
 
 export function useSplashScreen() {
-  const authContext = useAuthContext();
+  const isInitialized = useAuthStore((state) => state.isInitialized);
+  const [showLoading, hideLoading] = useIonLoading();
 
   useEffect(() => {
-    if (authContext.isInitialized) {
+    if (isInitialized) {
       SplashScreen.hide();
+      hideLoading();
     }
-  }, [authContext.isInitialized]);
+  }, [isInitialized]);
+
+  return {
+    showLoading,
+    hideLoading,
+  };
 }

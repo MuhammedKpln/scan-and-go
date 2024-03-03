@@ -26,10 +26,10 @@ export function useAppToast() {
     }
   }, []);
 
-  const showToast = useCallback((props: IProps) => {
+  const showToast = useCallback(async (props: IProps) => {
     const color = _toastColor(props.status);
 
-    _showToast({
+    await _showToast({
       message: props.message,
       color,
       buttons: props.buttons,

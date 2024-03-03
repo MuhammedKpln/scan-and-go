@@ -1,3 +1,3 @@
-export enum CloudFunctions {
-  CreateUserProfile = "createUserProfile",
+export enum EdgeFunctions {
+  SendNewMessage = "handle_new_message",
 }

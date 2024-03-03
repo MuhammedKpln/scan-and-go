@@ -1,7 +1,14 @@
-import { useAuthContext } from "@/context/AuthContext";
+import { useIsNative } from "@/hooks/app/useIsNative";
+import ScanModule from "@/modules/scan/Scan.module";
+import ChatPage from "@/pages/Chats/Chat";
 import ChatsPage from "@/pages/Chats/Chats";
+import EditNotePage from "@/pages/EditNote/EditNote";
 import HomePage from "@/pages/Home/Home";
+import NewTagPage from "@/pages/NewTag/NewTag";
+import NoteDetailsPage from "@/pages/NoteDetails/NoteDetails";
 import ProfilePage from "@/pages/Profile/ProfilePage";
+import SettingsPage from "@/pages/Settings/Settings";
+import EditTagPage from "@/pages/Tags/EditTag";
 import TagsPage from "@/pages/Tags/Tags";
 import {
   IonFabButton,
@@ -10,6 +17,7 @@ import {
   IonTabBar,
   IonTabButton,
   IonTabs,
+  useIonModal,
 } from "@ionic/react";
 import {
   albumsOutline,
@@ -18,27 +26,27 @@ import {
   personCircleOutline,
   qrCodeOutline,
 } from "ionicons/icons";
-import { lazy, useEffect } from "react";
-import { Redirect, Route, useHistory } from "react-router";
+import { useCallback } from "react";
+import { Redirect, Route } from "react-router";
+import PrivateRoute from "./PrivateRoute";
 import { Routes } from "./routes";
 
-const ScanPage = lazy(() => import("@/pages/Scan"));
-
 export default function TabRoutes() {
-  const router = useHistory();
-  const auth = useAuthContext();
+  const { notNativeAlert, isNative } = useIsNative();
 
-  useEffect(() => {
-    const unregister = router.listen(() => {
-      if (router.location.pathname.startsWith("/app")) {
-        if (!auth.isSignedIn) {
-          router.replace("/");
-        }
-      }
-    });
+  const [showModal, hideModal] = useIonModal(ScanModule, {
+    onCancel: () => {
+      hideModal(undefined, "cancel");
+    },
+  });
 
-    return unregister;
-  }, [auth]);
+  const onClickScanTab = useCallback(() => {
+    if (!isNative.current) {
+      return notNativeAlert();
+    }
+
+    showModal();
+  }, []);
 
   return (
     <IonTabs>
@@ -49,7 +57,6 @@ export default function TabRoutes() {
         <Route path={Routes.Tags} exact>
           <TagsPage />
         </Route>
-        <Route path={Routes.Scan} component={ScanPage} exact />
         <Route path={Routes.Chats} exact>
           <ChatsPage />
         </Route>
@@ -59,6 +66,17 @@ export default function TabRoutes() {
         <Route path={Routes.AppRoot} exact>
           <Redirect to={Routes.Home} />
         </Route>
+
+        <PrivateRoute path={Routes.EditTag} component={EditTagPage} exact />
+        <PrivateRoute path={Routes.NewTag} exact component={NewTagPage} />
+        <PrivateRoute path={Routes.EditNote} component={EditNotePage} exact />
+        <PrivateRoute
+          path={`${Routes.Notes}/:id`}
+          exact
+          component={NoteDetailsPage}
+        />
+        <PrivateRoute path={Routes.Settings} component={SettingsPage} exact />
+        <PrivateRoute path={Routes.Chat} component={ChatPage} />
       </IonRouterOutlet>
 
       <IonTabBar slot="bottom">
@@ -68,7 +86,7 @@ export default function TabRoutes() {
         <IonTabButton tab="tags" href={Routes.Tags}>
           <IonIcon aria-hidden="true" icon={albumsOutline} />
         </IonTabButton>
-        <IonTabButton tab="scan" href={Routes.Scan}>
+        <IonTabButton tab="scan" onClick={onClickScanTab}>
           <IonFabButton>
             <IonIcon aria-hidden="true" icon={qrCodeOutline} />
           </IonFabButton>

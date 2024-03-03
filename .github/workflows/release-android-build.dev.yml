@@ -1,7 +1,7 @@
 # This action will be executed when a tag is created and uploaded.
 # More information: https://github.com/davidcopano/github-actions-docs
 
-name: Generate Android APK and publish release on Github
+name: Generate Dev Android APK
 
 on:
   push:
@@ -67,19 +67,16 @@ jobs:
         run: cd android && bundle install && cd ..
 
       - name: Execute Fastlane command
-        run: cd android && fastlane debug
+        run: cd android && fastlane debugProd
         env:
           KEYSTORE_PATH: ${{ steps.android_keystore.outputs.filePath }}
           KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
           KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
-          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
-          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
-          VITE_FIREBASE_AUTH_RETURN_URL: ${{ secrets.VITE_FIREBASE_AUTH_RETURN_URL }}
+          VITE_SUPABASE_CLIENT_URL: ${{ secrets.VITE_SUPABASE_CLIENT_URL }}
+          VITE_SUPABASE_CLIENT_ANON_KEY: ${{ secrets.VITE_SUPABASE_CLIENT_ANON_KEY }}
+          PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
       - name: Upload generated and signed APK as artifact to Github
         uses: actions/upload-artifact@v4

@@ -19,15 +19,14 @@ export default function AppInfoCard(props: IProps) {
       case InfoCardStatus.Error:
         return "danger";
       case InfoCardStatus.Information:
-        return "warning";
-
+        return "secondary";
       default:
         return "warning";
     }
   }, [props.status]);
 
   return (
-    <IonItem color={color}>
+    <IonItem color={color} className="rounded-md m-2">
       <IonIcon icon={informationCircleOutline} slot="start" color="light" />
       <IonLabel color="light">{props.message}</IonLabel>
     </IonItem>

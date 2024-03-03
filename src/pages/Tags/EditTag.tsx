@@ -1,12 +1,12 @@
 import AppHeader from "@/components/App/AppHeader";
 import AppLoading from "@/components/App/AppLoading";
-import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
-import { ITag, ITagWithId } from "@/models/tag.model";
+import { ITag } from "@/models/tag.model";
 import EditTagModule from "@/modules/tags/edit_tag.module";
 import { Routes } from "@/routes/routes";
+import { useAuthStore } from "@/stores/auth.store";
 import { IonContent, IonPage, IonTitle } from "@ionic/react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { Redirect, RouteComponentProps } from "react-router";
 export interface EditTagPageProps
@@ -15,27 +15,21 @@ export interface EditTagPageProps
   }> {}
 
 export default function EditTagPage(props: EditTagPageProps) {
-  const queryClient = useQueryClient();
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
 
-  const tags = useMemo(() => {
-    return queryClient.getQueryData<ITagWithId[]>([QueryKeys.Tags, user?.uid]);
-  }, [queryClient]);
+  const tagUid = props.match.params.tagUid;
+  const tags = useQuery<ITag[]>({
+    queryKey: [QueryKeys.Tags, user?.id],
+  });
 
   const tag = useMemo(() => {
-    let tag: ITag | undefined;
+    if (!tags.data) return;
 
-    if (!tags) return;
+    const filteredTags = tags.data.filter(
+      (v) => v.id === props.match.params.tagUid
+    );
 
-    for (const key of tags!) {
-      for (const k of Object.keys(key)) {
-        if (props.match.params.tagUid === k) {
-          return key[k];
-        }
-      }
-    }
-
-    return tag;
+    return filteredTags.length > 0 && filteredTags[0];
   }, [tags]);
 
   if (!tags) {
@@ -46,14 +40,20 @@ export default function EditTagPage(props: EditTagPageProps) {
     return <AppLoading />;
   }
 
+  if (tags.isLoading) {
+    return <AppLoading />;
+  }
+
+  console.log(tag);
+
   return (
     <IonPage>
       <AppHeader withBackButton>
-        <IonTitle>{tag?.tagName}</IonTitle>
+        <IonTitle>{tag?.name}</IonTitle>
       </AppHeader>
 
       <IonContent className="ios-paddign">
-        <EditTagModule tagUid={props.match.params.tagUid} tag={tag} />
+        <EditTagModule tagUid={tagUid} tag={tag} />
       </IonContent>
     </IonPage>
   );

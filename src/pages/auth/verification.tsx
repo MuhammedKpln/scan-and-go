@@ -1,9 +1,9 @@
 import Verification from "@/assets/verification.svg";
 import AppHeader from "@/components/App/AppHeader";
-import { useAuthContext } from "@/context/AuthContext";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { Routes } from "@/routes/routes";
-import { fbAuthService } from "@/services/firebase-auth.service";
+import { authService } from "@/services/auth.service";
+import { useAuthStore } from "@/stores/auth.store";
 import {
   IonButton,
   IonContent,
@@ -12,38 +12,36 @@ import {
   IonText,
   IonTitle,
   useIonRouter,
-  useIonViewDidEnter,
 } from "@ionic/react";
 import { motion } from "framer-motion";
 import { useCallback } from "react";
+import { Redirect } from "react-router";
 import styles from "./verification.module.scss";
 
 export default function VerificationPage() {
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const { showToast } = useAppToast();
   const router = useIonRouter();
 
-  useIonViewDidEnter(() => {
-    if (user?.emailVerified) {
-      showToast({
-        message: "Du har nu verifierad ditt emejl!",
-        status: ToastStatus.Success,
-      });
-
-      router.push(Routes.AppRoot, "root", "replace", {
-        unmount: true,
-      });
-    }
-  });
-
   const onClickResend = useCallback(async () => {
-    await fbAuthService.sendVerificationEmail(user!);
+    await authService.sendVerificationEmail(user!.email!);
 
     showToast({
       message: "Vi har skickat ett nytt verifierings mejl.",
       status: ToastStatus.Success,
     });
   }, [user]);
+
+  if (
+    router.routeInfo.search === `?verified=true` &&
+    user?.email_confirmed_at
+  ) {
+    showToast({
+      message: "Du har nu verifierad ditt emejl!",
+      status: ToastStatus.Success,
+    });
+    return <Redirect to={Routes.AppRoot} />;
+  }
 
   return (
     <IonPage>

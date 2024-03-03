@@ -1,44 +1,38 @@
-import AppInfoCard from "@/components/App/AppInfoCard";
-import AppLoading from "@/components/App/AppLoading";
-import { useAuthContext } from "@/context/AuthContext";
-import { renderIdWithData } from "@/helpers";
+import DataEmpty from "@/components/DataEmpty/DataEmpty";
+import TagCard from "@/components/Tags/tag_card.component";
 import { QueryKeys } from "@/models/query_keys.model";
-import { ITag, ITagWithId } from "@/models/tag.model";
+import { ITag } from "@/models/tag.model";
 import { tagService } from "@/services/tag.service";
-import {
-  IonCard,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
-} from "@ionic/react";
-import { useQuery } from "@tanstack/react-query";
+import { useAuthStore } from "@/stores/auth.store";
+import { useIonRouter } from "@ionic/react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 export default function TagsModule() {
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
+  const router = useIonRouter();
 
-  const queryTags = useQuery<ITagWithId[], void>({
-    queryKey: [QueryKeys.Tags, user?.uid],
-    queryFn: () => tagService.fetchTags(user!.uid),
+  const queryTags = useSuspenseQuery<ITag[], void>({
+    queryKey: [QueryKeys.Tags, user?.id],
+    queryFn: () => tagService.fetchTags(user!.id),
   });
 
-  if (queryTags.isLoading) {
-    return <AppLoading message="Laddar etiketter" />;
-  }
-
   return (
-    <>
-      {queryTags.data!.length < 1 ? (
-        <AppInfoCard message="Inga registererade etiketter kunde hittas." />
+    <div className="flex flex-col justify-center items-center">
+      {queryTags?.data?.length < 1 ? (
+        <DataEmpty message="Inga registererade etiketter kunde hittas." />
       ) : (
-        renderIdWithData<ITag>(queryTags.data!, (data, id) => (
-          <IonCard routerLink={`/tags/${id}`} key={id}>
-            <IonCardHeader>
-              <IonCardTitle>{data.tagName}</IonCardTitle>
-              <IonCardSubtitle>{data.tagNote}</IonCardSubtitle>
-            </IonCardHeader>
-          </IonCard>
+        queryTags.data?.map((tag) => (
+          <TagCard
+            created_at={tag.created_at}
+            icon={tag?.icon}
+            isActive={tag?.isActive}
+            name={tag.name}
+            note={tag.note}
+            tagUid={tag.id}
+            key={tag.id}
+          />
         ))
       )}
-    </>
+    </div>
   );
 }

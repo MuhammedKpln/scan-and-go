@@ -1,9 +1,8 @@
-import { useAuthContext } from "@/context/AuthContext";
-import { updateIdWithDataValue } from "@/helpers";
 import { ToastStatus, useAppToast } from "@/hooks/useAppToast";
 import { QueryKeys } from "@/models/query_keys.model";
-import { ITag, ITagWithId } from "@/models/tag.model";
+import { ITag } from "@/models/tag.model";
 import { tagService } from "@/services/tag.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IonButton,
@@ -13,8 +12,10 @@ import {
   IonTextarea,
   IonToggle,
 } from "@ionic/react";
+import { PostgrestError } from "@supabase/supabase-js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
+import { produce } from "immer";
+import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -31,45 +32,57 @@ const editTagFormSchema = z.object({
 
 export default function EditTagModule({ tagUid, tag }: IProps) {
   const queryClient = useQueryClient();
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const { showToast } = useAppToast();
 
-  const tags = useMemo(() => {
-    return queryClient.getQueryData<ITagWithId[]>([QueryKeys.Tags, user?.uid]);
-  }, [queryClient]);
-
-  const tagsMutation = useMutation<void, Error, Omit<ITag, "userUid">>({
+  const tagsMutation = useMutation<void, PostgrestError, Partial<ITag>>({
     mutationFn: (tag) => {
       return tagService.updateTag(tagUid, tag);
     },
-    onSuccess: (data, variables) => {
-      queryClient.setQueryData<ITagWithId[]>([QueryKeys.Tag, user?.uid], () => {
-        if (tags) {
-          return updateIdWithDataValue<ITag>(tags, tagUid, variables);
+    onSuccess: (_, variables) => {
+      queryClient.setQueryData<ITag>([QueryKeys.Tag, user?.id], (v) => {
+        if (v) {
+          return { ...v, ...variables };
+        }
+      });
+
+      queryClient.setQueryData<ITag[]>([QueryKeys.Tags, user?.id], (v) => {
+        console.log(v);
+        if (v && v.length > 0) {
+          const updatedState = produce(v, (draft) => {
+            const index = draft.findIndex((e) => e.id === tagUid);
+
+            if (index !== -1) {
+              draft[index] = { ...draft[index], ...variables };
+            }
+          });
+
+          return updatedState;
         }
       });
     },
   });
 
+  console.log(tagsMutation.error);
+
   const { handleSubmit, control } = useForm<typeof editTagFormSchema._type>({
     resolver: zodResolver(editTagFormSchema),
     reValidateMode: "onSubmit",
     defaultValues: {
-      name: tag?.tagName,
-      isAvailable: tag?.isAvailable,
-      note: tag?.tagNote,
+      name: tag?.name,
+      isAvailable: tag?.isAvailable ?? undefined,
+      note: tag?.note,
     },
   });
 
   const onSubmitForm = useCallback(
     async (inputs: typeof editTagFormSchema._type) => {
       try {
-        console.log(tag.isAvailable, inputs.isAvailable);
-
+        console.log(inputs);
         await tagsMutation.mutateAsync({
           isAvailable: inputs.isAvailable,
-          tagName: inputs.name,
-          tagNote: inputs.note,
+          name: inputs.name,
+          note: inputs.note,
         });
 
         showToast({

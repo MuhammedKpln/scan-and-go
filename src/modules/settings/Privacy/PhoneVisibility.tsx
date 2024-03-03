@@ -1,7 +1,7 @@
-import { useAuthContext } from "@/context/AuthContext";
 import { QueryKeys } from "@/models/query_keys.model";
-import { IUser } from "@/models/user.model";
+import { IUserWithPhoneAndSocial } from "@/models/user.model";
 import { profileService } from "@/services/profile.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { IonToggleCustomEvent } from "@ionic/core";
 import { IonItem, IonToggle, ToggleChangeEventDetail } from "@ionic/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,16 +13,16 @@ interface IMutationVariables {
 }
 
 export default function PhoneVisibility() {
-  const { user } = useAuthContext();
+  const user = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: [QueryKeys.Profile, user?.uid],
+    queryKey: [QueryKeys.ProfileWithRelations, user?.id],
     networkMode: "offlineFirst",
     queryFn: async () => {
-      const profile = await profileService.fetchProfile(user!.uid);
+      const profile = await profileService.fetchProfile(user!.id);
 
-      return profile.data();
+      return profile;
     },
   });
   const updateShowPhoneNumber = useMutation<void, void, IMutationVariables>({
@@ -32,13 +32,13 @@ export default function PhoneVisibility() {
       });
     },
     onSuccess(data, variables) {
-      const qKey = [QueryKeys.Profile, user?.uid];
+      const qKey = [QueryKeys.ProfileWithRelations, user?.id];
 
-      queryClient.setQueryData<IUser>(qKey, (v) => {
+      queryClient.setQueryData<IUserWithPhoneAndSocial>(qKey, (v) => {
         return {
           ...v,
           showPhoneNumber: variables.checked,
-        } as IUser;
+        } as IUserWithPhoneAndSocial;
       });
     },
   });
@@ -47,7 +47,7 @@ export default function PhoneVisibility() {
     async (e: IonToggleCustomEvent<ToggleChangeEventDetail<boolean>>) => {
       await updateShowPhoneNumber.mutateAsync({
         checked: e.target.checked,
-        userUid: user!.uid,
+        userUid: user!.id,
       });
     },
     []

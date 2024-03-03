@@ -1,3 +1,4 @@
+import { Routes } from "@/routes/routes";
 import { IonBackButton, IonButtons, IonHeader, IonToolbar } from "@ionic/react";
 import { PropsWithChildren } from "react";
 
@@ -11,7 +12,7 @@ export default function AppHeader({ children, withBackButton }: IProps) {
       <IonToolbar>
         {withBackButton === true && (
           <IonButtons slot="start">
-            <IonBackButton />
+            <IonBackButton defaultHref={Routes.Home} />
           </IonButtons>
         )}
 
