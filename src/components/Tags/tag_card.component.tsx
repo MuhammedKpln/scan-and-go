@@ -10,7 +10,7 @@ type IProps = {
   name: string;
   note: string;
   isActive: boolean;
-  icon: string;
+  icon?: string;
   created_at: string;
   tagUid: string;
 };

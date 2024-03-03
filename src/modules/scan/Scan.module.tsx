@@ -1,7 +1,7 @@
 import AppInfoCard, { InfoCardStatus } from "@/components/App/AppInfoCard";
+import { useIsNative } from "@/hooks/app/useIsNative";
 import { useBarcodeScanner } from "@/hooks/useBarcodeScanner";
 import { QueryKeys } from "@/models/query_keys.model";
-import { Routes } from "@/routes/routes";
 import { tagService } from "@/services/tag.service";
 import { Barcode, BarcodeScanner } from "@capacitor-mlkit/barcode-scanning";
 import { IonButton, useIonAlert, useIonModal } from "@ionic/react";
@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from "react";
 import TagDialogModule from "../tag/tag_dialog/tag_dialog.module";
 
 interface IProps {
-  onCancel: (route: string) => void;
+  onCancel: () => void;
 }
 export default function ScanModule(props: IProps) {
   const [tagUid, setTagUid] = useState<string | undefined>();
@@ -24,6 +24,7 @@ export default function ScanModule(props: IProps) {
   });
   const [showAlert] = useIonAlert();
   const queryClient = useQueryClient();
+  const { isNative } = useIsNative();
 
   useEffect(() => {
     return () => {
@@ -52,14 +53,14 @@ export default function ScanModule(props: IProps) {
             {
               text: "Registrera",
               handler() {
-                props.onCancel(Routes.NewTag.replace(":tagUid", response.id));
+                props.onCancel();
               },
             },
             {
               text: "Gå tillbaka",
               role: "cancel",
               handler() {
-                props.onCancel(Routes.AppRoot);
+                props.onCancel();
               },
             },
           ],
@@ -80,7 +81,7 @@ export default function ScanModule(props: IProps) {
   });
 
   const stopScanAndNavigate = useCallback(async () => {
-    props.onCancel(Routes.AppRoot);
+    props.onCancel();
   }, []);
 
   const scanBarcode = useCallback(() => {
@@ -88,6 +89,12 @@ export default function ScanModule(props: IProps) {
   }, []);
 
   useEffect(() => {
+    if (!isNative.current) {
+      props.onCancel();
+
+      return;
+    }
+
     initialize().then(async () => {
       scanBarcode();
     });

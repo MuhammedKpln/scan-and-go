@@ -1,3 +1,4 @@
+import { useIsNative } from "@/hooks/app/useIsNative";
 import ScanModule from "@/modules/scan/Scan.module";
 import ChatPage from "@/pages/Chats/Chat";
 import ChatsPage from "@/pages/Chats/Chats";
@@ -31,6 +32,8 @@ import PrivateRoute from "./PrivateRoute";
 import { Routes } from "./routes";
 
 export default function TabRoutes() {
+  const { notNativeAlert, isNative } = useIsNative();
+
   const [showModal, hideModal] = useIonModal(ScanModule, {
     onCancel: () => {
       hideModal(undefined, "cancel");
@@ -38,6 +41,10 @@ export default function TabRoutes() {
   });
 
   const onClickScanTab = useCallback(() => {
+    if (!isNative.current) {
+      return notNativeAlert();
+    }
+
     showModal();
   }, []);
 

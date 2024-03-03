@@ -1,4 +1,3 @@
-import NO_AVATAR from "@/assets/noavatar.svg";
 import { imageService } from "@/services/app/image.service";
 import { IonImg, IonSpinner } from "@ionic/react";
 import { useEffect, useState } from "react";
@@ -8,8 +7,8 @@ export default function AppImage({ src, ...rest }: IProps) {
 
   useEffect(() => {
     async function fetchImage() {
-      if (src === NO_AVATAR) {
-        setImageSrc(NO_AVATAR);
+      if (src?.startsWith("/src/assets/")) {
+        setImageSrc(src);
 
         return;
       }

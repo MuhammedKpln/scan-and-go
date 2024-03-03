@@ -12,7 +12,6 @@ export enum Routes {
   AppRoot = "/app",
   Home = "/app/home",
   Notes = "/app/notes",
-  Scan = "/app/scan",
   Chats = "/app/chats",
   Chat = "/app/chat/:roomUid",
   Profile = "/app/profile",
