@@ -69,7 +69,7 @@ export default function ProfileView({
       </div>
 
       {(socialData || phoneData) && (
-        <IonList>
+        <IonList className="rounded-md">
           {phoneData && (
             <IonItem
               href={`tel:${phoneData.number}`}
