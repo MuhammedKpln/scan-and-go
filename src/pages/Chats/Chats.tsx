@@ -1,6 +1,6 @@
-import AppInfoCard from "@/components/App/AppInfoCard";
 import AppLoading from "@/components/App/AppLoading";
 import Chat from "@/components/Chat/Chat";
+import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import { QueryKeys } from "@/models/query_keys.model";
 import { IRoom } from "@/models/room.model";
 import { Routes } from "@/routes/routes";
@@ -44,8 +44,10 @@ export default function ChatsPage() {
           </IonToolbar>
         </IonHeader>
 
-        {!data.data ? (
-          <AppInfoCard message="No messages found" />
+        {data.data!.length < 1 ? (
+          <div className="ion-padding">
+            <DataEmpty message="Inga nya meddelande" />
+          </div>
         ) : (
           <IonList inset>
             {data.data.map((room) => {
