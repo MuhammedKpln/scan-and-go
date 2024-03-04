@@ -15,7 +15,7 @@ import { logoApple, logoGoogle } from "ionicons/icons";
 export default function LoginPage() {
   return (
     <IonPage>
-      <AppHeader withBackButton>
+      <AppHeader>
         <IonTitle>Login</IonTitle>
       </AppHeader>
       <IonContent className="ion-padding">
