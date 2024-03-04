@@ -52,7 +52,7 @@ export default function TwitterSettingModal(props: IProps) {
   const mutation = useMutation<void, void, IUpdateTwitterMutationVars>({
     mutationKey: [QueryKeys.UserSocialMediaAccounts, user?.id],
     mutationFn: (variables) => {
-      return profileService.updateSocialMediaAccounts(user!.id, variables);
+      return profileService.updateSocialMediaAccounts(variables);
     },
     onSuccess(_, variables) {
       queryClient.setQueryData<IUserWithPhoneAndSocial>(
@@ -60,8 +60,8 @@ export default function TwitterSettingModal(props: IProps) {
         (v) => {
           if (v) {
             const updatedState = produce(v, (draft) => {
-              if (draft.social_media_accounts.length > 0) {
-                draft.social_media_accounts[0].twitter = variables.twitter;
+              if (draft.social_media_accounts) {
+                draft.social_media_accounts.twitter = variables.twitter;
               }
             });
 
@@ -73,18 +73,17 @@ export default function TwitterSettingModal(props: IProps) {
   });
 
   useEffect(() => {
-    if (!query.isSuccess) return;
-
-    if (query.data?.social_media_accounts[0].twitter) {
-      setValue("twitterUsername", query.data?.social_media_accounts[0].twitter);
+    if (query.data?.social_media_accounts?.twitter) {
+      setValue("twitterUsername", query.data?.social_media_accounts.twitter);
     }
   }, [query]);
 
   const onSubmit = useCallback(async (inputs: typeof formValidator._type) => {
     try {
       await mutation.mutateAsync({
-        ...query.data!.social_media_accounts[0]!,
+        id: user!.id,
         twitter: inputs.twitterUsername,
+        updated_at: new Date().toISOString(),
       });
 
       showToast({

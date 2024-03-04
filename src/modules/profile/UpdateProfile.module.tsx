@@ -128,7 +128,7 @@ export default function UpdateProfileModule(props: IProps) {
     [selectedImage, user, userProfile]
   );
 
-  if (userProfile.isLoading) {
+  if (userProfile.isPending) {
     return <AppLoading />;
   }
 

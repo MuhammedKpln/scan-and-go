@@ -16,6 +16,6 @@ export interface IRegisterUserForm
 }
 
 export interface IUserWithPhoneAndSocial extends IUser {
-  social_media_accounts: IUserPrivateSocialMediaAccounts[];
-  phone_numbers: IUserPrivatePhone[];
+  social_media_accounts: IUserPrivateSocialMediaAccounts;
+  phone_numbers: IUserPrivatePhone;
 }

@@ -58,7 +58,7 @@ export default function AllowMessages() {
     []
   );
 
-  if (query.isLoading) {
+  if (query.isPending) {
     return <IonSkeletonText animated={true} className="h-5" />;
   }
 

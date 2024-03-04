@@ -69,19 +69,11 @@ export default function TagDialogModule({ onClose, tagUid }: IProps) {
   }, [tagQuery]);
 
   const phoneData = useMemo(() => {
-    if (!tagQuery.isSuccess) return;
-
-    if (tagQuery.data.profiles?.phone_numbers) {
-      return tagQuery.data.profiles?.phone_numbers[0];
-    }
+    return tagQuery.data?.profiles?.phone_numbers ?? undefined;
   }, [tagQuery]);
 
   const socialMediaAccountsData = useMemo(() => {
-    if (!tagQuery.isSuccess) return;
-
-    if (tagQuery.data.profiles?.social_media_accounts) {
-      return tagQuery.data.profiles?.social_media_accounts[0];
-    }
+    return tagQuery.data?.profiles?.social_media_accounts ?? undefined;
   }, [tagQuery]);
 
   const sendMessage = useCallback(() => {
@@ -105,18 +97,18 @@ export default function TagDialogModule({ onClose, tagUid }: IProps) {
         <div id="container" className="flex flex-col gap-5 ion-padding">
           <div id="user" className="flex gap-3 justify-between items-center">
             <AppAvatar>
-              {tagQuery.isLoading && <IonSkeletonText animated />}
+              {tagQuery.isPending && <IonSkeletonText animated />}
             </AppAvatar>
             <div>
               <h1 className="font-bold">
-                {tagQuery.isLoading ? (
+                {tagQuery.isPending ? (
                   <IonSkeletonText style={{ width: "15rem", height: "2rem" }} />
                 ) : (
                   `${profileData?.firstName} ${profileData?.lastName}`
                 )}
               </h1>
               <p>
-                {tagQuery.isLoading ? (
+                {tagQuery.isPending ? (
                   <IonSkeletonText style={{ width: "15rem" }} />
                 ) : (
                   profileData?.bio
@@ -134,7 +126,7 @@ export default function TagDialogModule({ onClose, tagUid }: IProps) {
             {userLatestNote}
           </div>
 
-          {tagQuery.isLoading ? (
+          {tagQuery.isPending ? (
             <IonSpinner className="self-center" />
           ) : (
             <>

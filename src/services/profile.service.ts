@@ -26,14 +26,10 @@ class ProfileService extends BaseService {
     }
   }
 
-  async updateSocialMediaAccounts(
-    userUid: string,
-    _data: IUserPrivateSocialMediaAccounts
-  ) {
+  async updateSocialMediaAccounts(_data: IUserPrivateSocialMediaAccounts) {
     const { error } = await this.client
       .from("social_media_accounts")
-      .upsert(_data, { onConflict: "id" })
-      .eq("userId", userUid);
+      .upsert(_data, { onConflict: "id" });
 
     if (error) {
       throw error;

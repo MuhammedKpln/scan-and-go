@@ -6,8 +6,8 @@ import EditTagModule from "@/modules/tags/edit_tag.module";
 import { Routes } from "@/routes/routes";
 import { useAuthStore } from "@/stores/auth.store";
 import { IonContent, IonPage, IonTitle } from "@ionic/react";
-import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Suspense, useMemo } from "react";
 import { Redirect, RouteComponentProps } from "react-router";
 export interface EditTagPageProps
   extends RouteComponentProps<{
@@ -18,7 +18,7 @@ export default function EditTagPage(props: EditTagPageProps) {
   const user = useAuthStore((state) => state.user);
 
   const tagUid = props.match.params.tagUid;
-  const tags = useQuery<ITag[]>({
+  const tags = useSuspenseQuery<ITag[]>({
     queryKey: [QueryKeys.Tags, user?.id],
   });
 
@@ -40,12 +40,6 @@ export default function EditTagPage(props: EditTagPageProps) {
     return <AppLoading />;
   }
 
-  if (tags.isLoading) {
-    return <AppLoading />;
-  }
-
-  console.log(tag);
-
   return (
     <IonPage>
       <AppHeader withBackButton>
@@ -53,7 +47,9 @@ export default function EditTagPage(props: EditTagPageProps) {
       </AppHeader>
 
       <IonContent className="ios-paddign">
-        <EditTagModule tagUid={tagUid} tag={tag} />
+        <Suspense fallback={<AppLoading />}>
+          <EditTagModule tagUid={tagUid} tag={tag} />
+        </Suspense>
       </IonContent>
     </IonPage>
   );

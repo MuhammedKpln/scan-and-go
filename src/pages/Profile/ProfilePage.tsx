@@ -50,13 +50,7 @@ export default function ProfilePage() {
   });
 
   const socialMediaAccounts = useMemo(() => {
-    if (profileQuery.isSuccess) {
-      return profileQuery.data.social_media_accounts.length > 0
-        ? profileQuery.data.social_media_accounts[0]
-        : undefined;
-    }
-
-    return undefined;
+    return profileQuery.data?.social_media_accounts;
   }, [profileQuery]);
 
   if (profileQuery.isError) {
@@ -69,7 +63,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (profileQuery.isLoading) {
+  if (profileQuery.isPending) {
     return <AppLoading />;
   }
 

@@ -7,10 +7,10 @@ import { motion } from "framer-motion";
 import styles from "./tag_card.module.scss";
 
 type IProps = {
-  name: string;
-  note: string;
+  name: string | null;
+  note: string | null;
   isActive: boolean;
-  icon?: string;
+  icon: string | null;
   created_at: string;
   tagUid: string;
 };

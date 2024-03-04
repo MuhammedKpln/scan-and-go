@@ -59,7 +59,7 @@ export default function ChatPage(props: ChatPageProps) {
   });
 
   const pageTitle = useMemo(() => {
-    if (query.isLoading) return;
+    if (query.isPending) return;
 
     for (const message of query.data!) {
       if (message.toId !== user?.id) {
@@ -67,9 +67,9 @@ export default function ChatPage(props: ChatPageProps) {
         return `${user.firstName} ${user.lastName}`;
       }
     }
-  }, [query.isLoading]);
+  }, [query.isPending]);
 
-  if (query.isLoading) {
+  if (query.isPending) {
     return <AppLoading />;
   }
 

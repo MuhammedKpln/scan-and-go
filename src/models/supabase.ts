@@ -12,19 +12,19 @@ export type Database = {
       fcm_tokens: {
         Row: {
           created_at: string
-          id: number
+          id: string
           token: string | null
           userId: string | null
         }
         Insert: {
           created_at?: string
-          id?: number
+          id?: string
           token?: string | null
           userId?: string | null
         }
         Update: {
           created_at?: string
-          id?: number
+          id?: string
           token?: string | null
           userId?: string | null
         }
@@ -35,7 +35,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       messages: {
@@ -87,7 +87,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       notes: {
@@ -95,7 +95,7 @@ export type Database = {
           content: string
           created_at: string
           expire_at: string
-          id: number
+          id: string
           tagId: string | null
           userId: string
         }
@@ -103,7 +103,7 @@ export type Database = {
           content: string
           created_at?: string
           expire_at: string
-          id?: number
+          id?: string
           tagId?: string | null
           userId: string
         }
@@ -111,7 +111,7 @@ export type Database = {
           content?: string
           created_at?: string
           expire_at?: string
-          id?: number
+          id?: string
           tagId?: string | null
           userId?: string
         }
@@ -129,43 +129,75 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
-      phone_numbers: {
+      notifications: {
         Row: {
+          body: string | null
           created_at: string
-          id: number
-          number: string
-          userId: string
+          fromUserId: string
+          id: string
+          toUserId: string
+          type: number
         }
         Insert: {
+          body?: string | null
           created_at?: string
-          id?: number
-          number: string
-          userId: string
+          fromUserId: string
+          id?: string
+          toUserId: string
+          type?: number
         }
         Update: {
+          body?: string | null
           created_at?: string
-          id?: number
-          number?: string
-          userId?: string
+          fromUserId?: string
+          id?: string
+          toUserId?: string
+          type?: number
         }
         Relationships: [
           {
-            foreignKeyName: "public_phone_numbers_userId_fkey"
-            columns: ["userId"]
+            foreignKeyName: "notifications_fromUserId_fkey"
+            columns: ["fromUserId"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "public_phoneNumbers_userId_fkey"
-            columns: ["userId"]
+            foreignKeyName: "notifications_toUserId_fkey"
+            columns: ["toUserId"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
+          },
+        ]
+      }
+      phone_numbers: {
+        Row: {
+          created_at: string
+          id: string
+          number: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          number: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          number?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phone_numbers_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
@@ -206,7 +238,7 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       rooms: {
@@ -229,66 +261,69 @@ export type Database = {
       }
       social_media_accounts: {
         Row: {
-          id: number
+          id: string
           twitter: string | null
           updated_at: string
-          userId: string | null
         }
         Insert: {
-          id?: number
+          id: string
           twitter?: string | null
           updated_at?: string
-          userId?: string | null
         }
         Update: {
-          id?: number
+          id?: string
           twitter?: string | null
           updated_at?: string
-          userId?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "public_social_media_accounts_userId_fkey"
-            columns: ["userId"]
-            isOneToOne: false
+            foreignKeyName: "social_media_accounts_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       tags: {
         Row: {
           created_at: string
+          icon: string | null
           id: string
-          isAvailable: boolean | null
-          name: string
-          note: string
-          userId: string
+          isActive: boolean
+          isAvailable: boolean
+          name: string | null
+          note: string | null
+          userId: string | null
         }
         Insert: {
           created_at?: string
+          icon?: string | null
           id?: string
-          isAvailable?: boolean | null
-          name: string
-          note: string
-          userId: string
+          isActive?: boolean
+          isAvailable?: boolean
+          name?: string | null
+          note?: string | null
+          userId?: string | null
         }
         Update: {
           created_at?: string
+          icon?: string | null
           id?: string
-          isAvailable?: boolean | null
-          name?: string
-          note?: string
-          userId?: string
+          isActive?: boolean
+          isAvailable?: boolean
+          name?: string | null
+          note?: string | null
+          userId?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "public_tags_userId_fkey"
+            foreignKeyName: "tags_userId_fkey"
             columns: ["userId"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
     }
@@ -322,6 +357,185 @@ export type Database = {
       [_ in never]: never
     }
   }
+  storage: {
+    Tables: {
+      buckets: {
+        Row: {
+          allowed_mime_types: string[] | null
+          avif_autodetection: boolean | null
+          created_at: string | null
+          file_size_limit: number | null
+          id: string
+          name: string
+          owner: string | null
+          owner_id: string | null
+          public: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          allowed_mime_types?: string[] | null
+          avif_autodetection?: boolean | null
+          created_at?: string | null
+          file_size_limit?: number | null
+          id: string
+          name: string
+          owner?: string | null
+          owner_id?: string | null
+          public?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          allowed_mime_types?: string[] | null
+          avif_autodetection?: boolean | null
+          created_at?: string | null
+          file_size_limit?: number | null
+          id?: string
+          name?: string
+          owner?: string | null
+          owner_id?: string | null
+          public?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      migrations: {
+        Row: {
+          executed_at: string | null
+          hash: string
+          id: number
+          name: string
+        }
+        Insert: {
+          executed_at?: string | null
+          hash: string
+          id: number
+          name: string
+        }
+        Update: {
+          executed_at?: string | null
+          hash?: string
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      objects: {
+        Row: {
+          bucket_id: string | null
+          created_at: string | null
+          id: string
+          last_accessed_at: string | null
+          metadata: Json | null
+          name: string | null
+          owner: string | null
+          owner_id: string | null
+          path_tokens: string[] | null
+          updated_at: string | null
+          version: string | null
+        }
+        Insert: {
+          bucket_id?: string | null
+          created_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          metadata?: Json | null
+          name?: string | null
+          owner?: string | null
+          owner_id?: string | null
+          path_tokens?: string[] | null
+          updated_at?: string | null
+          version?: string | null
+        }
+        Update: {
+          bucket_id?: string | null
+          created_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          metadata?: Json | null
+          name?: string | null
+          owner?: string | null
+          owner_id?: string | null
+          path_tokens?: string[] | null
+          updated_at?: string | null
+          version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objects_bucketId_fkey"
+            columns: ["bucket_id"]
+            isOneToOne: false
+            referencedRelation: "buckets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      can_insert_object: {
+        Args: {
+          bucketid: string
+          name: string
+          owner: string
+          metadata: Json
+        }
+        Returns: undefined
+      }
+      extension: {
+        Args: {
+          name: string
+        }
+        Returns: string
+      }
+      filename: {
+        Args: {
+          name: string
+        }
+        Returns: string
+      }
+      foldername: {
+        Args: {
+          name: string
+        }
+        Returns: unknown
+      }
+      get_size_by_bucket: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          size: number
+          bucket_id: string
+        }[]
+      }
+      search: {
+        Args: {
+          prefix: string
+          bucketname: string
+          limits?: number
+          levels?: number
+          offsets?: number
+          search?: string
+          sortcolumn?: string
+          sortorder?: string
+        }
+        Returns: {
+          name: string
+          id: string
+          updated_at: string
+          created_at: string
+          last_accessed_at: string
+          metadata: Json
+        }[]
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
 }
 
 export type Tables<
@@ -331,7 +545,7 @@ export type Tables<
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
         Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
       Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
@@ -340,14 +554,14 @@ export type Tables<
     ? R
     : never
   : PublicTableNameOrOptions extends keyof (Database["public"]["Tables"] &
-      Database["public"]["Views"])
-  ? (Database["public"]["Tables"] &
-      Database["public"]["Views"])[PublicTableNameOrOptions] extends {
-      Row: infer R
-    }
-    ? R
+        Database["public"]["Views"])
+    ? (Database["public"]["Tables"] &
+        Database["public"]["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
     : never
-  : never
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
@@ -355,7 +569,7 @@ export type TablesInsert<
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
@@ -363,12 +577,12 @@ export type TablesInsert<
     ? I
     : never
   : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
-      Insert: infer I
-    }
-    ? I
+    ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
     : never
-  : never
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
@@ -376,7 +590,7 @@ export type TablesUpdate<
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
@@ -384,12 +598,12 @@ export type TablesUpdate<
     ? U
     : never
   : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
-      Update: infer U
-    }
-    ? U
+    ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
     : never
-  : never
 
 export type Enums<
   PublicEnumNameOrOptions extends
@@ -397,9 +611,10 @@ export type Enums<
     | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
-    : never = never
+    : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof Database["public"]["Enums"]
-  ? Database["public"]["Enums"][PublicEnumNameOrOptions]
-  : never
+    ? Database["public"]["Enums"][PublicEnumNameOrOptions]
+    : never
+

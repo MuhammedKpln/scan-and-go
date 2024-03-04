@@ -26,7 +26,7 @@ export default function ChatsPage() {
     queryFn: () => messagesService.fetchRooms(user!.id),
   });
 
-  if (data.isLoading) {
+  if (data.isPending) {
     return <AppLoading />;
   }
 

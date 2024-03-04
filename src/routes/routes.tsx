@@ -4,7 +4,7 @@ import RegisterPage from "@/pages/auth/Register/Register";
 import LoginPage from "@/pages/auth/login";
 import VerificationPage from "@/pages/auth/verification";
 import { Route } from "react-router";
-import PublicRoute from "./PublicRoute";
+import { default as PublicRoute } from "./PublicRoute";
 import TabRoutes from "./tab.route";
 
 export enum Routes {

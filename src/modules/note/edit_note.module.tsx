@@ -107,7 +107,7 @@ export default function EditNoteModule(props: IProps) {
     []
   );
 
-  if (tags.isLoading) {
+  if (tags.isPending) {
     return <AppLoading />;
   }
 

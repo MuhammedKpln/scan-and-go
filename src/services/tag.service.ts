@@ -12,15 +12,16 @@ const fetchTagQuery = supabaseClient
 export type ITagWithRelations = QueryData<typeof fetchTagQuery>;
 
 class TagService extends BaseService {
-  async fetchTag(tagUid: string): Promise<ITagWithRelations> {
+  async fetchTag(tagUid: string): Promise<ITagWithRelations | null> {
     const { data, error } = await this.client
       .from("tags")
       .select(
         "*, profiles(*, phone_numbers(*),social_media_accounts(*)), notes(*)"
       )
       .eq("id", tagUid)
+      .eq("isActive", true)
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (error) {
       throw error;

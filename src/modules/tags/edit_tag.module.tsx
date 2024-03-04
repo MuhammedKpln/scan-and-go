@@ -27,7 +27,7 @@ interface IProps {
 const editTagFormSchema = z.object({
   name: z.string(),
   note: z.string(),
-  isAvailable: z.boolean(),
+  isActive: z.boolean(),
 });
 
 export default function EditTagModule({ tagUid, tag }: IProps) {
@@ -69,18 +69,17 @@ export default function EditTagModule({ tagUid, tag }: IProps) {
     resolver: zodResolver(editTagFormSchema),
     reValidateMode: "onSubmit",
     defaultValues: {
-      name: tag?.name,
-      isAvailable: tag?.isAvailable ?? undefined,
-      note: tag?.note,
+      name: tag?.name ?? "",
+      isActive: tag?.isActive ?? undefined,
+      note: tag?.note ?? "",
     },
   });
 
   const onSubmitForm = useCallback(
     async (inputs: typeof editTagFormSchema._type) => {
       try {
-        console.log(inputs);
         await tagsMutation.mutateAsync({
-          isAvailable: inputs.isAvailable,
+          isActive: inputs.isActive,
           name: inputs.name,
           note: inputs.note,
         });
@@ -138,7 +137,7 @@ export default function EditTagModule({ tagUid, tag }: IProps) {
           <IonItem>
             <Controller
               control={control}
-              name="isAvailable"
+              name="isActive"
               render={({ field }) => (
                 <IonToggle
                   checked={field.value}

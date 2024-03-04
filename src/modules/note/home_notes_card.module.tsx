@@ -119,7 +119,7 @@ export default function HomeNotesCard() {
       </IonCardHeader>
 
       <IonCardContent>
-        {notes.isLoading ? (
+        {notes.isPending ? (
           <IonSpinner />
         ) : (
           <IonList>

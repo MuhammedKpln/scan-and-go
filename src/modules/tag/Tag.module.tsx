@@ -26,15 +26,11 @@ export default function TagModule(props: TagDetailPageProps) {
   const router = useIonRouter();
   const isSignedIn = useAuthStore((state) => state.isSignedIn);
 
-  const fetchTag = useCallback(() => {
-    return tagService.fetchTag(props.match.params.tagUid);
-  }, []);
-
-  const tagQuery = useQuery<ITagWithRelations>({
+  const tagQuery = useQuery<ITagWithRelations | null>({
     queryKey: [QueryKeys.Tag, props.match.params.tagUid],
-    queryFn: fetchTag,
-    networkMode: "online",
+    queryFn: () => tagService.fetchTag(props.match.params.tagUid),
   });
+
   const profileData = useMemo(() => tagQuery.data?.profiles, [tagQuery]);
 
   const sendMessage = useCallback(() => {
@@ -59,30 +55,22 @@ export default function TagModule(props: TagDetailPageProps) {
   const userLatestNote = useMemo(() => {
     if (!tagQuery.isSuccess) return "";
 
-    if (tagQuery.data.notes.length > 0) {
+    if (tagQuery.data && tagQuery.data?.notes.length > 0) {
       return tagQuery.data.notes[0].content;
     }
 
-    return tagQuery.data.note;
+    return tagQuery.data?.note;
   }, [tagQuery]);
 
   const phoneData = useMemo(() => {
-    if (!tagQuery.isSuccess) return;
-
-    if (tagQuery.data.profiles?.phone_numbers) {
-      return tagQuery.data.profiles?.phone_numbers[0];
-    }
+    return tagQuery.data?.profiles?.phone_numbers ?? undefined;
   }, [tagQuery]);
 
   const socialMediaAccountsData = useMemo(() => {
-    if (!tagQuery.isSuccess) return;
-
-    if (tagQuery.data.profiles?.social_media_accounts) {
-      return tagQuery.data.profiles?.social_media_accounts[0];
-    }
+    return tagQuery.data?.profiles?.social_media_accounts ?? undefined;
   }, [tagQuery]);
 
-  if (tagQuery.isLoading) {
+  if (tagQuery.isPending) {
     return <AppLoading message="Loading tag..." />;
   }
 
@@ -115,7 +103,7 @@ export default function TagModule(props: TagDetailPageProps) {
       </AppHeader>
       <IonContent className="ion-padding">
         <ProfileView
-          bioContent={userLatestNote}
+          bioContent={userLatestNote!}
           bioText="Anteckning"
           profileData={profileData!}
           onSendMessage={sendMessage}
