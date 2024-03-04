@@ -8,7 +8,9 @@ import Providers from "./Providers";
 const container = document.getElementById("root");
 const root = createRoot(container!);
 
-SplashScreen.show().then(() => {
+SplashScreen.show({
+  autoHide: false,
+}).then(() => {
   defineCustomElements(window);
 
   root.render(
