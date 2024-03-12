@@ -4,7 +4,8 @@ import RegisterPage from "@/pages/auth/Register/Register";
 import LoginPage from "@/pages/auth/login";
 import VerificationPage from "@/pages/auth/verification";
 import { Route } from "react-router";
-import { default as PublicRoute } from "./PublicRoute";
+import PrivateRoute from "./PrivateRoute";
+import PublicRoute from "./PublicRoute";
 import TabRoutes from "./tab.route";
 
 export enum Routes {
@@ -29,7 +30,7 @@ export enum Routes {
 export default function AppRoutes() {
   return (
     <>
-      <Route path={Routes.AppRoot} render={() => <TabRoutes />} />
+      <PrivateRoute path={Routes.AppRoot} render={() => <TabRoutes />} />
       <Route path={Routes.Verification} component={VerificationPage} exact />
 
       <Route path={Routes.Tag} component={TagPage} exact />

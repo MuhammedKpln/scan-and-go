@@ -2,7 +2,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { Redirect, Route, RouteProps } from "react-router";
 import { Routes } from "./routes";
 
-export default function PrivateRoute({
+export default function PublicRoute({
   component: Component,
   ...rest
 }: RouteProps) {

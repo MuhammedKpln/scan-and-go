@@ -1,7 +1,8 @@
 import { Color } from "@ionic/core";
 import { IonIcon, IonItem, IonLabel } from "@ionic/react";
-import { informationCircleOutline } from "ionicons/icons";
 import { useMemo } from "react";
+
+import { informationCircleOutline } from "ionicons/icons";
 
 export enum InfoCardStatus {
   Information,
@@ -12,6 +13,7 @@ interface IProps {
   message: string;
   status?: InfoCardStatus;
 }
+
 
 export default function AppInfoCard(props: IProps) {
   const color = useMemo<Color>(() => {
