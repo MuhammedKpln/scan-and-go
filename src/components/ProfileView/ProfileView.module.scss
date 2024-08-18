@@ -3,13 +3,11 @@ ion-content::part(scroll) {
 }
 
 .qrCodeContainer {
-  background-color: var(--ion-color-light);
-
+  background-color: var(--ion-item-background);
   @apply p-3 rounded-lg flex items-center justify-center w-full;
 }
 
 .noteContainer::part(native) {
-  background-color: var(--ion-color-light);
 
   @apply p-3 rounded-lg;
 }

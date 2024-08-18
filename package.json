@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "predev": "yarn gen-supabase-types-local",
     "prebuild": "yarn gen-supabase-types",
     "build": "ionic build --prod",
     "preview": "vite preview",
@@ -37,8 +36,8 @@
     "@formkit/auto-animate": "^0.8.1",
     "@hookform/resolvers": "^3.3.4",
     "@ionic/pwa-elements": "^3.2.2",
-    "@ionic/react": "^7.7.0",
-    "@ionic/react-router": "^7.7.0",
+    "@ionic/react": "^8.2.7",
+    "@ionic/react-router": "^8.2.7",
     "@supabase/supabase-js": "^2.39.6",
     "@tanstack/query-async-storage-persister": "^5.24.8",
     "@tanstack/react-query": "^5.24.8",
@@ -54,8 +53,8 @@
     "ionicons": "^7.0.0",
     "libphonenumber-js": "^1.10.57",
     "mime": "^4.0.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-hook-form": "^7.49.3",
     "react-router": "^5.3.4",
     "react-router-dom": "^5.3.4",
@@ -93,5 +92,6 @@
     "vite-tsconfig-paths": "^4.3.1",
     "vitest": "^0.34.6"
   },
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
