@@ -88,7 +88,7 @@ export default function TabRoutes() {
         </IonTabButton>
         <IonTabButton tab="scan" onClick={onClickScanTab}>
           <IonFabButton size="small">
-            <IonIcon aria-hidden="true" icon={qrCodeOutline} />
+            <IonIcon aria-hidden="true" icon={qrCodeOutline} size="small" />
           </IonFabButton>
         </IonTabButton>
         <IonTabButton tab="messages" href={Routes.Chats}>
