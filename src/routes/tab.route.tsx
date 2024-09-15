@@ -87,7 +87,7 @@ export default function TabRoutes() {
           <IonIcon aria-hidden="true" icon={albumsOutline} />
         </IonTabButton>
         <IonTabButton tab="scan" onClick={onClickScanTab}>
-          <IonFabButton>
+          <IonFabButton size="small">
             <IonIcon aria-hidden="true" icon={qrCodeOutline} />
           </IonFabButton>
         </IonTabButton>
